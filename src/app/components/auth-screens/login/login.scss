@@ -1,0 +1,176 @@
+.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #f5f7fa;
+    font-family: Inter, Arial, sans-serif;
+    text-align:center;
+}
+
+.card {
+    width: 420px;
+    padding: 28px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 8px 20px rgba(16, 24, 40, 0.06);
+    text-align: center
+}
+
+.brand {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    background: #113880;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-weight: 700
+}
+
+.title {
+    margin: 0 0 4px;
+    color: #1f3556
+}
+
+.subtitle {
+    margin: 0 0 16px;
+    color: #7b8aa3;
+    font-size: 13px
+}
+
+.tabs {
+    display: flex;
+    // gap: 8px;
+    justify-content: center;
+    margin-bottom: 18px
+}
+
+.tab {
+    padding: 8px 14px;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    background: #eef3fb;
+    color: #113880;
+    cursor: pointer;
+    width: 100%;
+}
+
+.tab.active {
+    background: #113880;
+    color: #fff
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left
+}
+
+.form label {
+    font-size: 13px;
+    color: #516177;
+    margin-bottom: 6px
+}
+
+.form input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e6e9ef;
+    background: #fafbfd
+}
+
+.mobile-row {
+    // display: flex;
+    // gap: 8px
+}
+
+.mobile-input {
+    flex: 1
+}
+
+.otp-inline {
+    display: flex;
+    flex-direction: column;
+    // align-items: flex-end;
+    // gap: 6px;
+    margin-top: 10px
+}
+
+.otp-input {
+    width: 120px;
+    text-align: center;
+    letter-spacing: 6px;
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #e6e9ef;
+    background: #fafbfd
+}
+
+.resend {
+    font-size: 12px;
+    color: #6f7f9a
+}
+
+.resend .link {
+    background: transparent;
+    border: none;
+    color: #113880;
+    cursor: pointer;
+    padding: 0
+}
+
+.mobile-action-row {
+    margin-top: 12px
+}
+
+.mobile-action-row .primary {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    background: #113880;
+    color: white;
+    border: none;
+    cursor: pointer
+}
+
+.otp-group input {
+    text-align: center;
+    letter-spacing: 8px;
+    font-size: 18px
+}
+
+.actions {
+    margin-top: 8px
+}
+
+.primary {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: #113880;
+    color: white;
+    border: none;
+    cursor: pointer
+}
+
+.primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed
+}
+
+.create-link {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #6f7f9a
+}
+
+.create-link a {
+    color: #113880;
+    text-decoration: none
+}

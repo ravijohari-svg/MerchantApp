@@ -1,0 +1,58 @@
+<div class="login-page">
+	<div >
+		<div class="brand">S1</div>
+		<h2 class="title">Welcome back</h2>
+		<p class="subtitle">Sign in to your merchant account</p>
+        <div class="card">
+		<div class="tabs" >
+			<button class="tab" [class.active]="mode==='email'" (click)="setMode('email')">Email & Password</button>
+			<button class="tab" [class.active]="mode==='mobile'" (click)="setMode('mobile')">Mobile OTP</button>
+		</div>
+			<form class="form" (submit)="$event.preventDefault(); onPrimaryAction()">
+				@if (mode==='email') {
+				<label>Email Address</label>
+				<input type="email" placeholder="you@company.com" (input)="email = $any($event.target).value" />
+
+				<label>Password</label>
+				<input type="password" placeholder="Enter password" (input)="password = $any($event.target).value" />
+
+                <div class="actions">
+                        <button type="submit" class="primary" [disabled]="primaryDisabled">{{ primaryLabel }}</button>
+                    </div>
+				}
+
+				@if (mode==='mobile') {
+                    
+                   
+				<div class="mobile-row">
+					 <div>
+                        <label>Mobile Number</label>
+                        <input class="mobile-input" type="tel" placeholder="+91 12345 67890" (input)="mobile = $any($event.target).value" />
+                    </div>
+
+						@if (showOtpInput) {
+							<div class="otp-inline">
+								<label class="sr-only">Enter 6 digit OTP</label>
+								<input class="otp-input" type="text" maxlength="6" placeholder="______" (input)="otp = $any($event.target).value" />
+								<div class="resend">
+									@if (resendSeconds===0) {
+										<button type="button" class="link" (click)="resendOtp()">Resend</button>
+									} @else {
+										<span>Resend In {{resendSeconds}}s</span>
+									}
+								</div>
+							</div>
+						}
+				</div>
+
+				<div class="mobile-action-row">
+					<button type="button" class="primary" (click)="onSendOrVerify()" [disabled]="mobileActionDisabled">{{ mobileActionLabel }}</button>
+				</div>
+				}
+
+			
+		</form>
+        </div>
+		<div class="create-link">New to S1? <a href="#">Create a merchant account</a></div>
+	</div>
+</div>
