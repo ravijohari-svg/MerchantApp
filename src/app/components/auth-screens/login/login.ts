@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { AuthApiService } from '../../../services/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports:[CommonModule],
+  imports:[CommonModule, RouterLink],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })

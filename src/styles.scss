@@ -41,3 +41,51 @@ body {
 body {
   margin: 0px;
 }
+
+
+// ------------------------------------
+
+::ng-deep .merchant-stepper .mat-horizontal-stepper-header-container{
+
+    width:360px;
+    margin:0 auto 20px;
+}
+
+::ng-deep .merchant-stepper .mat-step-header{
+
+    padding:0;
+    width:40px;
+}
+
+::ng-deep .merchant-stepper .mat-step-icon{
+
+    width:26px;
+    height:26px;
+
+    font-size:12px;
+
+    background:#e6eaf2;
+    color:#8d99ae;
+}
+
+::ng-deep .merchant-stepper .mat-step-icon-selected{
+
+    background:#2f56a5 !important;
+    color:white;
+}
+
+::ng-deep .merchant-stepper .mat-step-label{
+
+    display:none;
+}
+
+::ng-deep .merchant-stepper .mat-stepper-horizontal-line{
+
+    min-width:35px;
+    border-top-color:#dde3ec;
+}
+
+::ng-deep .merchant-stepper .mat-horizontal-content-container{
+
+    padding:0;
+}
