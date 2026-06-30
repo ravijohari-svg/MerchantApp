@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ApiService } from '../../../services/api.service';
 import { AuthApiService } from '../../../services/auth.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +21,7 @@ export class Login {
   resendSeconds = 0;
   private _resendTimer: any = null;
 
-  constructor(private authApiService : AuthApiService){
+  constructor(private authApiService : AuthApiService , private router: Router){
   }
 
   setMode(m: 'email' | 'mobile') {
@@ -72,10 +72,13 @@ export class Login {
 
   signInWithEmail() {
     // Replace with real authentication call
-    alert(`Signing in with email: ${this.email}`);
+    // alert(`Signing in with email: ${this.email}`);
     let payload = {
       Email: this.email
     }
+
+     this.router.navigate(['/merchant']);
+    return;
     
   this.authApiService.login(payload).subscribe({
     next: (res: any) => {

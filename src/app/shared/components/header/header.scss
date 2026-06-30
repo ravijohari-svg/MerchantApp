@@ -1,0 +1,243 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 0 24px;
+  box-sizing: border-box;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  @media (max-width: 576px) {
+    padding: 0 16px;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.menu-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+  }
+
+  i {
+    font-size: 18px;
+  }
+
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 12px;
+  width: 100%;
+  max-width: 380px;
+  gap: 10px;
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    background-color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .search-icon {
+    color: #94a3b8;
+    font-size: 14px;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 13px;
+    color: #0f172a;
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+  }
+
+  .search-shortcut {
+    font-size: 10px;
+    font-weight: 500;
+    color: #94a3b8;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 2px 5px;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 576px) {
+    display: none; // Hide full search bar on mobile, could trigger overlay
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  @media (max-width: 576px) {
+    gap: 12px;
+  }
+}
+
+// Role Selector
+.role-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+
+  &:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  .role-icon {
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .role-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: #334155;
+  }
+
+  .role-arrow {
+    font-size: 10px;
+    color: #94a3b8;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px 8px;
+    .role-text, .role-arrow {
+      display: none;
+    }
+  }
+
+  @media (max-width: 576px) {
+    display: none; // Hide completely on mobile
+  }
+}
+
+.notification-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+  }
+
+  i {
+    font-size: 20px;
+  }
+
+  .bell-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 6px;
+    height: 6px;
+    background-color: #ef4444;
+    border-radius: 50%;
+    border: 1.5px solid #ffffff;
+  }
+}
+
+// User Profile
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 1px solid #e2e8f0;
+  padding-left: 20px;
+
+  @media (max-width: 576px) {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .avatar-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.2);
+  }
+
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+
+    .profile-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    .profile-role {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    @media (max-width: 768px) {
+      display: none; // Hide profile details on tablet and mobile
+    }
+  }
+}

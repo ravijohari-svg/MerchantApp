@@ -1,39 +1,228 @@
-<mat-tab-group animationDuration="300ms">
-
-  <!-- TAB 1 -->
-  <mat-tab label="Dashboard">
-    <div class="tab-content">
-      <h2>Dashboard</h2>
-      <p>This is your dashboard tab.</p>
-
-      <button mat-raised-button color="primary">
-        Test Button
+<div class="dashboard-content">
+  <div class="dashboard-title-bar">
+    <div class="title-info">
+      <h1>Dashboard</h1>
+      <p class="subtitle">{{ currentDate() }}</p>
+    </div>
+    <div class="action-buttons">
+      <button class="btn btn-outline" (click)="refreshDashboard()" [disabled]="isRefreshing()">
+        <i class="pi pi-refresh" [class.pi-spin]="isRefreshing()"></i>
+        <span>Refresh</span>
+      </button>
+      <button class="btn btn-primary" (click)="exportReport()">
+        <i class="pi pi-download"></i>
+        <span>Export Report</span>
       </button>
     </div>
-  </mat-tab>
+  </div>
 
-  <!-- TAB 2 -->
-  <mat-tab label="Users">
-    <div class="tab-content">
-      <h2>Users</h2>
-      <p>Manage your users here.</p>
+  <div class="kpi-grid">
+    @for (card of kpiCards; track card.id) {
+      <div class="kpi-card" [class]="card.theme">
+        <div class="kpi-card-header">
+          <div class="kpi-icon-wrapper">
+            @if (card.id === 'revenue') {
+              <span class="kpi-symbol">₹</span>
+            } @else {
+              <i [class]="card.icon"></i>
+            }
+          </div>
+          <span class="trend-badge" [class]="card.changeType">
+            @if (card.changeType === 'up') {
+              <i class="pi pi-arrow-up-right trend-arrow"></i>
+            } @else if (card.changeType === 'down') {
+              <i class="pi pi-arrow-down-left trend-arrow"></i>
+            }
+            {{ card.change }}
+          </span>
+        </div>
+        <div class="kpi-card-body">
+          <h2 class="kpi-value">{{ card.value }}</h2>
+          <span class="kpi-label">{{ card.label }}</span>
+          <p class="kpi-subtext">{{ card.subtext }}</p>
+        </div>
+      </div>
+    }
+  </div>
 
-      <button mat-stroked-button color="accent">
-        Add User
-      </button>
+  <div class="dashboard-table-card">
+    <div class="table-card-header">
+      <h2>All Stores — Today's Performance</h2>
+      <span class="live-badge">
+        <span class="live-dot"></span>
+        Live
+      </span>
     </div>
-  </mat-tab>
-
-  <!-- TAB 3 -->
-  <mat-tab label="Settings">
-    <div class="tab-content">
-      <h2>Settings</h2>
-      <p>Application settings page.</p>
-
-      <button mat-flat-button color="warn">
-        Save Settings
-      </button>
+    <div class="table-wrapper">
+      <table class="performance-table">
+        <thead>
+          <tr>
+            <th>Store</th>
+            <th>Category</th>
+            <th class="num-cell">Orders</th>
+            <th class="num-cell">Revenue</th>
+            <th>Rating</th>
+            <th>Drone</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (store of storesPerformance; track store.name) {
+            <tr>
+              <td>
+                <div class="store-cell">
+                  <span class="store-emoji">{{ store.emoji }}</span>
+                  <span class="store-name-text">{{ store.name }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="category-badge" [class]="store.category.toLowerCase()">
+                  {{ store.category }}
+                </span>
+              </td>
+              <td class="num-cell">{{ store.orders }}</td>
+              <td class="num-cell font-medium">₹{{ store.revenue | number:'1.0-0' }}</td>
+              <td>
+                <div class="rating-cell">
+                  <i class="pi pi-star-fill star-icon"></i>
+                  <span>{{ store.rating }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="drone-cell" [class.drone-on]="store.drone === 'On'">
+                  @if (store.drone === 'On') {
+                    <i class="pi pi-send drone-icon"></i>
+                  }
+                  <span>{{ store.drone }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="status-cell" [class.status-active]="store.status === 'Active'" [class.status-inactive]="store.status === 'Inactive'">
+                  {{ store.status }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-  </mat-tab>
+  </div>
 
-</mat-tab-group>
+  <div class="charts-grid">
+    <div class="chart-card revenue-chart-card">
+      <div class="chart-header">
+        <div class="chart-title-info">
+          <h2>Revenue — Last 7 Days</h2>
+          <p class="chart-subtitle">Total ₹3,93,540 this week</p>
+        </div>
+        <div class="time-selectors">
+          <button [class.active]="selectedTimeRange() === '7D'" (click)="setTimeRange('7D')">7D</button>
+          <button [class.active]="selectedTimeRange() === '1M'" (click)="setTimeRange('1M')">1M</button>
+          <button [class.active]="selectedTimeRange() === '3M'" (click)="setTimeRange('3M')">3M</button>
+        </div>
+      </div>
+      <div class="chart-content">
+        <!-- SVG Line Chart -->
+        <svg class="line-chart-svg" width="100%" height="200" viewBox="0 0 600 200" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1e40af" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#1e40af" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          
+          <!-- Grid Lines -->
+          <line x1="40" y1="30" x2="580" y2="30" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="4 4" />
+          <line x1="40" y1="90" x2="580" y2="90" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="4 4" />
+          <line x1="40" y1="150" x2="580" y2="150" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="4 4" />
+          
+          <!-- Grid Value Labels -->
+          <text class="grid-text" x="30" y="34" text-anchor="end">₹88K</text>
+          <text class="grid-text" x="30" y="94" text-anchor="end">₹68K</text>
+          <text class="grid-text" x="30" y="154" text-anchor="end">₹48K</text>
+          
+          <!-- Gradient Area Under Curve -->
+          <path d="M 60 170 L 60 160 C 130 155, 170 110, 230 115 C 320 120, 370 65, 440 55 C 510 45, 540 60, 580 75 L 580 170 Z" fill="url(#chartGradient)" />
+          
+          <!-- Smooth Line Path -->
+          <path d="M 60 160 C 130 155, 170 110, 230 115 C 320 120, 370 65, 440 55 C 510 45, 540 60, 580 75" fill="none" stroke="#11357c" stroke-width="3" stroke-linecap="round" />
+          
+          <!-- Interactive Data Points (Circles) -->
+          <circle cx="60" cy="160" r="4.5" fill="#ffffff" stroke="#11357c" stroke-width="2.5" />
+          <circle cx="150" cy="142" r="4.5" fill="#ffffff" stroke="#11357c" stroke-width="2.5" />
+          <circle cx="230" cy="115" r="4.5" fill="#ffffff" stroke="#11357c" stroke-width="2.5" />
+          <circle cx="330" cy="117" r="4.5" fill="#ffffff" stroke="#11357c" stroke-width="2.5" />
+          <circle cx="440" cy="55" r="5.5" fill="#11357c" stroke="#ffffff" stroke-width="2.5" /> <!-- Selected Point -->
+          <circle cx="530" cy="58" r="4.5" fill="#ffffff" stroke="#11357c" stroke-width="2.5" />
+          <circle cx="580" cy="75" r="4.5" fill="#ffffff" stroke="#11357c" stroke-width="2.5" />
+          
+          <!-- X-Axis Labels -->
+          <text class="x-axis-text" x="60" y="190" text-anchor="middle">Mon</text>
+          <text class="x-axis-text" x="150" y="190" text-anchor="middle">Tue</text>
+          <text class="x-axis-text" x="230" y="190" text-anchor="middle">Wed</text>
+          <text class="x-axis-text" x="330" y="190" text-anchor="middle">Thu</text>
+          <text class="x-axis-text" x="440" y="190" text-anchor="middle">Fri</text>
+          <text class="x-axis-text" x="530" y="190" text-anchor="middle">Sat</text>
+          <text class="x-axis-text" x="580" y="190" text-anchor="middle">Sun</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="chart-card donut-chart-card">
+      <div class="chart-header">
+        <div class="chart-title-info">
+          <h2>Order Status</h2>
+          <p class="chart-subtitle">Today's distribution (212 orders)</p>
+        </div>
+      </div>
+      <div class="chart-content donut-layout">
+        <div class="donut-svg-wrapper">
+          <svg class="donut-chart-svg" width="150" height="150" viewBox="0 0 200 200">
+            <!-- Background track circle -->
+            <circle cx="100" cy="100" r="70" fill="transparent" stroke="#f8fafc" stroke-width="20" />
+            
+            <!-- Green segment (Delivered: 70% -> length 307.87) -->
+            <!-- Circumference = 2 * pi * 70 = 439.82 -->
+            <!-- 70% of 439.82 = 307.87. Offset = 0 -->
+            <circle cx="100" cy="100" r="70" fill="transparent" stroke="#10b981" stroke-width="20" 
+              stroke-dasharray="307.87 439.82" stroke-dashoffset="0" transform="rotate(-90 100 100)" />
+              
+            <!-- Yellow/Orange segment (Preparing: 18% -> length 79.17) -->
+            <!-- 18% of 439.82 = 79.17. Offset = -307.87 -->
+            <circle cx="100" cy="100" r="70" fill="transparent" stroke="#f59e0b" stroke-width="20" 
+              stroke-dasharray="79.17 439.82" stroke-dashoffset="-307.87" transform="rotate(-90 100 100)" stroke-linecap="round" />
+
+            <!-- Blue segment (Pending: 8% -> length 35.19) -->
+            <!-- 8% of 439.82 = 35.19. Offset = -387.04 -->
+            <circle cx="100" cy="100" r="70" fill="transparent" stroke="#0ea5e9" stroke-width="20" 
+              stroke-dasharray="35.19 439.82" stroke-dashoffset="-387.04" transform="rotate(-90 100 100)" stroke-linecap="round" />
+
+            <!-- Red segment (Cancelled: 4% -> length 17.59) -->
+            <!-- 4% of 439.82 = 17.59. Offset = -422.23 -->
+            <circle cx="100" cy="100" r="70" fill="transparent" stroke="#ef4444" stroke-width="20" 
+              stroke-dasharray="17.59 439.82" stroke-dashoffset="-422.23" transform="rotate(-90 100 100)" stroke-linecap="round" />
+          </svg>
+          <div class="donut-center-text">
+            <span class="donut-number">212</span>
+            <span class="donut-label">Total</span>
+          </div>
+        </div>
+        
+        <div class="donut-legend">
+          @for (category of orderStatusDistribution.categories; track category.name) {
+            <div class="legend-item">
+              <div class="legend-name-group">
+                <span class="legend-dot" [style.background-color]="category.color"></span>
+                <span class="legend-name">{{ category.name }}</span>
+              </div>
+              <div class="legend-value-group">
+                <span class="legend-value">{{ category.count }}</span>
+                <span class="legend-pct">{{ category.percentage }}%</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

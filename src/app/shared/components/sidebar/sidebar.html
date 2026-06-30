@@ -1,1 +1,55 @@
-<p>sidebar works!</p>
+<div class="sidebar-container" [class.open]="layoutService.isSidebarOpen()">
+  <div class="sidebar-header">
+    <div class="logo-circle">S1</div>
+    <span class="logo-text">S1 Merchant</span>
+  </div>
+
+  <div class="store-selector">
+    <div class="store-avatar">K</div>
+    <div class="store-info">
+      <div class="store-name">KFC India</div>
+      <div class="store-count">6 stores</div>
+    </div>
+    <i class="pi pi-chevron-down store-arrow"></i>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul class="sidebar-menu">
+      @for (item of menuItems; track item.name) {
+        <li 
+          [class.active]="activeItem === item.name" 
+          (click)="selectItem(item.name)"
+          class="menu-item"
+        >
+          <div class="menu-item-content">
+            <i [class]="item.icon" class="menu-icon"></i>
+            <span class="menu-label">{{ item.name }}</span>
+          </div>
+          
+          @if (item.badge) {
+            <span class="menu-badge" [class.badge-danger]="item.name === 'Orders' || item.name === 'Notifications'">
+              {{ item.badge }}
+            </span>
+          }
+          
+          @if (activeItem === item.name) {
+            <div class="active-indicator"></div>
+          }
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="menu-item signout-btn">
+      <div class="menu-item-content">
+        <i class="pi pi-sign-out menu-icon"></i>
+        <span class="menu-label" [routerLink]="['/auth']">Sign Out</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (layoutService.isSidebarOpen()) {
+  <div class="sidebar-backdrop" (click)="layoutService.closeSidebar()"></div>
+}
