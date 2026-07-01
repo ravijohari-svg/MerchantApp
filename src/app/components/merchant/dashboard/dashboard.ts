@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { MATERIAL_IMPORTS } from '../../../shared/material/material.module';
-import { DecimalPipe, CurrencyPipe } from '@angular/common';
+import { DecimalPipe, CurrencyPipe, NgClass } from '@angular/common';
 
 interface KpiCard {
   id: string;
@@ -27,7 +27,7 @@ interface StorePerformance {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MATERIAL_IMPORTS, DecimalPipe],
+  imports: [MATERIAL_IMPORTS , DecimalPipe, NgClass],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -174,6 +174,196 @@ export class Dashboard {
       { name: 'Cancelled', count: 7, percentage: 4, color: '#ef4444' }, // Red
     ]
   };
+
+
+  productColumns = [
+    'product',
+    'sku',
+    'category',
+    'units',
+    'revenue',
+    'stock'
+  ];
+
+  topProducts = [
+    {
+      icon: '🍔',
+      name: 'McSpicy Burger',
+      sku: 'KFC-001',
+      category: 'Food',
+      units: 248,
+      revenue: '₹37,200',
+      stock: 85
+    },
+    {
+      icon: '💊',
+      name: 'Paracetamol 500mg',
+      sku: 'MED-042',
+      category: 'Pharmacy',
+      units: 312,
+      revenue: '₹9,360',
+      stock: 12
+    },
+    {
+      icon: '📱',
+      name: 'Samsung Galaxy S24',
+      sku: 'SAM-S24',
+      category: 'Electronics',
+      units: 34,
+      revenue: '₹8,49,966',
+      stock: 8
+    },
+    {
+      icon: '🌾',
+      name: 'Basmati Rice 5kg',
+      sku: 'GRO-188',
+      category: 'Grocery',
+      units: 167,
+      revenue: '₹41,750',
+      stock: 46
+    },
+    {
+      icon: '🍛',
+      name: 'Chicken Biryani',
+      sku: 'KFC-089',
+      category: 'Food',
+      units: 189,
+      revenue: '₹56,700',
+      stock: 99
+    }
+  ];
+
+  //==========================
+  // Orders
+  //==========================
+
+  orderColumns = [
+    'id',
+    'customer',
+    'store',
+    'amount',
+    'status',
+    'time'
+  ];
+
+  orders = [
+    {
+      id: 'ORD-7841',
+      customer: 'Priya Sharma',
+      initial: 'P',
+      color: '#3559b7',
+      store: 'KFC - Sector 55',
+      amount: '₹847',
+      status: 'Delivered',
+      statusClass: 'delivered',
+      time: '2 min ago'
+    },
+    {
+      id: 'ORD-7840',
+      customer: 'Arjun Mehta',
+      initial: 'A',
+      color: '#8064ff',
+      store: 'MedPlus - DLF Phase',
+      amount: '₹420',
+      status: 'In Transit',
+      statusClass: 'transit',
+      time: '8 min ago'
+    },
+    {
+      id: 'ORD-7839',
+      customer: 'Sneha Gupta',
+      initial: 'S',
+      color: '#10b981',
+      store: 'D-Mart - Sector 29',
+      amount: '₹2,340',
+      status: 'Preparing',
+      statusClass: 'preparing',
+      time: '15 min ago'
+    },
+    {
+      id: 'ORD-7838',
+      customer: 'Rohit Verma',
+      initial: 'R',
+      color: '#f59e0b',
+      store: 'KFC - Cyber Hub',
+      amount: '₹650',
+      status: 'Accepted',
+      statusClass: 'accepted',
+      time: '22 min ago'
+    },
+    {
+      id: 'ORD-7837',
+      customer: 'Anjali Singh',
+      initial: 'A',
+      color: '#ef4444',
+      store: 'Samsung - Sector 5',
+      amount: '₹12,999',
+      status: 'Delivered',
+      statusClass: 'delivered',
+      time: '34 min ago'
+    },
+    {
+      id: 'ORD-7836',
+      customer: 'Vikash Kumar',
+      initial: 'V',
+      color: '#3b82f6',
+      store: 'MedPlus - Cyber Hub',
+      amount: '₹890',
+      status: 'Cancelled',
+      statusClass: 'cancelled',
+      time: '45 min ago'
+    }
+  ];
+
+  //==========================
+  // Quick Actions
+  //==========================
+
+  actions = [
+    {
+      icon: 'add',
+      title: 'Add Product'
+    },
+    {
+      icon: 'store',
+      title: 'New Store'
+    },
+    {
+      icon: 'local_offer',
+      title: 'Create Coupon'
+    },
+    {
+      icon: 'shopping_cart',
+      title: 'View Orders'
+    }
+  ];
+
+  //==========================
+  // Notifications
+  //==========================
+
+  notifications = [
+    {
+      message: 'New order #ORD-7841 from Priya Sharma (₹847)',
+      time: '2 min ago'
+    },
+    {
+      message: 'Paracetamol stock low - only 12 units left',
+      time: '15 min ago'
+    },
+    {
+      message: 'Drone dispatched for #ORD-7840',
+      time: '8 min ago'
+    },
+    {
+      message: 'Settlement of ₹1,24,500 processed',
+      time: '1 hr ago'
+    },
+    {
+      message: 'KFC DLF Phase 3 went offline',
+      time: '2 hrs ago'
+    }
+  ];
 
   refreshDashboard() {
     this.isRefreshing.set(true);

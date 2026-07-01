@@ -225,4 +225,354 @@
       </div>
     </div>
   </div>
+
+  <div class="dashboard">
+
+  <!-- ===================== TOP PRODUCTS ===================== -->
+
+  <mat-card class="card">
+
+    <div class="card-header">
+      <h3>Top Products This Week</h3>
+
+      <a class="view-link">
+        View all
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+
+    <table mat-table [dataSource]="topProducts" class="dashboard-table">
+
+      <!-- Product -->
+
+      <ng-container matColumnDef="product">
+        <th mat-header-cell *matHeaderCellDef>PRODUCT</th>
+
+        <td mat-cell *matCellDef="let item">
+
+          <div class="product-cell">
+
+            <div class="emoji">
+              {{ item.icon }}
+            </div>
+
+            <div class="product-name">
+              {{ item.name }}
+            </div>
+
+          </div>
+
+        </td>
+      </ng-container>
+
+      <!-- SKU -->
+
+      <ng-container matColumnDef="sku">
+        <th mat-header-cell *matHeaderCellDef>SKU</th>
+
+        <td mat-cell *matCellDef="let item">
+          {{ item.sku }}
+        </td>
+      </ng-container>
+
+      <!-- Category -->
+
+      <ng-container matColumnDef="category">
+
+        <th mat-header-cell *matHeaderCellDef>CATEGORY</th>
+
+        <td mat-cell *matCellDef="let item">
+
+          <span class="badge">
+            {{ item.category }}
+          </span>
+
+        </td>
+
+      </ng-container>
+
+      <!-- Units -->
+
+      <ng-container matColumnDef="units">
+
+        <th mat-header-cell *matHeaderCellDef>UNITS SOLD</th>
+
+        <td mat-cell *matCellDef="let item">
+          {{ item.units }}
+        </td>
+
+      </ng-container>
+
+      <!-- Revenue -->
+
+      <ng-container matColumnDef="revenue">
+
+        <th mat-header-cell *matHeaderCellDef>REVENUE</th>
+
+        <td mat-cell *matCellDef="let item">
+          {{ item.revenue }}
+        </td>
+
+      </ng-container>
+
+      <!-- Stock -->
+
+      <ng-container matColumnDef="stock">
+
+        <th mat-header-cell *matHeaderCellDef>STOCK LEVEL</th>
+
+        <td mat-cell *matCellDef="let item">
+
+          <div class="stock">
+
+            <div class="progress">
+              <div
+                class="fill"
+                [style.width.%]="item.stock">
+              </div>
+            </div>
+
+            <span
+              [class.success]="item.stock >= 20"
+              [class.danger]="item.stock < 20">
+
+              {{ item.stock }}
+
+            </span>
+
+          </div>
+
+        </td>
+
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="productColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: productColumns"></tr>
+
+    </table>
+
+  </mat-card>
+
+  <!-- ===================== BOTTOM SECTION ===================== -->
+
+  <div class="bottom-grid">
+
+    <!-- ================= Orders ================= -->
+
+    <mat-card class="card">
+
+      <div class="card-header">
+
+        <h3>Recent Orders</h3>
+
+        <a class="view-link">
+
+          View all
+
+          <mat-icon>arrow_forward</mat-icon>
+
+        </a>
+
+      </div>
+
+      <table mat-table [dataSource]="orders" class="dashboard-table">
+
+        <!-- Order ID -->
+
+        <ng-container matColumnDef="id">
+
+          <th mat-header-cell *matHeaderCellDef>
+            ORDER ID
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+            {{ item.id }}
+          </td>
+
+        </ng-container>
+
+        <!-- Customer -->
+
+        <ng-container matColumnDef="customer">
+
+          <th mat-header-cell *matHeaderCellDef>
+            CUSTOMER
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            <div class="customer">
+
+              <div
+                class="avatar"
+                [style.background]="item.color">
+
+                {{ item.initial }}
+
+              </div>
+
+              {{ item.customer }}
+
+            </div>
+
+          </td>
+
+        </ng-container>
+
+        <!-- Store -->
+
+        <ng-container matColumnDef="store">
+
+          <th mat-header-cell *matHeaderCellDef>
+            STORE
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            {{ item.store }}
+
+          </td>
+
+        </ng-container>
+
+        <!-- Amount -->
+
+        <ng-container matColumnDef="amount">
+
+          <th mat-header-cell *matHeaderCellDef>
+            AMOUNT
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            {{ item.amount }}
+
+          </td>
+
+        </ng-container>
+
+        <!-- Status -->
+
+        <ng-container matColumnDef="status">
+
+          <th mat-header-cell *matHeaderCellDef>
+            STATUS
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            <span [ngClass]="item.statusClass">
+
+              {{ item.status }}
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <!-- Time -->
+
+        <ng-container matColumnDef="time">
+
+          <th mat-header-cell *matHeaderCellDef>
+            TIME
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            {{ item.time }}
+
+          </td>
+
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="orderColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: orderColumns"></tr>
+
+      </table>
+
+    </mat-card>
+
+    <!-- ================= Right Sidebar ================= -->
+
+    <div class="sidebar">
+
+      <!-- Quick Actions -->
+
+      <mat-card class="card">
+
+        <h3>Quick Actions</h3>
+
+        <div class="quick-grid">
+
+          @for (action of actions; track action.title) {
+
+            <div class="quick-card">
+
+              <div class="icon">
+
+                <mat-icon>
+                  {{ action.icon }}
+                </mat-icon>
+
+              </div>
+
+              <span>
+                {{ action.title }}
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+      </mat-card>
+
+      <!-- Notifications -->
+
+      <mat-card class="card">
+
+        <div class="notify-header">
+
+          <h3>Notifications</h3>
+
+          <span class="count">5</span>
+
+        </div>
+
+        @for (notification of notifications; track notification.message) {
+
+          <div class="notification">
+
+            <div class="dot"></div>
+
+            <div>
+
+              <div class="text">
+
+                {{ notification.message }}
+
+              </div>
+
+              <div class="time">
+
+                {{ notification.time }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </mat-card>
+
+    </div>
+
+  </div>
+
+</div>
 </div>

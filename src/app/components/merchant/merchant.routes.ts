@@ -20,6 +20,12 @@ export const MERCHANT_ROUTES: Routes = [
         loadComponent: () =>
           import('./dashboard/dashboard')
             .then(m => m.Dashboard)
+      },
+      {
+        path: 'store-management',
+        loadComponent: () =>
+          import('./store-management/store-management')
+            .then(m => m.StoreManagement)
       }
     ]
   }

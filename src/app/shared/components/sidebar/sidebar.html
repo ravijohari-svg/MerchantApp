@@ -18,7 +18,7 @@
       @for (item of menuItems; track item.name) {
         <li 
           [class.active]="activeItem === item.name" 
-          (click)="selectItem(item.name)"
+          (click)="selectItem(item)"
           class="menu-item"
         >
           <div class="menu-item-content">

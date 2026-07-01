@@ -1,0 +1,171 @@
+<div class="page store-page-wrapper">
+
+    <div class="header">
+
+        <div>
+
+            <h2>Store Management</h2>
+
+            <p>Manage all store branches, locations, and assignments</p>
+
+        </div>
+
+        <button class="add-btn">
+
+            + Add Store
+
+        </button>
+
+    </div>
+
+    <!-- hierarchy -->
+
+    <div class="hierarchy-card">
+
+        <div class="title">
+
+            📚 KFC India — Organization Hierarchy
+
+        </div>
+
+        <div class="owner">
+
+            KFC India (Merchant Account · Owner: Ravi Sharma)
+
+        </div>
+
+        <div class="hierarchy">
+
+            @for(item of hierarchy; track item){
+
+            <div
+                class="branch"
+                [class.inactive]="!item.active">
+
+                <div>{{item.name}}</div>
+
+                <span>{{item.manager}}</span>
+
+            </div>
+
+            }
+
+        </div>
+
+    </div>
+
+    <!-- cards -->
+
+    <div class="card-grid">
+
+        @for(store of stores; track store){
+
+        <div class="store-card">
+
+            <div class="top">
+
+                <div class="store">
+
+                    <span class="icon">
+
+                        {{store.icon}}
+
+                    </span>
+
+                    <div>
+
+                        <h4>{{store.name}}</h4>
+
+                        <small>{{store.type}}</small>
+
+                    </div>
+
+                </div>
+
+                <span
+                    class="status"
+                    [class.inactive]="!store.active">
+
+                    {{store.active?'Active':'Inactive'}}
+
+                </span>
+
+            </div>
+
+            <div class="stats">
+
+                <div>
+
+                    <h3>{{store.orders}}</h3>
+
+                    <span>Orders Today</span>
+
+                </div>
+
+                <div>
+
+                    <h3>{{store.revenue}}</h3>
+
+                    <span>Revenue Today</span>
+
+                </div>
+
+            </div>
+
+            <div class="rating">
+
+                ⭐ {{store.rating}}
+
+             @if (store.delivery) {
+                <span>
+                    ✔ {{ store.delivery }}
+                </span>
+            }
+
+            </div>
+
+            <div class="team-title">
+
+                Assigned Team
+
+            </div>
+
+            <div class="team">
+
+                @for(member of store.team; track member){
+
+                <span>
+
+                    {{member}}
+
+                </span>
+
+                }
+
+                <small>+0 more</small>
+
+            </div>
+
+            <div class="actions">
+
+                <button>
+
+                    ✎ Edit
+
+                </button>
+
+                <button>
+
+                    👁 View
+
+                </button>
+
+            </div>
+
+        </div>
+
+        }
+
+    </div>
+
+</div>
