@@ -1,0 +1,208 @@
+$bg-primary: #f8f9fc;
+$text-dark: #1a202c;
+$text-secondary: #718096;
+$border-light: #edf2f7;
+
+$clr-critical: #e53935;
+$clr-warning: #ffb300;
+$clr-out: #718096;
+$clr-success: #43a047;
+
+$chip-pharmacy-text: #1e40af;
+$chip-pharmacy-bg: #eff6ff;
+$chip-electronics-text: #0369a1;
+$chip-electronics-bg: #f0f9ff;
+$chip-grocery-text: #0f766e;
+$chip-grocery-bg: #f0fdfa;
+
+.dashboard-wrapper {
+  background-color: $bg-primary;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+//   font-family: 'Public Sans', sans-serif;
+  color: $text-dark;
+
+  .dashboard-header {
+    .view-badge {
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 26px; font-weight: 800; margin: 0; }
+    .subtitle { color: $text-secondary; font-size: 14px; margin: 8px 0 8px 0; }
+  }
+
+  mat-card {
+    border-radius: 16px;
+    border: none;
+    background: #ffffff;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05), 0px 10px 15px -3px rgba(145, 158, 171, 0.05) !important;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+
+    .kpi-card {
+      display: flex;
+    //   flex-direction: row;
+    //   align-items: center;
+      gap: 16px;
+      padding: 24px;
+
+      .kpi-icon-wrapper {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        mat-icon { font-size: 24px; width: 24px; height: 24px; }
+      }
+      .kpi-content {
+        display: flex; flex-direction: column;
+        .kpi-value { font-size: 24px; font-weight: 800; margin: 0; line-height: 1.2; }
+        .kpi-title { font-size: 13px; color: $text-secondary; font-weight: 500; }
+      }
+    }
+  }
+
+  .table-card {
+    padding: 0;
+    overflow: hidden;
+
+    .table-card-header {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid $border-light;
+      
+      h2 { font-size: 18px; font-weight: 700; margin: 0; }
+      .action-btn-primary {
+        background-color: #1e3a8a;
+        color: #fff;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        display: flex; align-items: center; gap: 8px;
+      }
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .custom-mat-table {
+      width: 100%;
+      background: transparent;
+
+      th.mat-mdc-header-cell {
+        color: $text-secondary;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid $border-light;
+        background-color: #fafbfc;
+        padding: 16px 24px;
+      }
+
+      td.mat-mdc-cell {
+        padding: 18px 24px;
+        border-bottom: 1px solid $border-light;
+        font-size: 13px;
+        color: $text-dark;
+      }
+
+      .product-cell {
+        display: flex; align-items: center; gap: 12px;
+        .product-visual-icon { font-size: 16px; }
+        .product-name { font-weight: 600; color: #1e3a8a; }
+      }
+      .sku-cell { color: $text-secondary; font-family: monospace; font-size: 12px; }
+
+      .category-chip {
+        padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+        &.pharmacy { color: $chip-pharmacy-text; background: $chip-pharmacy-bg; }
+        &.electronics { color: $chip-electronics-text; background: $chip-electronics-bg; }
+        &.grocery { color: $chip-grocery-text; background: $chip-grocery-bg; }
+      }
+
+      .stock-ratio-cell {
+        font-weight: 700;
+        .divider { color: #cbd5e1; margin: 0 2px; }
+        .max-stock { color: $text-secondary; font-weight: 400; }
+        &.critical { color: $clr-critical; }
+        &.warning { color: $clr-warning; }
+        &.out-of-stock { color: $clr-out; }
+      }
+
+      .progress-track {
+        width: 80px; height: 6px; background-color: #f1f5f9; border-radius: 10px; overflow: hidden;
+        .progress-bar {
+          height: 100%; border-radius: 10px;
+          &.critical { background-color: $clr-critical; }
+          &.warning { background-color: $clr-warning; }
+          &.out-of-stock { background-color: transparent; }
+        }
+      }
+
+      .urgency-text {
+        font-weight: 700; font-size: 12px;
+        &.critical { color: $clr-critical; }
+        &.warning { color: $clr-warning; }
+        &.out-of-stock { color: #f43f5e; }
+      }
+
+      .action-restock-btn {
+        background-color: #1e3a8a; color: #fff;
+        border-radius: 8px; font-size: 12px; font-weight: 600;
+        padding: 0 16px; height: 32px; line-height: 32px;
+      }
+    }
+  }
+
+  .recent-updates-card {
+    padding: 24px;
+    .updates-header h2 { font-size: 18px; font-weight: 700; margin: 0 0 20px 0; }
+
+    .updates-list {
+      display: flex; flex-direction: column; gap: 16px;
+
+      .update-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding-bottom: 12px; border-bottom: 1px solid $border-light;
+        &:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .log-meta {
+          display: flex; align-items: center; gap: 16px;
+          .log-icon {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            mat-icon { font-size: 18px; width: 18px; height: 18px; }
+            &.restocked { background-color: #ecfdf5; color: $clr-success; }
+            &.consumed { background-color: #fef2f2; color: $clr-critical; }
+          }
+          .log-details {
+            display: flex; flex-direction: column;
+            .log-title { font-size: 13px; color: $text-dark; }
+            .log-subtitle { font-size: 11px; color: $text-secondary; margin-top: 2px; }
+          }
+        }
+
+        .log-quantity {
+          font-weight: 700; font-size: 13px;
+          &.restocked { color: $clr-success; }
+          &.consumed { color: $clr-critical; }
+        }
+      }
+    }
+  }
+}

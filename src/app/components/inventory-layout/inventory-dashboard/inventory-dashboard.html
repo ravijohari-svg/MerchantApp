@@ -1,0 +1,121 @@
+<div class="dashboard-wrapper">
+  <header class="dashboard-header">
+    <span class="view-badge">Inventory View</span>
+    <h1>Inventory Dashboard</h1>
+    <p class="subtitle">Manage stock levels, alerts, and product availability</p>
+  </header>
+
+  <div class="kpi-grid">
+    <mat-card class="kpi-card" *ngFor="let kpi of kpis">
+      <div class="kpi-icon-wrapper" [style.background-color]="kpi.bgColor" [style.color]="kpi.iconColor">
+        <mat-icon>{{ kpi.icon }}</mat-icon>
+      </div>
+      <div class="kpi-content">
+        <h2 class="kpi-value">{{ kpi.value }}</h2>
+        <span class="kpi-title">{{ kpi.title }}</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <mat-card class="table-card">
+    <div class="table-card-header">
+      <h2>Low Stock & Out-of-Stock Alerts</h2>
+      <button mat-flat-button class="action-btn-primary" (click)="onUpdateInventory()">
+        <mat-icon>add</mat-icon> Update Inventory
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="alertsDataSource" class="custom-mat-table">
+
+        <ng-container matColumnDef="product">
+          <th mat-header-cell *matHeaderCellDef>PRODUCT</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="product-cell">
+              <span class="product-visual-icon">💊</span>
+              <span class="product-name">{{ element.productName }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="sku">
+          <th mat-header-cell *matHeaderCellDef>SKU</th>
+          <td mat-cell *matCellDef="let element" class="sku-cell"> {{ element.sku }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef>CATEGORY</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="category-chip" [ngClass]="element.category.toLowerCase()">
+              {{ element.category }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="currentStock">
+          <th mat-header-cell *matHeaderCellDef>CURRENT STOCK</th>
+          <td mat-cell *matCellDef="let element" class="stock-ratio-cell" [ngClass]="element.urgency.replace(' ', '-').toLowerCase()">
+            {{ element.currentStock }} <span class="divider">/</span> <span class="max-stock">{{ element.maxStock }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="stockLevel">
+          <th mat-header-cell *matHeaderCellDef>STOCK LEVEL</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="progress-track">
+              <div class="progress-bar" 
+                   [ngClass]="element.urgency.replace(' ', '-').toLowerCase()"
+                   [style.width.%]="getStockPercentage(element.currentStock, element.maxStock)">
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="urgency">
+          <th mat-header-cell *matHeaderCellDef>URGENCY</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="urgency-text" [ngClass]="element.urgency.replace(' ', '-').toLowerCase()">
+              {{ element.urgency }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>ACTION</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-flat-button class="action-restock-btn" (click)="onRestock(element)">
+              Restock
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </mat-card>
+
+  <mat-card class="recent-updates-card">
+    <div class="updates-header">
+      <h2>Recent Inventory Updates</h2>
+    </div>
+    <div class="updates-list">
+      <div class="update-row" *ngFor="let log of recentUpdates">
+        <div class="log-meta">
+          <div class="log-icon" [ngClass]="log.type.toLowerCase()">
+            <mat-icon>{{ log.type === 'Restocked' ? 'trending_up' : 'trending_down' }}</mat-icon>
+          </div>
+          <div class="log-details">
+            <span class="log-title">
+              <strong>{{ log.type }}: {{ log.item }}</strong>
+            </span>
+            <span class="log-subtitle">by {{ log.user }} · {{ log.time }}</span>
+          </div>
+        </div>
+        <div class="log-quantity" [ngClass]="log.type.toLowerCase()">
+          {{ log.quantity > 0 ? '+' : '' }}{{ log.quantity }} units
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>

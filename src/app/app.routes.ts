@@ -26,7 +26,20 @@ export const routes: Routes = [
       import('./components/store-manager/store-manager.routes')
         .then(m => m.STORE_ROUTES)
   },
-
+  {
+    path: 'inventory',
+    // canActivate: [authGuard],
+    loadChildren: () =>
+      import('./components/inventory-layout/inventory-layout.routes')
+        .then(m => m.INVENTORY_ROUTES)
+  },
+ {
+    path: 'staff',
+    // canActivate: [authGuard],
+    loadChildren: () =>
+      import('./components/staff-layout/staff-layout.routes')
+        .then(m => m.STAFF_ROUTES)
+  },
   {
     path: '**',
     redirectTo: 'auth'

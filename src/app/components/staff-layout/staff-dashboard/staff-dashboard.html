@@ -1,0 +1,69 @@
+<div class="work-dashboard-container">
+  <header class="view-header">
+    <span class="purple-badge">Staff View</span>
+    <h1>My Work Dashboard</h1>
+    <p class="subtitle">Assigned orders and today's tasks · KFC – Sector 55</p>
+  </header>
+
+  <div class="metrics-grid">
+    <mat-card class="metric-card" *ngFor="let kpi of kpis">
+      <mat-card-content class="metric-body">
+        <div class="metric-icon" [style.color]="kpi.iconColor" [style.background-color]="kpi.iconColor + '12'">
+          <mat-icon>{{ kpi.icon }}</mat-icon>
+        </div>
+        <div class="metric-data">
+          <h2 class="metric-value">{{ kpi.value }}</h2>
+          <span class="metric-title">{{ kpi.title }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="content-card">
+    <div class="card-title-header">
+      <h2>Active Orders — Requires Action</h2>
+    </div>
+    
+    <div class="orders-list">
+      <div class="order-item-row" *ngFor="let order of activeOrders">
+        <div class="order-details-col">
+          <div class="identity-line">
+            <span class="order-id">{{ order.id }}</span>
+            <span class="items-count">{{ order.itemsCount }} items</span>
+          </div>
+          <div class="meta-line">
+            <span class="customer-name">{{ order.customerName }}</span>
+            <span class="timestamp">{{ order.timeElapsed }}</span>
+          </div>
+        </div>
+
+        <div class="order-actions-col">
+          <span class="status-indicator-text" [ngClass]="order.status.toLowerCase()">
+            {{ order.status }}
+          </span>
+          <button mat-flat-button 
+                  [ngClass]="'action-btn-' + order.actionLabel.toLowerCase()" 
+                  (click)="handleAction(order)">
+            {{ order.actionLabel }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <mat-card class="content-card text-logs-card">
+    <div class="card-title-header">
+      <h2>Today's Notifications</h2>
+    </div>
+
+    <div class="notifications-list">
+      <div class="notification-row" *ngFor="let note of notifications">
+        <span class="bullet" [ngClass]="note.type"></span>
+        <div class="notification-body">
+          <p class="message-text">{{ note.message }}</p>
+          <span class="time-elapsed">{{ note.time }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>
