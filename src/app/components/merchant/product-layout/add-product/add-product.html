@@ -1,0 +1,312 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="page-title">Add Product</h1>
+    <p class="page-subtitle">Register your new business location and configure its operating parameters.</p>
+  </div>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    
+    <div class="accordion-card" [class.open]="panels.basicInfo">
+      <div class="accordion-header" (click)="togglePanel('basicInfo')">
+        <div class="header-left">
+          <div class="status-indicator" [class.valid]="productForm.get('productName')?.valid && productForm.get('store')?.valid">
+            <i class="icon-info">ⓘ</i>
+          </div>
+          <h2>Basic Information</h2>
+        </div>
+        <span class="chevron" [class.up]="panels.basicInfo">▼</span>
+      </div>
+
+      <div class="accordion-content" *ngIf="panels.basicInfo">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Product Name <span class="required">*</span></label>
+            <input type="text" formControlName="productName" placeholder="Enter product name" [class.error]="isInvalid('productName')">
+            <span class="error-msg" *ngIf="isInvalid('productName')">Product Name is required (Min 3 characters).</span>
+          </div>
+
+          <div class="form-group">
+            <label>Store <span class="required">*</span></label>
+            <select formControlName="store" [class.error]="isInvalid('store')">
+              <option value="" disabled selected>Select Store</option>
+              <option *ngFor="let s of stores" [value]="s">{{s}}</option>
+            </select>
+            <span class="error-msg" *ngIf="isInvalid('store')">Please select a store.</span>
+          </div>
+
+          <div class="form-group">
+            <label>Category <span class="required">*</span></label>
+            <select formControlName="category" [class.error]="isInvalid('category')">
+              <option value="" disabled selected>Select Category</option>
+              <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Sub Category <span class="required">*</span></label>
+            <select formControlName="subCategory" [class.error]="isInvalid('subCategory')">
+              <option value="" disabled selected>Select Sub Category</option>
+              <option *ngFor="let sub of subCategories" [value]="sub">{{sub}}</option>
+            </select>
+          </div>
+
+          <div class="form-group disabled-field">
+            <label>Brand</label>
+            <input type="text" formControlName="brand">
+          </div>
+
+          <div class="form-group disabled-field">
+            <label>SKU</label>
+            <input type="text" formControlName="sku">
+          </div>
+
+          <div class="form-group full-width">
+            <label>Short Description</label>
+            <textarea formControlName="shortDescription" placeholder="A brief summary of the product..." rows="2"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Long Description</label>
+            <textarea formControlName="longDescription" placeholder="Describe your product in detail..." rows="4"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="accordion-card" [class.open]="panels.images">
+  <div class="accordion-header" (click)="togglePanel('images')">
+    <div class="header-left">
+      <div class="status-indicator">🖼️</div>
+      <h2>Product Images</h2>
+    </div>
+    <span class="chevron" [class.up]="panels.images">▼</span>
+  </div>
+
+  <div class="accordion-content" *ngIf="panels.images">
+    <div class="images-layout">
+      
+      <div class="image-box primary-upload" (click)="mainFileInput.click()">
+        <input type="file" #mainFileInput hidden accept="image/*" (change)="onMainImageSelected($event)">
+        
+        <div class="box-inner" *ngIf="!mainImagePreview">
+          <span class="icon">📷</span>
+          <span class="label">Add Main Image</span>
+        </div>
+        <img *ngIf="mainImagePreview" [src]="mainImagePreview" class="preview-img-full" alt="Main Product">
+      </div>
+
+      <div class="gallery-wrapper">
+        <label class="gallery-title">Gallery Images</label>
+        <div class="gallery-grid">
+          
+          <div class="gallery-item mock-img" *ngFor="let preview of galleryPreviews; let i = index">
+            <img [src]="preview" alt="Gallery Product">
+            <button type="button" class="remove-img-btn" (click)="removeGalleryImage(i); $event.stopPropagation()">×</button>
+          </div>
+
+          <div class="gallery-item add-more" (click)="galleryFileInput.click()">
+            <input type="file" #galleryFileInput hidden accept="image/*" (change)="onGalleryImageSelected($event)">
+            <span>+</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+    <div class="drag-drop-zone" (click)="galleryFileInput.click()">
+      <div class="cloud-icon">☁️</div>
+      <h3>Drag and drop images here</h3>
+      <p>Supported formats: PNG, JPG, WEBP (Max 5 images)</p>
+      <button type="button" class="btn-browse">Browse Files</button>
+    </div>
+  </div>
+</div>
+
+    <div class="accordion-card" [class.open]="panels.inventory">
+      <div class="accordion-header" (click)="togglePanel('inventory')">
+        <div class="header-left">
+          <div class="status-indicator">📦</div>
+          <h2>Inventory</h2>
+        </div>
+        <span class="chevron" [class.up]="panels.inventory">▼</span>
+      </div>
+
+      <div class="accordion-content" *ngIf="panels.inventory">
+        <div class="inventory-container">
+          <div class="inventory-fields">
+            <div class="form-grid layout-2col">
+              <div class="form-group">
+                <label>Current Stock</label>
+                <input type="number" formControlName="currentStock">
+              </div>
+              <div class="form-group">
+                <label>Unit</label>
+                <select formControlName="unit">
+                  <option *ngFor="let u of units" [value]="u">{{u}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Minimum Stock Alert</label>
+                <input type="number" formControlName="minStockAlert">
+              </div>
+              <div class="form-group">
+                <label>Maximum Stock</label>
+                <input type="number" formControlName="maxStockAlert">
+              </div>
+              <div class="form-group disabled-field">
+                <label>SKU</label>
+                <input type="text" formControlName="sku">
+              </div>
+              <div class="form-group barcode-input">
+                <label>Barcode</label>
+                <div class="input-with-icon">
+                  <input type="text" formControlName="barcode" placeholder="Scan or enter barcode">
+                  <span class="barcode-icon">║▌║</span>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label>Expiry Date (Optional)</label>
+                <input type="date" formControlName="expiryDate">
+              </div>
+            </div>
+          </div>
+
+          <div class="status-sidebar-box">
+            <h4>STOCK STATUS</h4>
+            <div class="status-rows">
+              <div class="status-row" [class.active]="stockStatus === 'In Stock'">
+                <div class="status-label"><span class="dot green">●</span> In Stock</div>
+                <div class="status-badge state-green" *ngIf="stockStatus === 'In Stock'">Active</div>
+              </div>
+              <div class="status-row" [class.active]="stockStatus === 'Low Stock'">
+                <div class="status-label"><span class="dot orange">●</span> Low Stock</div>
+                <div class="status-meta" *ngIf="stockStatus === 'Low Stock'">Threshold: {{productForm.get('minStockAlert')?.value}}</div>
+              </div>
+              <div class="status-row" [class.active]="stockStatus === 'Out of Stock'">
+                <div class="status-label"><span class="dot red">●</span> Out Of Stock</div>
+                <div class="status-meta" *ngIf="stockStatus === 'Out of Stock'">0 units</div>
+              </div>
+            </div>
+            <p class="status-footer-note">ⓘ Stock status is automatically updated based on sales and procurement entries.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-card" [class.open]="panels.delivery">
+      <div class="accordion-header" (click)="togglePanel('delivery')">
+        <div class="header-left">
+          <div class="status-indicator">🚛</div>
+          <h2>Delivery Configuration</h2>
+        </div>
+        <span class="chevron" [class.up]="panels.delivery">▼</span>
+      </div>
+
+      <div class="accordion-content" *ngIf="panels.delivery">
+        <div class="delivery-container">
+          <div class="delivery-inputs">
+            <div class="form-group">
+              <label>Weight</label>
+              <div class="input-split">
+                <input type="number" step="0.01" formControlName="weight" placeholder="0.00">
+                <select formControlName="weightUnit" class="unit-selector">
+                  <option value="Kg">Kg</option>
+                  <option value="Gm">Gm</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" formGroupName="dimensions">
+              <label>Dimensions (L x W x H)</label>
+              <div class="dimensions-row">
+                <input type="text" formControlName="length" placeholder="L">
+                <input type="text" formControlName="width" placeholder="W">
+                <input type="text" formControlName="height" placeholder="H">
+              </div>
+            </div>
+          </div>
+
+          <div class="delivery-options-box">
+            <label class="checkbox-container">
+              <span>Drone Eligible</span>
+              <div>
+                <input type="checkbox" formControlName="droneEligible">
+               <span class="checkmark"></span>
+              </div>
+              
+            </label>
+            <label class="checkbox-container">
+              <span>Fragile Product</span>
+              <div>
+              <input type="checkbox" formControlName="fragileProduct">
+              <span class="checkmark"></span>
+              </div>
+            </label>
+            <label class="checkbox-container">
+              <span>Temperature Controlled</span>
+              <div>
+              <input type="checkbox" formControlName="temperatureControlled">
+              <span class="checkmark"></span>
+              </div>
+            </label>
+            <label class="checkbox-container">
+              <span>Available For Pickup</span>
+              <div>
+              <input type="checkbox" formControlName="availableForPickup">
+              <span class="checkmark"></span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-card" [class.open]="panels.visibility">
+      <div class="accordion-header" (click)="togglePanel('visibility')">
+        <div class="header-left">
+          <div class="status-indicator">👁️</div>
+          <h2>Visibility</h2>
+        </div>
+        <span class="chevron" [class.up]="panels.visibility">▼</span>
+      </div>
+
+      <div class="accordion-content" *ngIf="panels.visibility">
+        <div class="featured-toggle-box">
+          <div class="toggle-text">
+            <strong>Featured Product</strong>
+            <p>Display this item in the "Trending" section of your shop.</p>
+          </div>
+          <label class="switch">
+            <input type="checkbox" formControlName="featuredProduct">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="customer-availability-section">
+          <h4 class="section-subheading">Customer Availability</h4>
+          
+          <label class="availability-card-option">
+            <input type="checkbox" formControlName="availableToday">
+            <div class="card-option-content">
+              <strong>Available Today</strong>
+              <p>Product will be listed immediately.</p>
+            </div>
+          </label>
+
+          <label class="availability-card-option">
+            <input type="checkbox" formControlName="warehousePickup">
+            <div class="card-option-content">
+              <strong>Available For Pickup</strong>
+              <p>Customers can collect directly from the warehouse.</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions-bar">
+      <button type="submit" class="btn-submit-form" [disabled]="productForm.invalid">Save Product Settings</button>
+    </div>
+
+  </form>
+</div>

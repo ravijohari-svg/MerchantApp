@@ -35,7 +35,7 @@ export class Sidebar {
     this.activeItem = item.name;
 
     if (item.route) {
-    this.router.navigate(['/merchant/store-management']);
+    this.router.navigate(['/merchant/products']);
   }
   }
 
