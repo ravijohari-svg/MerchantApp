@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-store-management',
@@ -99,5 +100,11 @@ export class StoreManagement {
       team:['RK','AS','SP']
     }
   ];
+
+  constructor(private router: Router) {}
+
+  goToAddStore() {
+  this.router.navigate(['merchant/add-store']);
+}
 
 }

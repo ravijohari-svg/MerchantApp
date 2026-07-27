@@ -1,0 +1,240 @@
+<div class="settings-container">
+  <header class="settings-header">
+    <h1>Settings</h1>
+    <p>Manage your account, security, and preferences</p>
+  </header>
+
+  <div class="settings-layout">
+    <nav class="settings-sidebar">
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'profile'" 
+        (click)="setTab('profile')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 21V11m4 10V11m4 10V11m4 10V11M12 3L2 7h20L12 3z"/></svg>
+        <span>Business Profile</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'security'" 
+        (click)="setTab('security')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Security</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'notifications'" 
+        (click)="setTab('notifications')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span>Notifications</span>
+      </button>
+
+      <button 
+        class="nav-item" 
+        [class.active]="activeTab === 'integrations'" 
+        (click)="setTab('integrations')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span>Integrations</span>
+      </button>
+    </nav>
+
+    <main class="settings-content">
+
+      @if (activeTab === 'profile') {
+        <div class="card-content">
+          <h2>Business Profile</h2>
+          
+          <div class="profile-header">
+            <div class="avatar-box">K</div>
+            <div class="avatar-details">
+              <h3>KFC India</h3>
+              <p>Restaurant · Member since 2019</p>
+              <button type="button" class="btn-link">Change Logo</button>
+            </div>
+          </div>
+
+          <form [formGroup]="profileForm" (ngSubmit)="onSaveProfile()" class="form-grid">
+            <div class="form-group">
+              <label for="businessName">Business Name</label>
+              <input id="businessName" type="text" formControlName="businessName" [class.error]="isFieldInvalid(profileForm, 'businessName')">
+              @if (isFieldInvalid(profileForm, 'businessName')) {
+                <span class="error-msg">Valid business name is required</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="ownerName">Owner Name</label>
+              <input id="ownerName" type="text" formControlName="ownerName" [class.error]="isFieldInvalid(profileForm, 'ownerName')">
+              @if (isFieldInvalid(profileForm, 'ownerName')) {
+                <span class="error-msg">Owner name is required</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input id="email" type="email" formControlName="email" [class.error]="isFieldInvalid(profileForm, 'email')">
+              @if (isFieldInvalid(profileForm, 'email')) {
+                <span class="error-msg">Enter a valid email address</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="mobile">Mobile</label>
+              <input id="mobile" type="text" formControlName="mobile" [class.error]="isFieldInvalid(profileForm, 'mobile')">
+              @if (isFieldInvalid(profileForm, 'mobile')) {
+                <span class="error-msg">Valid phone number required</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="gstNumber">GST Number</label>
+              <input id="gstNumber" type="text" formControlName="gstNumber" [class.error]="isFieldInvalid(profileForm, 'gstNumber')">
+              @if (isFieldInvalid(profileForm, 'gstNumber')) {
+                <span class="error-msg">Invalid GST number format</span>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="panNumber">PAN Number</label>
+              <input id="panNumber" type="text" formControlName="panNumber" [class.error]="isFieldInvalid(profileForm, 'panNumber')">
+              @if (isFieldInvalid(profileForm, 'panNumber')) {
+                <span class="error-msg">Invalid PAN number format</span>
+              }
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      }
+
+      @if (activeTab === 'security') {
+        <div class="card-content">
+          <h2>Security Settings</h2>
+          <form [formGroup]="securityForm" class="toggle-list">
+            
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Two-Factor Authentication</h4>
+                <p>Protect your account with an additional verification step</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" formControlName="twoFactor">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Login Notifications</h4>
+                <p>Get notified by email when someone signs in</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" formControlName="loginNotifications">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <h4>Session Auto-Timeout</h4>
+                <p>Automatically sign out after 30 minutes of inactivity</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" formControlName="sessionTimeout">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+          </form>
+        </div>
+      }
+
+      @if (activeTab === 'notifications') {
+        <div class="card-content">
+          <h2>Notification Preferences</h2>
+          <form [formGroup]="notificationsForm" class="group-toggle-section">
+            
+            <div class="toggle-group-box">
+              <h3>Orders</h3>
+              <div class="toggle-row">
+                <span>New order received</span>
+                <label class="switch"><input type="checkbox" formControlName="newOrder"><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <span>Order status changes</span>
+                <label class="switch"><input type="checkbox" formControlName="orderStatus"><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <span>Order cancellations</span>
+                <label class="switch"><input type="checkbox" formControlName="orderCancellation"><span class="slider"></span></label>
+              </div>
+            </div>
+
+            <div class="toggle-group-box">
+              <h3>Payments</h3>
+              <div class="toggle-row">
+                <span>Settlement processed</span>
+                <label class="switch"><input type="checkbox" formControlName="settlementProcessed"><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <span>Payment failures</span>
+                <label class="switch"><input type="checkbox" formControlName="paymentFailures"><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <span>Refund requests</span>
+                <label class="switch"><input type="checkbox" formControlName="refundRequests"><span class="slider"></span></label>
+              </div>
+            </div>
+
+            <div class="toggle-group-box">
+              <h3>Operations</h3>
+              <div class="toggle-row">
+                <span>Low stock alerts</span>
+                <label class="switch"><input type="checkbox" formControlName="lowStockAlerts"><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <span>Drone delivery updates</span>
+                <label class="switch"><input type="checkbox" formControlName="droneDeliveryUpdates"><span class="slider"></span></label>
+              </div>
+              <div class="toggle-row">
+                <span>Store offline alerts</span>
+                <label class="switch"><input type="checkbox" formControlName="storeOfflineAlerts"><span class="slider"></span></label>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      }
+
+      @if (activeTab === 'integrations') {
+        <div class="card-content">
+          <h2>Integrations</h2>
+          <div class="integration-list">
+            @for (item of integrations; track item.id) {
+              <div class="integration-item">
+                <div class="integration-info">
+                  <h4>{{ item.title }}</h4>
+                  <p>{{ item.description }}</p>
+                </div>
+                <button 
+                  type="button" 
+                  [class]="item.connected ? 'badge-connected' : 'btn-connect'"
+                  (click)="toggleIntegration(item)">
+                  @if (item.connected) {
+                    Connected ✓
+                  } @else {
+                    Connect
+                  }
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </main>
+  </div>
+</div>

@@ -20,22 +20,22 @@ export class Sidebar {
 
   activeItem = 'Dashboard';
 
- menuItems = [
-  { name: 'Dashboard', icon: 'pi pi-th-large', route: '/dashboard' },
-  { name: 'Store Management', icon: 'pi pi-sliders-h', route: '/store-management' },
-  { name: 'Products', icon: 'pi pi-box', route: '/products' },
-  { name: 'Orders', icon: 'pi pi-shopping-cart', badge: 18, route: '/orders' },
-  { name: 'Promotions', icon: 'pi pi-percentage', route: '/promotions' },
-  { name: 'Team', icon: 'pi pi-users', route: '/team' },
-  { name: 'Notifications', icon: 'pi pi-bell', badge: 5, route: '/notifications' },
-  { name: 'Settings', icon: 'pi pi-cog', route: '/settings' }
+menuItems = [
+  { name: 'Dashboard', icon: 'pi pi-th-large', route: '/merchant/dashboard' },
+  { name: 'Store Management', icon: 'pi pi-sliders-h', route: '/merchant/store-management' },
+  { name: 'Products', icon: 'pi pi-box', route: '/merchant/products' },
+  { name: 'Orders', icon: 'pi pi-shopping-cart', badge: 18, route: '/merchant/orders' },
+  // { name: 'Promotions', icon: 'pi pi-percentage', route: '/merchant/promotions' },
+  { name: 'Team', icon: 'pi pi-users', route: '/merchant/team' },
+  { name: 'Notifications', icon: 'pi pi-bell', badge: 5, route: '/merchant/notifications' },
+  { name: 'Settings', icon: 'pi pi-cog', route: '/merchant/settings' }
 ];
 
  selectItem(item: any) {
     this.activeItem = item.name;
 
     if (item.route) {
-    this.router.navigate(['/merchant/products']);
+      this.router.navigate([item.route]);
   }
   }
 
