@@ -45,7 +45,7 @@ export class Login {
   }
 
   sendOtp() {
-    if (!this.mobile) {
+    if (!this.mobile && this.mobile.length == 10) {
       alert('Please enter mobile number first');
       return;
     }
@@ -74,25 +74,25 @@ export class Login {
     // Replace with real authentication call
     // alert(`Signing in with email: ${this.email}`);
     let payload = {
-      Email: this.email
+      Email: this.email,
+      Password: this.password
     }
 
-     this.router.navigate(['/merchant']);
-    return;
+    // return;
     
   this.authApiService.login(payload).subscribe({
     next: (res: any) => {
-      console.log('Login success:', res);
 
-      // example: store token if API returns it
-      localStorage.setItem('token', res.token);
+      
+      localStorage.setItem('token', res);
+     this.router.navigate(['/merchant']);
 
-      alert('Login successful');
+      // alert('Login successful');
     },
 
     error: (err: any) => {
       console.error('Login failed:', err);
-      alert('Login failed');
+      // alert('Login failed');
     }
   });
   }

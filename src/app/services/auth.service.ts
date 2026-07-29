@@ -1,34 +1,67 @@
-import { Injectable } from "@angular/core";
-import { environment } from "../../environments/environment";
-import { HttpClient } from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthApiService {
 
-    constructor(private http: HttpClient) {}
+  private baseUrl = `${environment.apiUrl}/dev/merchant/auth`;
 
-  login(payload: any) {
-    return this.http.post(
-      `${environment.apiUrl}/auth/login`,
-      payload
-    );
+  constructor(private http: HttpClient) {}
+
+  
+  login(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/email-login`, payload);
   }
 
-  getToken() {
+  register(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/register-details`, payload);
+  }
+
+  sendOtp(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/send-otp`, payload);
+  }
+
+  verifyOtp(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/verify-otp`, payload);
+  }
+
+  forgotPassword(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/forgot-email-password`, payload);
+  }
+
+  resetPassword(payload: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reset-password`, payload);
+  }
+
+
+  saveAuth(token: string, role?: string): void {
+    localStorage.setItem('token', token);
+
+    if (role) {
+      localStorage.setItem('role', role);
+    }
+  }
+
+ 
+  getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  getRole() {
+ 
+  getRole(): string | null {
     return localStorage.getItem('role');
   }
 
-  isLoggedIn() {
+
+  isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
-  logout() {
+  logout(): void {
     localStorage.clear();
   }
 }
