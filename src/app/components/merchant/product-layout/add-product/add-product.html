@@ -1,6 +1,6 @@
 <div class="add-product-container">
   <!-- Top Header Breadcrumb & Title -->
- 
+
   <div class="top-header">
     <div class="breadcrumb">
       <span class="back-arrow">←</span>
@@ -23,33 +23,27 @@
 
     <!-- Dynamic Progress Bar -->
     <div class="progress-bar-container">
-      <div 
-        class="progress-bar-fill" 
-        [style.width.%]="totalCompletionPercentage">
+      <div class="progress-bar-fill" [style.width.%]="totalCompletionPercentage">
       </div>
     </div>
 
-     <!-- Top Navigation Highlights Bar (Pill Stepper) -->
-  <div class="stepper-nav">
-    <div 
-      *ngFor="let sec of sections; let i = index" 
-      class="step-pill" 
-      [class.active]="activeSectionIndex === i"
-      [class.completed]="isSectionValid(i)"
-      (click)="navigateToSection(i)">
-      <span>{{ sec.id }}. {{ sec.name }}</span>
+    <!-- Top Navigation Highlights Bar (Pill Stepper) -->
+    <div class="stepper-nav">
+      <div *ngFor="let sec of sections; let i = index" class="step-pill" [class.active]="activeSectionIndex === i"
+        [class.completed]="isSectionValid(i)" (click)="navigateToSection(i)">
+        <span>{{ sec.id }}. {{ sec.name }}</span>
+      </div>
     </div>
   </div>
-  </div>
 
- 
+
 
 
   <div class="main-layout">
     <!-- Left Section: Multi-Accordion Reactive Form -->
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
       <div class="accordion-list">
-        
+
         <!-- 1. Basic Information -->
         <div class="accordion-item">
           <div class="accordion-header" (click)="toggleSection(0)">
@@ -61,41 +55,106 @@
               </div>
             </div>
             <div class="header-right">
-              <span class="valid-badge" *ngIf="isSectionValid(0)">Completed</span>
-              <span class="toggle-icon">{{ activeSectionIndex === 0 ? '▲' : '▼' }}</span>
+              <span class="header-icon"><img src="assets/icons/basicInfo.svg" alt="Draft" width="18" height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
             </div>
           </div>
+
           <div class="accordion-body" *ngIf="activeSectionIndex === 0" formGroupName="basicInfo">
-            <div class="form-grid">
-              <div class="form-group span-2">
-                <label>Product Name <span class="required">*</span></label>
-                <input type="text" formControlName="productName" placeholder="e.g., McSpicy Burger">
-                <span class="char-count">0/120 characters</span>
+            <!-- Product Name -->
+            <div class="form-group">
+              <label>Product Name <span class="required">*</span></label>
+              <input type="text" formControlName="productName" placeholder="e.g., McSpicy Burger" maxlength="120">
+              <div class="char-counter">
+                {{ productForm.get('basicInfo.productName')?.value?.length || 0 }}/120 characters
               </div>
+            </div>
+
+            <!-- Short Product Name & Brand (2 Columns) -->
+            <div class="basic-grid grid-2-col">
               <div class="form-group">
                 <label>Short Product Name</label>
                 <input type="text" formControlName="shortProductName" placeholder="e.g., McSpicy">
               </div>
+
               <div class="form-group">
                 <label>Brand</label>
                 <input type="text" formControlName="brand" placeholder="e.g., KFC">
               </div>
+            </div>
+
+            <!-- Category & Sub Category (2 Columns) -->
+            <div class="basic-grid grid-2-col">
               <div class="form-group">
                 <label>Category <span class="required">*</span></label>
                 <input type="text" formControlName="category" placeholder="Select category">
               </div>
+
               <div class="form-group">
                 <label>Sub Category <span class="required">*</span></label>
-                <input type="text" formControlName="subCategory" placeholder="Select sub-category">
-              </div>
-              <div class="form-group span-2">
-                <label>Short Description</label>
-                <textarea formControlName="shortDescription" rows="2" placeholder="Brief one-liner..."></textarea>
+                <input type="text" formControlName="subCategory" placeholder="Select sub category">
               </div>
             </div>
+
+            <!-- Product Type & Status (2 Columns) -->
+            <div class="basic-grid grid-2-col">
+              <div class="form-group">
+                <label>Product Type</label>
+                <input type="text" formControlName="productType" placeholder="Select product type">
+              </div>
+
+              <div class="form-group">
+                <label>Status</label>
+                <div class="status-toggle-group">
+                  <button type="button" class="status-btn"
+                    [class.active]="productForm.get('basicInfo.status')?.value === 'Draft'"
+                    (click)="setStatus('Draft')">
+                    Draft
+                  </button>
+                  <button type="button" class="status-btn"
+                    [class.active]="productForm.get('basicInfo.status')?.value === 'Active'"
+                    (click)="setStatus('Active')">
+                    Active
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Short Description -->
+            <div class="form-group">
+              <label>Short Description</label>
+              <input type="text" formControlName="shortDescription"
+                placeholder="Brief one-liner shown in listing cards.." maxlength="160">
+              <div class="char-counter">
+                {{ productForm.get('basicInfo.shortDescription')?.value?.length || 0 }}/160
+              </div>
+            </div>
+
+            <!-- Detailed Description with AI Button -->
+            <div class="form-group margin-bottom-lg">
+              <div class="label-with-action">
+                <label>Detailed Description</label>
+                <!-- <button type="button" class="btn-ai-generate" (click)="generateWithAI()">
+          <span class="ai-sparkle">✨</span> Generate with AI
+        </button> -->
+              </div>
+              <textarea formControlName="detailedDescription" rows="4"
+                placeholder="Detailed product description for the product page.." maxlength="2000">
+      </textarea>
+              <div class="char-counter">
+                {{ productForm.get('basicInfo.detailedDescription')?.value?.length || 0 }}/2000
+              </div>
+            </div>
+
+            <!-- Section Footer Navigation -->
             <div class="section-footer">
-              <button type="button" class="btn btn-outline" (click)="onSaveDraft()">Save Draft</button>
-              <button type="button" class="btn btn-primary" (click)="nextSection()">Next</button>
+              <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
+                <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                    height="18"></span> Save Draft
+              </button>
+              <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
             </div>
           </div>
         </div>
@@ -111,8 +170,12 @@
               </div>
             </div>
             <div class="header-right">
-              <span class="valid-badge" *ngIf="isSectionValid(1)">Completed</span>
-              <span class="toggle-icon">{{ activeSectionIndex === 1 ? '▲' : '▼' }}</span>
+              <!-- <span class="valid-badge" *ngIf="isSectionValid(1)">Completed</span> -->
+              <span class="header-icon"><img src="assets/icons/imagesMedia.svg" alt="Draft" width="18"
+                  height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 1 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
             </div>
           </div>
           <div class="accordion-body" *ngIf="activeSectionIndex === 1">
@@ -124,11 +187,8 @@
             </div>
 
             <div class="image-gallery-grid">
-              <div 
-                *ngFor="let slot of gallerySlots" 
-                class="gallery-slot"
-                [class.selected]="selectedImageSlot === slot.key"
-                [class.has-image]="slot.base64"
+              <div *ngFor="let slot of gallerySlots" class="gallery-slot"
+                [class.selected]="selectedImageSlot === slot.key" [class.has-image]="slot.base64"
                 (click)="selectImageSlot(slot.key)">
                 <img *ngIf="slot.base64" [src]="slot.base64" alt="slot.label">
                 <span *ngIf="!slot.base64">+ {{ slot.label }}</span>
@@ -140,890 +200,934 @@
             </div>
 
             <div class="section-footer">
-              <button type="button" class="btn btn-outline" (click)="previousSection()">Previous</button>
-              <button type="button" class="btn btn-outline" (click)="onSaveDraft()">Save Draft</button>
+              <div class="prev-draft-section">
+                <button type="button" class="btn btn-outline" (click)="previousSection()">Previous</button>
+                <button type="button" class="btn btn-outline" (click)="onSaveDraft()">
+                  <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                      height="18"></span>Save Draft</button>
+              </div>
               <button type="button" class="btn btn-primary" (click)="nextSection()">Next</button>
             </div>
           </div>
         </div>
 
         <!-- 3. Category & Attributes -->
-        
+
         <div class="accordion-item">
-  <div class="accordion-header" (click)="toggleSection(2)">
-    <div class="header-left">
-      <span class="section-number">3</span>
-      <div class="title-box">
-        <h3>Category & Attributes</h3>
-        <p>Fill in the required fields</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <span class="valid-badge" *ngIf="isSectionValid(2)">Completed</span>
-      <span class="toggle-icon">{{ activeSectionIndex === 2 ? '▲' : '▼' }}</span>
-    </div>
-  </div>
+          <div class="accordion-header" (click)="toggleSection(2)">
+            <div class="header-left">
+              <span class="section-number">3</span>
+              <div class="title-box">
+                <h3>Attributes</h3>
+                <p>Fill in the required fields</p>
+              </div>
+            </div>
+            <div class="header-right">
+              <!-- <span class="valid-badge" *ngIf="isSectionValid(2)">Completed</span>
+      <span class="toggle-icon">{{ activeSectionIndex === 2 ? '▲' : '▼' }}</span> -->
+              <span class="header-icon"><img src="assets/icons/attributes.svg" alt="Draft" width="18"
+                  height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 2 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
+            </div>
+          </div>
 
-  <div class="accordion-body" *ngIf="activeSectionIndex === 2" formGroupName="categoryAttributes">
-    <!-- Blue Info Banner -->
-    <div class="info-banner">
-      <span class="info-icon">ℹ️</span>
-      <span>Attributes loaded for category: <strong>Food</strong></span>
-    </div>
+          <div class="accordion-body" *ngIf="activeSectionIndex === 2" formGroupName="categoryAttributes">
+            <!-- Blue Info Banner -->
+            <div class="info-banner">
+              <span class="info-icon">ℹ️</span>
+              <span>Attributes loaded for category: <strong>Food</strong></span>
+            </div>
 
-    <!-- 2-Column Form Fields Grid -->
-    <div class="attributes-grid">
-      <!-- Left Column -->
-      <div class="grid-column">
-        <div class="form-group">
-          <label>Weight / Volume</label>
-          <input type="text" formControlName="weightVolume" placeholder="Enter weight / volume">
+            <!-- 2-Column Form Fields Grid -->
+            <div class="attributes-grid">
+              <!-- Left Column -->
+              <div class="grid-column">
+                <div class="form-group">
+                  <label>Weight / Volume</label>
+                  <input type="text" formControlName="weightVolume" placeholder="Enter weight / volume">
+                </div>
+
+                <div class="form-group">
+                  <label>Veg / Non-Veg</label>
+                  <select formControlName="vegNonVeg">
+                    <option value="">Select Option</option>
+                    <option value="Veg">Veg</option>
+                    <option value="Non-Veg">Non-Veg</option>
+                    <option value="Egg">Egg</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Storage Instructions</label>
+                  <input type="text" formControlName="storageInstructions" placeholder="Enter storage instructions">
+                </div>
+              </div>
+
+              <!-- Right Column -->
+              <div class="grid-column">
+                <div class="form-group">
+                  <label>Ingredients</label>
+                  <textarea formControlName="ingredients" rows="3" placeholder="Enter ingredients..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label>Shelf Life</label>
+                  <input type="text" formControlName="shelfLife" placeholder="Enter shelf life">
+                </div>
+
+                <div class="form-group">
+                  <label>Country of Origin</label>
+                  <input type="text" formControlName="countryOfOrigin" placeholder="Enter country of origin">
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="section-footer">
+              <div class="prev-draft-section">
+                <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
+                <button type="button" class="btn btn-outline" (click)="onSaveDraft()"><span class="save-draft-icon"><img
+                      src="assets/icons/saveDraft.svg" alt="Draft" width="18" height="18"></span> Save Draft</button>
+              </div>
+              <button type="button" class="btn btn-primary" (click)="nextSection()">Next ›</button>
+            </div>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label>Veg / Non-Veg</label>
-          <select formControlName="vegNonVeg">
-            <option value="">Select Option</option>
-            <option value="Veg">Veg</option>
-            <option value="Non-Veg">Non-Veg</option>
-            <option value="Egg">Egg</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Storage Instructions</label>
-          <input type="text" formControlName="storageInstructions" placeholder="Enter storage instructions">
-        </div>
-      </div>
-
-      <!-- Right Column -->
-      <div class="grid-column">
-        <div class="form-group">
-          <label>Ingredients</label>
-          <textarea formControlName="ingredients" rows="3" placeholder="Enter ingredients..."></textarea>
-        </div>
-
-        <div class="form-group">
-          <label>Shelf Life</label>
-          <input type="text" formControlName="shelfLife" placeholder="Enter shelf life">
-        </div>
-
-        <div class="form-group">
-          <label>Country of Origin</label>
-          <input type="text" formControlName="countryOfOrigin" placeholder="Enter country of origin">
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer Buttons -->
-    <div class="section-footer">
-      <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
-      <button type="button" class="btn btn-outline" (click)="onSaveDraft()">💾 Save Draft</button>
-      <button type="button" class="btn btn-primary" (click)="nextSection()">Next ›</button>
-    </div>
-  </div>
-</div>
 
 
         <!-- 4. Dynamic Variants -->
         <!-- 4. Product Variants -->
-<div class="accordion-item">
-  <div class="accordion-header" (click)="toggleSection(3)">
-    <div class="header-left">
-      <span class="section-number">4</span>
-      <div class="title-box">
-        <h3>Product Variants</h3>
-        <p>Fill in the required fields</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <span class="stack-icon">📚</span>
-      <span class="toggle-icon">{{ activeSectionIndex === 3 ? '▲' : '▼' }}</span>
-    </div>
-  </div>
-
-  <div class="accordion-body" *ngIf="activeSectionIndex === 3">
-    <!-- Sub-header Row with Actions -->
-    <div class="variants-top-bar">
-      <p class="variants-description">
-        Create variants for Size, Colour, Weight, Pack Size, Flavour, or Capacity.
-      </p>
-      <div class="variants-actions">
-        <button type="button" class="btn-generate" (click)="generateVariants()">
-          <span class="icon">⚡</span> Generate Variants
-        </button>
-        <button type="button" class="btn-add-variant" (click)="addVariant()">
-          <span class="icon">+</span> Add Variant
-        </button>
-      </div>
-    </div>
-
-    <!-- Variants Table -->
-    <div class="variants-table-wrapper" formArrayName="variants">
-      <table class="variants-table">
-        <thead>
-          <tr>
-            <th class="col-drag"></th>
-            <th class="col-name">NAME</th>
-            <th class="col-sku">SKU</th>
-            <th class="col-price">SELLING PRICE</th>
-            <th class="col-mrp">MRP</th>
-            <th class="col-stock">STOCK</th>
-            <th class="col-status">STATUS</th>
-            <th class="col-action"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let variant of variantsArray.controls; let i = index" [formGroupName]="i">
-            <!-- Drag Handle Icon -->
-            <td class="col-drag">
-              <span class="drag-handle">░░</span>
-            </td>
-
-            <!-- Variant Name -->
-            <td class="col-name">
-              <input type="text" formControlName="name" placeholder="Variant 1">
-            </td>
-
-            <!-- SKU -->
-            <td class="col-sku">
-              <input type="text" formControlName="sku" class="input-bold">
-            </td>
-
-            <!-- Selling Price with Currency Prefix -->
-            <td class="col-price">
-              <div class="input-with-symbol">
-                <span class="currency-symbol">₹</span>
-                <input type="number" formControlName="sellingPrice" placeholder="">
+        <div class="accordion-item">
+          <div class="accordion-header" (click)="toggleSection(3)">
+            <div class="header-left">
+              <span class="section-number">4</span>
+              <div class="title-box">
+                <h3>Product Variants</h3>
+                <p>Fill in the required fields</p>
               </div>
-            </td>
+            </div>
+            <div class="header-right">
+              <span class="header-icon"><img src="assets/icons/productsVariant.svg" alt="variants" width="18"
+                  height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 3 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
+            </div>
+          </div>
 
-            <!-- MRP with Currency Prefix -->
-            <td class="col-mrp">
-              <div class="input-with-symbol">
-                <span class="currency-symbol">₹</span>
-                <input type="number" formControlName="mrp" placeholder="">
+          <div class="accordion-body" *ngIf="activeSectionIndex === 3">
+            <!-- Sub-header Row with Actions -->
+            <div class="variants-top-bar">
+              <p class="variants-description">
+                Create variants for Size, Colour, Weight, Pack Size, Flavour, or Capacity.
+              </p>
+              <div class="variants-actions">
+                <button type="button" class="btn-generate" (click)="generateVariants()">
+                  <span class="icon">⚡</span> Generate Variants
+                </button>
+                <button type="button" class="btn-add-variant" (click)="addVariant()">
+                  <span class="icon">+</span> Add Variant
+                </button>
               </div>
-            </td>
+            </div>
 
-            <!-- Stock -->
-            <td class="col-stock">
-              <input type="number" formControlName="stock" class="input-center">
-            </td>
+            <!-- Variants Table -->
+            <div class="variants-table-wrapper" formArrayName="variants">
+              <table class="variants-table">
+                <thead>
+                  <tr>
+                    <th class="col-drag"></th>
+                    <th class="col-name">NAME</th>
+                    <th class="col-sku">SKU</th>
+                    <th class="col-price">SELLING PRICE</th>
+                    <th class="col-mrp">MRP</th>
+                    <th class="col-stock">STOCK</th>
+                    <th class="col-status">STATUS</th>
+                    <th class="col-action"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let variant of variantsArray.controls; let i = index" [formGroupName]="i">
+                    <!-- Drag Handle Icon -->
+                    <td class="col-drag">
+                      <span class="drag-handle">░░</span>
+                    </td>
 
-            <!-- Status Dropdown -->
-            <td class="col-status">
-              <select formControlName="status">
-                <option value="Active">Active</option>
-                <option value="Draft">Draft</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </td>
+                    <!-- Variant Name -->
+                    <td class="col-name">
+                      <input type="text" formControlName="name" placeholder="Variant 1">
+                    </td>
 
-            <!-- Delete Row Action -->
-            <td class="col-action">
-              <button 
-                type="button" 
-                class="btn-delete" 
-                (click)="removeVariant(i)" 
-                *ngIf="variantsArray.length > 1"
-                title="Remove Variant">
-                ✕
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                    <!-- SKU -->
+                    <td class="col-sku">
+                      <input type="text" formControlName="sku" class="input-bold">
+                    </td>
 
-    <!-- Section Footer Navigation -->
-    <div class="section-footer">
-      <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
-      <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
-        <span class="icon">💾</span> Save Draft
-      </button>
-      <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
-    </div>
-  </div>
-</div>
+                    <!-- Selling Price with Currency Prefix -->
+                    <td class="col-price">
+                      <div class="input-with-symbol">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" formControlName="sellingPrice" placeholder="">
+                      </div>
+                    </td>
+
+                    <!-- MRP with Currency Prefix -->
+                    <td class="col-mrp">
+                      <div class="input-with-symbol">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" formControlName="mrp" placeholder="">
+                      </div>
+                    </td>
+
+                    <!-- Stock -->
+                    <td class="col-stock">
+                      <input type="number" formControlName="stock" class="input-center">
+                    </td>
+
+                    <!-- Status Dropdown -->
+                    <td class="col-status">
+                      <select formControlName="status">
+                        <option value="Active">Active</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                    </td>
+
+                    <!-- Delete Row Action -->
+                    <td class="col-action">
+                      <button type="button" class="btn-delete" (click)="removeVariant(i)"
+                        *ngIf="variantsArray.length > 1" title="Remove Variant">
+                        ✕
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Section Footer Navigation -->
+            <div class="section-footer">
+              <div class="prev-draft-section">
+                <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
+                <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
+                  <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                      height="18"></span> Save Draft
+                </button>
+              </div>
+              <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
+            </div>
+          </div>
+        </div>
 
         <!-- 5. Pricing -->
         <!-- 5. Pricing -->
-  <div class="accordion-item">
-    <div class="accordion-header" (click)="toggleSection(4)">
-      <div class="header-left">
-        <span class="section-number">5</span>
-        <div class="title-box">
-          <h3>Pricing</h3>
-          <p>Fill in the required fields</p>
-        </div>
-      </div>
-      <div class="header-right">
-        <span class="header-icon">$</span>
-        <span class="toggle-icon">{{ activeSectionIndex === 4 ? '▲' : '▼' }}</span>
-      </div>
-    </div>
+        <div class="accordion-item">
+          <div class="accordion-header" (click)="toggleSection(4)">
+            <div class="header-left">
+              <span class="section-number">5</span>
+              <div class="title-box">
+                <h3>Pricing</h3>
+                <p>Fill in the required fields</p>
+              </div>
+            </div>
+            <div class="header-right">
+              <span class="header-icon"><img src="assets/icons/productPrice.svg" alt="Draft" width="18"
+                  height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 4 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
+            </div>
+          </div>
 
-    <div class="accordion-body" *ngIf="activeSectionIndex === 4" formGroupName="pricing">
-      <!-- Row 1: Prices (3 Columns) -->
-      <div class="pricing-grid grid-3-col">
-        <div class="form-group">
-          <label>Selling Price <span class="required">*</span></label>
-          <div class="input-with-symbol">
-            <span class="symbol">₹</span>
-            <input type="number" formControlName="sellingPrice" placeholder="149">
+          <div class="accordion-body" *ngIf="activeSectionIndex === 4" formGroupName="pricing">
+            <!-- Row 1: Prices (3 Columns) -->
+            <div class="pricing-grid grid-3-col">
+              <div class="form-group">
+                <label>Selling Price <span class="required">*</span></label>
+                <div class="input-with-symbol">
+                  <span class="symbol">₹</span>
+                  <input type="number" formControlName="sellingPrice" placeholder="149">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>MRP <span class="required">*</span></label>
+                <div class="input-with-symbol">
+                  <span class="symbol">₹</span>
+                  <input type="number" formControlName="mrp" placeholder="169">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Cost Price</label>
+                <div class="input-with-symbol">
+                  <span class="symbol">₹</span>
+                  <input type="number" formControlName="costPrice" placeholder="80">
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 2: Tax & Discounts (3 Columns) -->
+            <div class="pricing-grid grid-3-col">
+              <div class="form-group">
+                <label>GST Rate</label>
+                <select formControlName="gstRate">
+                  <option value="">Select GST Rate</option>
+                  <option value="0">0%</option>
+                  <option value="5">5%</option>
+                  <option value="12">12%</option>
+                  <option value="18">18%</option>
+                  <option value="28">28%</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Discount Type</label>
+                <select formControlName="discountType">
+                  <option value="">Select Type</option>
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="flat">Flat Amount (₹)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Discount Value</label>
+                <div class="input-with-symbol">
+                  <span class="symbol">%</span>
+                  <input type="number" formControlName="discountValue" placeholder="0">
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 3: Quantities (2 Columns) -->
+            <div class="pricing-grid grid-2-col">
+              <div class="form-group">
+                <label>Min Order Quantity</label>
+                <input type="number" formControlName="minOrderQuantity" placeholder="1">
+              </div>
+
+              <div class="form-group">
+                <label>Max Order Quantity</label>
+                <input type="number" formControlName="maxOrderQuantity" placeholder="10">
+              </div>
+            </div>
+
+            <!-- Section Footer Navigation -->
+            <div class="section-footer">
+              <div class="prev-draft-section">
+                <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
+                <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
+                  <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                      height="18" /></span> Save Draft
+                </button>
+              </div>
+
+              <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
+            </div>
           </div>
         </div>
-
-        <div class="form-group">
-          <label>MRP <span class="required">*</span></label>
-          <div class="input-with-symbol">
-            <span class="symbol">₹</span>
-            <input type="number" formControlName="mrp" placeholder="169">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Cost Price</label>
-          <div class="input-with-symbol">
-            <span class="symbol">₹</span>
-            <input type="number" formControlName="costPrice" placeholder="80">
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 2: Tax & Discounts (3 Columns) -->
-      <div class="pricing-grid grid-3-col">
-        <div class="form-group">
-          <label>GST Rate</label>
-          <select formControlName="gstRate">
-            <option value="">Select GST Rate</option>
-            <option value="0">0%</option>
-            <option value="5">5%</option>
-            <option value="12">12%</option>
-            <option value="18">18%</option>
-            <option value="28">28%</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Discount Type</label>
-          <select formControlName="discountType">
-            <option value="">Select Type</option>
-            <option value="percentage">Percentage (%)</option>
-            <option value="flat">Flat Amount (₹)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Discount Value</label>
-          <div class="input-with-symbol">
-            <span class="symbol">%</span>
-            <input type="number" formControlName="discountValue" placeholder="0">
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 3: Quantities (2 Columns) -->
-      <div class="pricing-grid grid-2-col">
-        <div class="form-group">
-          <label>Min Order Quantity</label>
-          <input type="number" formControlName="minOrderQuantity" placeholder="1">
-        </div>
-
-        <div class="form-group">
-          <label>Max Order Quantity</label>
-          <input type="number" formControlName="maxOrderQuantity" placeholder="10">
-        </div>
-      </div>
-
-      <!-- Section Footer Navigation -->
-      <div class="section-footer">
-        <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
-        <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
-          <span class="icon">💾</span> Save Draft
-        </button>
-        <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
-      </div>
-    </div>
-  </div>
 
         <!-- 6. Inventory -->
         <!-- 6. Inventory -->
-<div class="accordion-item">
-  <div class="accordion-header" (click)="toggleSection(5)">
-    <div class="header-left">
-      <span class="section-number">6</span>
-      <div class="title-box">
-        <h3>Inventory</h3>
-        <p>Fill in the required fields</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <span class="header-icon">📦</span>
-      <span class="toggle-icon">{{ activeSectionIndex === 5 ? '▲' : '▼' }}</span>
-    </div>
-  </div>
+        <div class="accordion-item">
+          <div class="accordion-header" (click)="toggleSection(5)">
+            <div class="header-left">
+              <span class="section-number">6</span>
+              <div class="title-box">
+                <h3>Inventory</h3>
+                <p>Fill in the required fields</p>
+              </div>
+            </div>
+            <div class="header-right">
+              <span class="header-icon"><img src="assets/icons/inventory.svg" alt="Draft" width="18" height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 5 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
+            </div>
+          </div>
 
-  <div class="accordion-body" *ngIf="activeSectionIndex === 5" formGroupName="inventory">
-    <!-- Row 1: Stock Overview (3 Columns) -->
-    <div class="inventory-grid grid-3-col">
-      <div class="form-group">
-        <label>Current Stock <span class="required">*</span></label>
-        <input type="number" formControlName="currentStock" placeholder="100">
-      </div>
+          <div class="accordion-body" *ngIf="activeSectionIndex === 5" formGroupName="inventory">
+            <!-- Row 1: Stock Overview (3 Columns) -->
+            <div class="inventory-grid grid-3-col">
+              <div class="form-group">
+                <label>Current Stock <span class="required">*</span></label>
+                <input type="number" formControlName="currentStock" placeholder="100">
+              </div>
 
-      <div class="form-group">
-        <label>Reserved Stock</label>
-        <input type="number" formControlName="reservedStock" placeholder="0">
-      </div>
+              <div class="form-group">
+                <label>Reserved Stock</label>
+                <input type="number" formControlName="reservedStock" placeholder="0">
+              </div>
 
-      <div class="form-group">
-        <label>Incoming Stock</label>
-        <input type="number" formControlName="incomingStock" placeholder="0">
-      </div>
-    </div>
+              <div class="form-group">
+                <label>Incoming Stock</label>
+                <input type="number" formControlName="incomingStock" placeholder="0">
+              </div>
+            </div>
 
-    <!-- Row 2: Warehouse & Batch Number (2 Columns) -->
-    <div class="inventory-grid grid-2-col">
-      <div class="form-group">
-        <label>Warehouse / Store</label>
-        <input type="text" formControlName="warehouseStore" placeholder="Select or enter warehouse">
-      </div>
+            <!-- Row 2: Warehouse & Batch Number (2 Columns) -->
+            <div class="inventory-grid grid-2-col">
+              <div class="form-group">
+                <label>Warehouse / Store</label>
+                <input type="text" formControlName="warehouseStore" placeholder="Select or enter warehouse">
+              </div>
 
-      <div class="form-group">
-        <label>Batch Number</label>
-        <input type="text" formControlName="batchNumber" placeholder="BTH-2024-001" class="font-mono">
-      </div>
-    </div>
+              <div class="form-group">
+                <label>Batch Number</label>
+                <input type="text" formControlName="batchNumber" placeholder="BTH-2024-001" class="font-mono">
+              </div>
+            </div>
 
-    <!-- Row 3: Stock Alerts & Reorder (2 Columns) -->
-    <div class="inventory-grid grid-2-col">
-      <div class="form-group">
-        <label>Low Stock Alert Threshold</label>
-        <input type="number" formControlName="lowStockThreshold" placeholder="10">
-      </div>
+            <!-- Row 3: Stock Alerts & Reorder (2 Columns) -->
+            <div class="inventory-grid grid-2-col">
+              <div class="form-group">
+                <label>Low Stock Alert Threshold</label>
+                <input type="number" formControlName="lowStockThreshold" placeholder="10">
+              </div>
 
-      <div class="form-group">
-        <label>Reorder Quantity</label>
-        <input type="number" formControlName="reorderQuantity" placeholder="50">
-      </div>
-    </div>
+              <div class="form-group">
+                <label>Reorder Quantity</label>
+                <input type="number" formControlName="reorderQuantity" placeholder="50">
+              </div>
+            </div>
 
-    <!-- Row 4: Dates & Barcode (2 Columns) -->
-    <div class="inventory-grid grid-2-col">
-      <div class="form-group">
-        <label>Expiry Date</label>
-        <input type="date" formControlName="expiryDate">
-      </div>
+            <!-- Row 4: Dates & Barcode (2 Columns) -->
+            <div class="inventory-grid grid-2-col">
+              <div class="form-group">
+                <label>Expiry Date</label>
+                <input type="date" formControlName="expiryDate">
+              </div>
 
-      <div class="form-group">
-        <label>Barcode</label>
-        <input type="text" formControlName="barcode" placeholder="8901396110498" class="font-mono">
-      </div>
-    </div>
+              <div class="form-group">
+                <label>Barcode</label>
+                <input type="text" formControlName="barcode" placeholder="8901396110498" class="font-mono">
+              </div>
+            </div>
 
-    <!-- Toggle Cards Section -->
-    <div class="toggle-cards-container">
-      <!-- Toggle Card 1: Inventory Tracking -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Inventory Tracking</span>
-          <span class="toggle-sub">Track stock levels and get alerts when running low</span>
+            <!-- Toggle Cards Section -->
+            <div class="toggle-cards-container">
+              <!-- Toggle Card 1: Inventory Tracking -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Inventory Tracking</span>
+                  <span class="toggle-sub">Track stock levels and get alerts when running low</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="inventoryTracking">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <!-- Toggle Card 2: Continue Selling -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Continue Selling When Out of Stock</span>
+                  <span class="toggle-sub">Allow orders even when stock reaches zero</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="continueSellingOutOfStock">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Section Footer Navigation -->
+            <div class="section-footer">
+              <div class="prev-draft-section">
+                <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
+                <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
+                  <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                      height="18" /></span> Save Draft
+                </button>
+              </div>
+
+              <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
+            </div>
+          </div>
         </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="inventoryTracking">
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <!-- Toggle Card 2: Continue Selling -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Continue Selling When Out of Stock</span>
-          <span class="toggle-sub">Allow orders even when stock reaches zero</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="continueSellingOutOfStock">
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Section Footer Navigation -->
-    <div class="section-footer">
-      <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
-      <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
-        <span class="icon">💾</span> Save Draft
-      </button>
-      <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
-    </div>
-  </div>
-</div>
 
         <!-- 7. Packaging & Delivery -->
-       <!-- 7. Packaging & Delivery -->
-<div class="accordion-item">
-  <div class="accordion-header" (click)="toggleSection(6)">
-    <div class="header-left">
-      <span class="section-number">7</span>
-      <div class="title-box">
-        <h3>Packaging & Delivery</h3>
-        <p>Fill in the required fields</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <span class="header-icon">🚚</span>
-      <span class="toggle-icon">{{ activeSectionIndex === 6 ? '▲' : '▼' }}</span>
-    </div>
-  </div>
+        <!-- 7. Packaging & Delivery -->
+        <div class="accordion-item">
+          <div class="accordion-header" (click)="toggleSection(6)">
+            <div class="header-left">
+              <span class="section-number">7</span>
+              <div class="title-box">
+                <h3>Packaging & Delivery</h3>
+                <p>Fill in the required fields</p>
+              </div>
+            </div>
+            <div class="header-right">
+              <span class="header-icon"><img src="assets/icons/packaging.svg" alt="Draft" width="18" height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 6 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
+            </div>
+          </div>
 
-  <div class="accordion-body" *ngIf="activeSectionIndex === 6" formGroupName="packagingDelivery">
-    <!-- Row 1: Dimensions (4 Columns) -->
-    <div class="packaging-grid grid-4-col">
-      <div class="form-group">
-        <label>Weight (kg)</label>
-        <input type="number" formControlName="weightKg" placeholder="0.5" step="0.1">
-      </div>
+          <div class="accordion-body" *ngIf="activeSectionIndex === 6" formGroupName="packagingDelivery">
+            <!-- Row 1: Dimensions (4 Columns) -->
+            <div class="packaging-grid grid-4-col">
+              <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" formControlName="weightKg" placeholder="0.5" step="0.1">
+              </div>
 
-      <div class="form-group">
-        <label>Length (cm)</label>
-        <input type="number" formControlName="lengthCm" placeholder="20">
-      </div>
+              <div class="form-group">
+                <label>Length (cm)</label>
+                <input type="number" formControlName="lengthCm" placeholder="20">
+              </div>
 
-      <div class="form-group">
-        <label>Width (cm)</label>
-        <input type="number" formControlName="widthCm" placeholder="15">
-      </div>
+              <div class="form-group">
+                <label>Width (cm)</label>
+                <input type="number" formControlName="widthCm" placeholder="15">
+              </div>
 
-      <div class="form-group">
-        <label>Height (cm)</label>
-        <input type="number" formControlName="heightCm" placeholder="10">
-      </div>
-    </div>
+              <div class="form-group">
+                <label>Height (cm)</label>
+                <input type="number" formControlName="heightCm" placeholder="10">
+              </div>
+            </div>
 
-    <!-- Package Type Selection Grid -->
-    <div class="package-type-section">
-      <label class="section-label">Package Type</label>
-      <div class="package-cards-grid">
-        <div 
-          class="package-card" 
-          [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Standard Box'"
-          (click)="selectPackageType('Standard Box')">
-          <span class="card-icon">📦</span>
-          <span class="card-title">Standard Box</span>
+            <!-- Package Type Selection Grid -->
+            <div class="package-type-section">
+              <label class="section-label">Package Type</label>
+              <div class="package-cards-grid">
+                <div class="package-card"
+                  [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Standard Box'"
+                  (click)="selectPackageType('Standard Box')">
+                  <span class="card-icon">📦</span>
+                  <span class="card-title">Standard Box</span>
+                </div>
+
+                <div class="package-card"
+                  [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Padded Envelope'"
+                  (click)="selectPackageType('Padded Envelope')">
+                  <span class="card-icon">✉️</span>
+                  <span class="card-title">Padded Envelope</span>
+                </div>
+
+                <div class="package-card"
+                  [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Thermal Bag'"
+                  (click)="selectPackageType('Thermal Bag')">
+                  <span class="card-icon">🧊</span>
+                  <span class="card-title">Thermal Bag</span>
+                </div>
+
+                <div class="package-card"
+                  [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Custom Box'"
+                  (click)="selectPackageType('Custom Box')">
+                  <span class="card-icon">🎁</span>
+                  <span class="card-title">Custom Box</span>
+                </div>
+
+                <div class="package-card"
+                  [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Tube'"
+                  (click)="selectPackageType('Tube')">
+                  <span class="card-icon">📜</span>
+                  <span class="card-title">Tube</span>
+                </div>
+
+                <div class="package-card"
+                  [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Bulk Bag'"
+                  (click)="selectPackageType('Bulk Bag')">
+                  <span class="card-icon">🛍️</span>
+                  <span class="card-title">Bulk Bag</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Toggle Cards Section -->
+            <div class="toggle-cards-container">
+              <!-- Fragile Item -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Fragile Item</span>
+                  <span class="toggle-sub">Extra protective packaging</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="fragileItem">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <!-- Temperature Controlled -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Temperature Controlled</span>
+                  <span class="toggle-sub">Requires cold chain packaging</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="temperatureControlled">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <!-- Hazardous Material -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Hazardous Material</span>
+                  <span class="toggle-sub">Special handling required</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="hazardousMaterial">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <!-- Drone Compatible -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Drone Compatible</span>
+                  <span class="toggle-sub">Deliver via S1 drone fleet</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="droneCompatible">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Estimated Pickup Ready Time -->
+            <div class="form-group margin-bottom-lg">
+              <label>Estimated Pickup Ready Time</label>
+              <input type="text" formControlName="estimatedPickupTime" placeholder="Select time or duration">
+            </div>
+
+            <!-- Green Drone Compatible Status Banner -->
+            <div class="drone-status-card" *ngIf="productForm.get('packagingDelivery.droneCompatible')?.value">
+              <div class="status-icon-badge">
+                <span class="paper-plane-icon">✈️</span>
+              </div>
+              <div class="status-details">
+                <h4 class="status-title">✓ Drone Compatible</h4>
+                <ul class="checklist">
+                  <li>✓ Weight limit (≤3 kg)</li>
+                  <li>✓ Not fragile</li>
+                  <li>✓ Not temperature-controlled</li>
+                  <li>✓ Drone delivery enabled</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Section Footer Navigation -->
+            <div class="section-footer">
+              <div class="prev-draft-section">
+                <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
+                <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
+                  <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                      height="18" /></span> Save Draft
+                </button>
+              </div>
+
+              <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
+            </div>
+          </div>
         </div>
-
-        <div 
-          class="package-card" 
-          [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Padded Envelope'"
-          (click)="selectPackageType('Padded Envelope')">
-          <span class="card-icon">✉️</span>
-          <span class="card-title">Padded Envelope</span>
-        </div>
-
-        <div 
-          class="package-card" 
-          [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Thermal Bag'"
-          (click)="selectPackageType('Thermal Bag')">
-          <span class="card-icon">🧊</span>
-          <span class="card-title">Thermal Bag</span>
-        </div>
-
-        <div 
-          class="package-card" 
-          [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Custom Box'"
-          (click)="selectPackageType('Custom Box')">
-          <span class="card-icon">🎁</span>
-          <span class="card-title">Custom Box</span>
-        </div>
-
-        <div 
-          class="package-card" 
-          [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Tube'"
-          (click)="selectPackageType('Tube')">
-          <span class="card-icon">📜</span>
-          <span class="card-title">Tube</span>
-        </div>
-
-        <div 
-          class="package-card" 
-          [class.selected]="productForm.get('packagingDelivery.packageType')?.value === 'Bulk Bag'"
-          (click)="selectPackageType('Bulk Bag')">
-          <span class="card-icon">🛍️</span>
-          <span class="card-title">Bulk Bag</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Toggle Cards Section -->
-    <div class="toggle-cards-container">
-      <!-- Fragile Item -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Fragile Item</span>
-          <span class="toggle-sub">Extra protective packaging</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="fragileItem">
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <!-- Temperature Controlled -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Temperature Controlled</span>
-          <span class="toggle-sub">Requires cold chain packaging</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="temperatureControlled">
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <!-- Hazardous Material -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Hazardous Material</span>
-          <span class="toggle-sub">Special handling required</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="hazardousMaterial">
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <!-- Drone Compatible -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Drone Compatible</span>
-          <span class="toggle-sub">Deliver via S1 drone fleet</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="droneCompatible">
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Estimated Pickup Ready Time -->
-    <div class="form-group margin-bottom-lg">
-      <label>Estimated Pickup Ready Time</label>
-      <input type="text" formControlName="estimatedPickupTime" placeholder="Select time or duration">
-    </div>
-
-    <!-- Green Drone Compatible Status Banner -->
-    <div class="drone-status-card" *ngIf="productForm.get('packagingDelivery.droneCompatible')?.value">
-      <div class="status-icon-badge">
-        <span class="paper-plane-icon">✈️</span>
-      </div>
-      <div class="status-details">
-        <h4 class="status-title">✓ Drone Compatible</h4>
-        <ul class="checklist">
-          <li>✓ Weight limit (≤3 kg)</li>
-          <li>✓ Not fragile</li>
-          <li>✓ Not temperature-controlled</li>
-          <li>✓ Drone delivery enabled</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Section Footer Navigation -->
-    <div class="section-footer">
-      <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
-      <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
-        <span class="icon">💾</span> Save Draft
-      </button>
-      <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
-    </div>
-  </div>
-</div>
 
         <!-- 8. Visibility -->
         <!-- 8. Visibility & SEO -->
-<div class="accordion-item">
-  <div class="accordion-header" (click)="toggleSection(7)">
-    <div class="header-left">
-      <span class="section-number">8</span>
-      <div class="title-box">
-        <h3>Visibility & SEO</h3>
-        <p>Fill in the required fields</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <span class="header-icon">🌐</span>
-      <span class="toggle-icon">{{ activeSectionIndex === 7 ? '▲' : '▼' }}</span>
-    </div>
-  </div>
+        <div class="accordion-item">
+          <div class="accordion-header" (click)="toggleSection(7)">
+            <div class="header-left">
+              <span class="section-number">8</span>
+              <div class="title-box">
+                <h3>Visibility & SEO</h3>
+                <p>Fill in the required fields</p>
+              </div>
+            </div>
+            <div class="header-right">
+              <span class="header-icon"><img src="assets/icons/visiblity.svg" alt="Draft" width="18" height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 7 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
+            </div>
+          </div>
 
-  <div class="accordion-body" *ngIf="activeSectionIndex === 7" formGroupName="visibilitySeo">
-    <!-- Row 1: Publish Now & Schedule Publish (2 Columns) -->
-    <div class="toggle-cards-grid grid-2-col">
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Publish Now</span>
-          <span class="toggle-sub">Product goes live immediately</span>
+          <div class="accordion-body" *ngIf="activeSectionIndex === 7" formGroupName="visibilitySeo">
+            <!-- Row 1: Publish Now & Schedule Publish (2 Columns) -->
+            <div class="toggle-cards-grid grid-2-col">
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Publish Now</span>
+                  <span class="toggle-sub">Product goes live immediately</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="publishNow">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Schedule Publish</span>
+                  <span class="toggle-sub">Choose date and time</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="schedulePublish">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Toggle Cards List -->
+            <div class="toggle-cards-container">
+              <!-- Featured Product -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Featured Product</span>
+                  <span class="toggle-sub">Highlighted in featured sections</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="featuredProduct">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <!-- Show on Homepage -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Show on Homepage</span>
+                  <span class="toggle-sub">Display in homepage carousel</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="showOnHomepage">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+
+              <!-- Available Online -->
+              <div class="toggle-card">
+                <div class="toggle-info">
+                  <span class="toggle-title">Available Online</span>
+                  <span class="toggle-sub">Visible and purchasable in storefront</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" formControlName="availableOnline">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Form Inputs Section -->
+            <div class="form-fields-stack">
+              <!-- Search Tags -->
+              <div class="form-group">
+                <label>Search Tags</label>
+                <input type="text" formControlName="searchTags"
+                  placeholder="burger, fast food, fried chicken... (comma separated)">
+              </div>
+
+              <!-- SEO Title -->
+              <div class="form-group">
+                <label>SEO Title</label>
+                <input type="text" formControlName="seoTitle"
+                  placeholder="McSpicy Burger – Order Online | S1 Fast Delivery">
+              </div>
+
+              <!-- SEO Description -->
+              <div class="form-group">
+                <label>SEO Description</label>
+                <textarea formControlName="seoDescription" rows="3"
+                  placeholder="Order McSpicy Burger online. Hot, fresh and delivered in minutes via S1 drone delivery."></textarea>
+              </div>
+
+              <!-- Custom URL Slug with Domain Prefix -->
+              <div class="form-group">
+                <label>Custom URL Slug</label>
+                <div class="url-input-group">
+                  <span class="domain-prefix">s1.in/</span>
+                  <input type="text" formControlName="urlSlug" placeholder="mcspicy-burger">
+                </div>
+              </div>
+            </div>
+
+            <!-- Google Search Preview Card -->
+            <div class="google-preview-card">
+              <span class="preview-label">GOOGLE SEARCH PREVIEW</span>
+              <h4 class="preview-title">
+                {{ productForm.get('visibilitySeo.seoTitle')?.value || 'McSpicy Burger – Order Online | S1 Fast
+                Delivery' }}
+              </h4>
+              <div class="preview-url">
+                s1.in › {{ productForm.get('visibilitySeo.urlSlug')?.value || 'mcspicy-burger' }}
+              </div>
+              <p class="preview-description">
+                {{ productForm.get('visibilitySeo.seoDescription')?.value || 'Order McSpicy Burger online. Hot, fresh
+                and delivered to your doorstep in minutes...' }}
+              </p>
+            </div>
+
+            <!-- Section Footer Navigation -->
+            <div class="section-footer">
+              <div class="prev-draft-section">
+                <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
+                <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
+                  <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                      height="18" /></span> Save Draft
+                </button>
+              </div>
+
+              <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
+            </div>
+          </div>
         </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="publishNow">
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Schedule Publish</span>
-          <span class="toggle-sub">Choose date and time</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="schedulePublish">
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Toggle Cards List -->
-    <div class="toggle-cards-container">
-      <!-- Featured Product -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Featured Product</span>
-          <span class="toggle-sub">Highlighted in featured sections</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="featuredProduct">
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <!-- Show on Homepage -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Show on Homepage</span>
-          <span class="toggle-sub">Display in homepage carousel</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="showOnHomepage">
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <!-- Available Online -->
-      <div class="toggle-card">
-        <div class="toggle-info">
-          <span class="toggle-title">Available Online</span>
-          <span class="toggle-sub">Visible and purchasable in storefront</span>
-        </div>
-        <label class="switch">
-          <input type="checkbox" formControlName="availableOnline">
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Form Inputs Section -->
-    <div class="form-fields-stack">
-      <!-- Search Tags -->
-      <div class="form-group">
-        <label>Search Tags</label>
-        <input type="text" formControlName="searchTags" placeholder="burger, fast food, fried chicken... (comma separated)">
-      </div>
-
-      <!-- SEO Title -->
-      <div class="form-group">
-        <label>SEO Title</label>
-        <input type="text" formControlName="seoTitle" placeholder="McSpicy Burger – Order Online | S1 Fast Delivery">
-      </div>
-
-      <!-- SEO Description -->
-      <div class="form-group">
-        <label>SEO Description</label>
-        <textarea formControlName="seoDescription" rows="3" placeholder="Order McSpicy Burger online. Hot, fresh and delivered in minutes via S1 drone delivery."></textarea>
-      </div>
-
-      <!-- Custom URL Slug with Domain Prefix -->
-      <div class="form-group">
-        <label>Custom URL Slug</label>
-        <div class="url-input-group">
-          <span class="domain-prefix">s1.in/</span>
-          <input type="text" formControlName="urlSlug" placeholder="mcspicy-burger">
-        </div>
-      </div>
-    </div>
-
-    <!-- Google Search Preview Card -->
-    <div class="google-preview-card">
-      <span class="preview-label">GOOGLE SEARCH PREVIEW</span>
-      <h4 class="preview-title">
-        {{ productForm.get('visibilitySeo.seoTitle')?.value || 'McSpicy Burger – Order Online | S1 Fast Delivery' }}
-      </h4>
-      <div class="preview-url">
-        s1.in › {{ productForm.get('visibilitySeo.urlSlug')?.value || 'mcspicy-burger' }}
-      </div>
-      <p class="preview-description">
-        {{ productForm.get('visibilitySeo.seoDescription')?.value || 'Order McSpicy Burger online. Hot, fresh and delivered to your doorstep in minutes...' }}
-      </p>
-    </div>
-
-    <!-- Section Footer Navigation -->
-    <div class="section-footer">
-      <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
-      <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
-        <span class="icon">💾</span> Save Draft
-      </button>
-      <button type="button" class="btn btn-navy" (click)="nextSection()">Next ›</button>
-    </div>
-  </div>
-</div>
 
         <!-- 9. Review & Publish Section -->
         <!-- 9. Review & Publish -->
-<div class="accordion-item">
-  <div class="accordion-header" (click)="toggleSection(8)">
-    <div class="header-left">
-      <span class="section-number">9</span>
-      <div class="title-box">
-        <h3>Review & Publish</h3>
-        <p>Fill in the required fields</p>
-      </div>
-    </div>
-    <div class="header-right">
-      <span class="header-icon">🛡️</span>
-      <span class="toggle-icon">{{ activeSectionIndex === 8 ? '▲' : '▼' }}</span>
-    </div>
-  </div>
+        <div class="accordion-item">
+          <div class="accordion-header" (click)="toggleSection(8)">
+            <div class="header-left">
+              <span class="section-number">9</span>
+              <div class="title-box">
+                <h3>Review & Publish</h3>
+                <p>Fill in the required fields</p>
+              </div>
+            </div>
+            <div class="header-right">
+              <span class="header-icon"><img src="assets/icons/review.svg" alt="Draft" width="18" height="18"></span>
+              <mat-icon class="toggle-icon-arrow">
+                {{ activeSectionIndex === 8 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </mat-icon>
+            </div>
+          </div>
 
-  <div class="accordion-body" *ngIf="activeSectionIndex === 8">
-    <p class="review-subtitle">
-      Review all sections before publishing. Click Edit to make changes.
-    </p>
+          <div class="accordion-body" *ngIf="activeSectionIndex === 8">
+            <p class="review-subtitle">
+              Review all sections before publishing. Click Edit to make changes.
+            </p>
 
-    <!-- 2-Column Section Cards Grid -->
-    <div class="review-grid">
-      <!-- Section 1 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">1</span>
-          <span class="step-title">Basic Information</span>
-        </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(0)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(0)">Edit</button>
-        </div>
-      </div>
+            <!-- 2-Column Section Cards Grid -->
+            <div class="review-grid">
+              <!-- Section 1 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">1</span>
+                  <span class="step-title">Basic Information</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(0)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(0)">Edit</button>
+                </div>
+              </div>
 
-      <!-- Section 2 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">2</span>
-          <span class="step-title">Images & Media</span>
-        </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(1)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(1)">Edit</button>
-        </div>
-      </div>
+              <!-- Section 2 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">2</span>
+                  <span class="step-title">Images & Media</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(1)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(1)">Edit</button>
+                </div>
+              </div>
 
-      <!-- Section 3 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">3</span>
-          <span class="step-title">Category & Attributes</span>
-        </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(2)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(2)">Edit</button>
-        </div>
-      </div>
+              <!-- Section 3 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">3</span>
+                  <span class="step-title">Attributes</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(2)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(2)">Edit</button>
+                </div>
+              </div>
 
-      <!-- Section 4 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">4</span>
-          <span class="step-title">Variants</span>
-        </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(3)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(3)">Edit</button>
-        </div>
-      </div>
+              <!-- Section 4 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">4</span>
+                  <span class="step-title">Variants</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(3)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(3)">Edit</button>
+                </div>
+              </div>
 
-      <!-- Section 5 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">5</span>
-          <span class="step-title">Pricing</span>
-        </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(4)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(4)">Edit</button>
-        </div>
-      </div>
+              <!-- Section 5 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">5</span>
+                  <span class="step-title">Pricing</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(4)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(4)">Edit</button>
+                </div>
+              </div>
 
-      <!-- Section 6 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">6</span>
-          <span class="step-title">Inventory</span>
-        </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(5)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(5)">Edit</button>
-        </div>
-      </div>
+              <!-- Section 6 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">6</span>
+                  <span class="step-title">Inventory</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(5)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(5)">Edit</button>
+                </div>
+              </div>
 
-      <!-- Section 7 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">7</span>
-          <span class="step-title">Packaging & Delivery</span>
-        </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(6)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(6)">Edit</button>
-        </div>
-      </div>
+              <!-- Section 7 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">7</span>
+                  <span class="step-title">Packaging & Delivery</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(6)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(6)">Edit</button>
+                </div>
+              </div>
 
-      <!-- Section 8 Card -->
-      <div class="review-card">
-        <div class="card-left">
-          <span class="step-num">8</span>
-          <span class="step-title">Visibility</span>
+              <!-- Section 8 Card -->
+              <div class="review-card">
+                <div class="card-left">
+                  <span class="step-num">8</span>
+                  <span class="step-title">Visibility</span>
+                </div>
+                <div class="card-right">
+                  <span class="warning-icon" *ngIf="!isSectionValid(7)">⚠️</span>
+                  <button type="button" class="btn-edit" (click)="navigateToSection(7)">Edit</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Soft Yellow Warning Banner -->
+            <div class="warning-banner" *ngIf="remainingSectionsCount > 0">
+              <span class="banner-icon">⚠️</span>
+              <span class="banner-text">{{ remainingSectionsCount }} section(s) remaining before publishing.</span>
+            </div>
+
+            <!-- Section Footer Navigation -->
+            <div class="section-footer review-footer">
+              <div class="footer-left">
+                <div class="prev-draft-section">
+                  <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
+                  <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
+                    <span class="save-draft-icon"><img src="assets/icons/saveDraft.svg" alt="Draft" width="18"
+                        height="18" /></span> Save Draft
+                  </button>
+                </div>
+
+              </div>
+
+              <div class="footer-right">
+                <button type="button" class="btn btn-outline-grey" (click)="onPreview()">
+                  <span class="icon">👁️</span> Preview
+                </button>
+                <button type="button" class="btn btn-publish" (click)="onPublish()">
+                  <span class="icon">✓</span> Publish Product
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="card-right">
-          <span class="warning-icon" *ngIf="!isSectionValid(7)">⚠️</span>
-          <button type="button" class="btn-edit" (click)="navigateToSection(7)">Edit</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Soft Yellow Warning Banner -->
-    <div class="warning-banner" *ngIf="remainingSectionsCount > 0">
-      <span class="banner-icon">⚠️</span>
-      <span class="banner-text">{{ remainingSectionsCount }} section(s) remaining before publishing.</span>
-    </div>
-
-    <!-- Section Footer Navigation -->
-    <div class="section-footer review-footer">
-      <div class="footer-left">
-        <button type="button" class="btn btn-outline" (click)="previousSection()">‹ Previous</button>
-        <button type="button" class="btn btn-outline-blue" (click)="onSaveDraft()">
-          <span class="icon">💾</span> Save Draft
-        </button>
-      </div>
-
-      <div class="footer-right">
-        <button type="button" class="btn btn-outline-grey" (click)="onPreview()">
-          <span class="icon">👁️</span> Preview
-        </button>
-        <button type="button" class="btn btn-publish" (click)="onPublish()">
-          <span class="icon">✓</span> Publish Product
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
       </div>
     </form>
@@ -1032,7 +1136,7 @@
     <div class="preview-sidebar">
       <div class="preview-card">
         <h4>Product Preview</h4>
-        
+
         <div class="image-container">
           <img *ngIf="activePreviewImage" [src]="activePreviewImage" alt="Preview Image">
           <span *ngIf="!activePreviewImage" class="placeholder-icon">🍔</span>
@@ -1065,46 +1169,44 @@
           </ul>
         </div>
 
-        <button type="button" class="btn-save-draft" (click)="onSaveDraft()">💾 Save as Draft</button>
+        <button type="button" class="btn-save-draft" (click)="onSaveDraft()"><span class="save-draft-icon"><img
+              src="assets/icons/saveDraft.svg" alt="Draft" width="18" height="18" /></span> Save as Draft</button>
       </div>
     </div>
   </div>
 
 
-  
-<!-- Success Modal Backdrop & Card -->
-<div class="modal-overlay" *ngIf="showSuccessModal">
-  <div class="success-modal-card">
-    
-    <!-- Success Badge Circle -->
-    <div class="success-icon-badge">
-      <span class="check-icon">✓</span>
-    </div>
 
-    <!-- Title & Description -->
-    <h2 class="modal-title">Product Published Successfully!</h2>
-    <p class="modal-description">
-      Your product is now live and available for customers on the S1 platform. Drone delivery has been enabled.
-    </p>
+  <!-- Success Modal Backdrop & Card -->
+  <div class="modal-overlay" *ngIf="showSuccessModal">
+    <div class="success-modal-card">
 
-    <!-- Action Buttons Stack -->
-    <div class="modal-actions">
-      <button type="button" class="btn btn-green" (click)="onViewProduct()">
-        View Product
-      </button>
+      <!-- Success Badge Circle -->
+      <div class="success-icon-badge">
+        <span class="check-icon">✓</span>
+      </div>
 
-      <button type="button" class="btn btn-light-blue" (click)="onAddAnotherProduct()">
-        Add Another Product
-      </button>
+      <!-- Title & Description -->
+      <h2 class="modal-title">Product Published Successfully!</h2>
+      <p class="modal-description">
+        Your product is now live and available for customers on the S1 platform. Drone delivery has been enabled.
+      </p>
 
-      <button type="button" class="btn btn-text" (click)="onBackToProducts()">
-        Back to Products
-      </button>
+      <!-- Action Buttons Stack -->
+      <div class="modal-actions">
+        <button type="button" class="btn btn-green" (click)="onViewProduct()">
+          View Product
+        </button>
+
+        <button type="button" class="btn btn-light-blue" (click)="onAddAnotherProduct()">
+          Add Another Product
+        </button>
+
+        <button type="button" class="btn btn-text" (click)="onBackToProducts()">
+          Back to Products
+        </button>
+      </div>
+
     </div>
 
   </div>
-  
-</div>
-
-
-

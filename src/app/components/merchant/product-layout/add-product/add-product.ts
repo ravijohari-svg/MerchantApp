@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
 
 export interface GallerySlot {
   key: string;
@@ -12,11 +13,10 @@ export interface GallerySlot {
 
 @Component({
   selector: 'app-add-product',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIcon],
   templateUrl: './add-product.html',
   styleUrl: './add-product.scss',
 })
-
 export class AddProduct implements OnInit {
   productForm!: FormGroup;
   activeSectionIndex: number = 0; // 0 to 8
@@ -30,7 +30,7 @@ export class AddProduct implements OnInit {
     { id: 6, name: 'Inventory', icon: '📦' },
     { id: 7, name: 'Packaging & Delivery', icon: '🚚' },
     { id: 8, name: 'Visibility', icon: '🌐' },
-    { id: 9, name: 'Review & Publish', icon: '✅' }
+    { id: 9, name: 'Review & Publish', icon: '✅' },
   ];
 
   gallerySlots: GallerySlot[] = [
@@ -39,7 +39,7 @@ export class AddProduct implements OnInit {
     { key: 'gallery2', label: 'Gallery 2', base64: null, fileName: null },
     { key: 'gallery3', label: 'Gallery 3', base64: null, fileName: null },
     { key: 'thumbnail', label: 'Thumbnail', base64: null, fileName: null },
-    { key: 'video', label: 'Video', base64: null, fileName: null }
+    { key: 'video', label: 'Video', base64: null, fileName: null },
   ];
 
   selectedImageSlot: string = 'main';
@@ -62,10 +62,10 @@ export class AddProduct implements OnInit {
         subCategory: ['', Validators.required],
         productType: [''],
         status: ['Active'],
-        sku: ['F00-4641'],
-        barcode: [''],
+        // sku: ['F00-4641'],
+        // barcode: [''],
         shortDescription: ['', Validators.maxLength(160)],
-        detailedDescription: ['', Validators.maxLength(2000)]
+        detailedDescription: ['', Validators.maxLength(2000)],
       }),
 
       // Section 2: Images & Media
@@ -75,7 +75,7 @@ export class AddProduct implements OnInit {
         gallery2: [null],
         gallery3: [null],
         thumbnail: [null],
-        video: [null]
+        video: [null],
       }),
 
       // Section 3: Category & Attributes
@@ -85,7 +85,7 @@ export class AddProduct implements OnInit {
         vegNonVeg: [''],
         shelfLife: [''],
         storageInstructions: [''],
-        countryOfOrigin: ['']
+        countryOfOrigin: [''],
       }),
 
       // Section 4: Variants
@@ -100,7 +100,7 @@ export class AddProduct implements OnInit {
         discountType: [''],
         discountValue: [0],
         minOrderQty: [1],
-        maxOrderQty: [10]
+        maxOrderQty: [10],
       }),
 
       // Section 6: Inventory
@@ -115,7 +115,7 @@ export class AddProduct implements OnInit {
         expiryDate: [''],
         barcode: ['8901396110498'],
         inventoryTracking: [true],
-        continueSellingOutOfStock: [false]
+        continueSellingOutOfStock: [false],
       }),
 
       // Section 7: Packaging & Delivery
@@ -129,7 +129,7 @@ export class AddProduct implements OnInit {
         temperatureControlled: [false],
         hazardousMaterial: [false],
         droneCompatible: [true],
-        estimatedPickupTime: ['']
+        estimatedPickupTime: [''],
       }),
 
       // Section 8: Visibility
@@ -141,9 +141,11 @@ export class AddProduct implements OnInit {
         availableOnline: [true], // Default enabled (blue toggle in UI)
         searchTags: ['burger, fast food, fried chicken...'],
         seoTitle: ['McSpicy Burger – Order Online | S1 Fast Delivery'],
-        seoDescription: ['Order McSpicy Burger online. Hot, fresh and delivered in minutes via S1 drone delivery.'],
-        urlSlug: ['mcspicy-burger']
-      })
+        seoDescription: [
+          'Order McSpicy Burger online. Hot, fresh and delivered in minutes via S1 drone delivery.',
+        ],
+        urlSlug: ['mcspicy-burger'],
+      }),
     });
 
     // Seed initial variant
@@ -156,28 +158,27 @@ export class AddProduct implements OnInit {
   }
 
   createVariantGroup(): FormGroup {
-  const index = this.variantsArray ? this.variantsArray.length + 1 : 1;
-  return this.fb.group({
-    name: [`Variant ${index}`],
-    sku: [`F00-${Math.floor(1000 + Math.random() * 9000)}`],
-    sellingPrice: [''],
-    mrp: [''],
-    stock: [0],
-    status: ['Active']
-  });
-}
+    const index = this.variantsArray ? this.variantsArray.length + 1 : 1;
+    return this.fb.group({
+      name: [`Variant ${index}`],
+      sku: [`F00-${Math.floor(1000 + Math.random() * 9000)}`],
+      sellingPrice: [''],
+      mrp: [''],
+      stock: [0],
+      status: ['Active'],
+    });
+  }
 
   generateVariants(): void {
-  // Logic to auto-generate variants if needed
-  if (this.variantsArray.length === 0) {
-    this.addVariant();
+    // Logic to auto-generate variants if needed
+    if (this.variantsArray.length === 0) {
+      this.addVariant();
+    }
   }
-}
 
   addVariant(): void {
     this.variantsArray.push(this.createVariantGroup());
   }
-  
 
   removeVariant(index: number): void {
     this.variantsArray.removeAt(index);
@@ -193,7 +194,7 @@ export class AddProduct implements OnInit {
       'pricing',
       'inventory',
       'packagingDelivery',
-      'visibilitySeo'
+      'visibilitySeo',
     ];
 
     if (sectionIndex === 8) {
@@ -213,14 +214,13 @@ export class AddProduct implements OnInit {
     return count;
   }
 
-  
   get totalCompletionPercentage(): number {
     return Math.round((this.completedSectionsCount / 8) * 100);
   }
 
   selectPackageType(type: string): void {
-  this.productForm.get('packagingDelivery.packageType')?.setValue(type);
-}
+    this.productForm.get('packagingDelivery.packageType')?.setValue(type);
+  }
 
   // Accordion & Navigation Controls
   toggleSection(index: number): void {
@@ -256,7 +256,7 @@ export class AddProduct implements OnInit {
       const file = input.files[0];
       const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
 
-      const slot = this.gallerySlots.find(s => s.key === targetKey);
+      const slot = this.gallerySlots.find((s) => s.key === targetKey);
 
       if (file.size > maxSizeBytes) {
         if (slot) slot.error = 'File size exceeds 5MB limit!';
@@ -280,7 +280,7 @@ export class AddProduct implements OnInit {
 
   // Active preview image helper
   get activePreviewImage(): string | null {
-    const slot = this.gallerySlots.find(s => s.key === this.selectedImageSlot);
+    const slot = this.gallerySlots.find((s) => s.key === this.selectedImageSlot);
     return slot?.base64 || this.gallerySlots[0].base64;
   }
 
@@ -304,49 +304,49 @@ export class AddProduct implements OnInit {
 
   // Add helper getters/methods inside AddProductComponent:
 
-// Dynamic check for remaining sections count
-get remainingSectionsCount(): number {
-  let incompleteCount = 0;
-  for (let i = 0; i < 8; i++) {
-    if (!this.isSectionValid(i)) {
-      incompleteCount++;
+  // Dynamic check for remaining sections count
+  get remainingSectionsCount(): number {
+    let incompleteCount = 0;
+    for (let i = 0; i < 8; i++) {
+      if (!this.isSectionValid(i)) {
+        incompleteCount++;
+      }
+    }
+    return incompleteCount;
+  }
+
+  // Action handlers for Section 9
+  onPreview(): void {
+    console.log('Previewing product form...', this.productForm.value);
+  }
+
+  onPublish(): void {
+    this.showSuccessModal = true;
+    if (this.productForm.valid) {
+      console.log('Publishing product...', this.productForm.value);
+    } else {
+      alert('Please fill in all required fields before publishing.');
     }
   }
-  return incompleteCount;
-}
 
-// Action handlers for Section 9
-onPreview(): void {
-  console.log('Previewing product form...', this.productForm.value);
-}
-
-onPublish(): void {
-  this.showSuccessModal = true;
-  if (this.productForm.valid) {
-    console.log('Publishing product...', this.productForm.value);
-    
-  } else {
-    alert('Please fill in all required fields before publishing.');
+  // Modal Action Handlers
+  onViewProduct(): void {
+    console.log('Navigating to View Product page...');
+    // Add router navigation logic, e.g.: this.router.navigate(['/products', productId]);
   }
-}
 
-// Modal Action Handlers
-onViewProduct(): void {
-  console.log('Navigating to View Product page...');
-  // Add router navigation logic, e.g.: this.router.navigate(['/products', productId]);
-}
+  onAddAnotherProduct(): void {
+    this.showSuccessModal = false;
+    this.productForm.reset();
+    this.activeSectionIndex = 0; // Reset back to section 1
+  }
 
-onAddAnotherProduct(): void {
-  this.showSuccessModal = false;
-  this.productForm.reset();
-  this.activeSectionIndex = 0; // Reset back to section 1
-}
+  onBackToProducts(): void {
+    this.showSuccessModal = false;
+    // Add router navigation logic, e.g.: this.router.navigate(['/products']);
+  }
 
-onBackToProducts(): void {
-  this.showSuccessModal = false;
-  // Add router navigation logic, e.g.: this.router.navigate(['/products']);
-}
-
-
-
+  setStatus(status: 'Draft' | 'Active'): void {
+    this.productForm.get('basicInfo.status')?.setValue(status);
+  }
 }
