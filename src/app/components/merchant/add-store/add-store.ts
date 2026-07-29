@@ -1,6 +1,6 @@
-import { Component, OnInit ,ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import * as L from 'leaflet';
 
 @Component({
@@ -9,14 +9,14 @@ import * as L from 'leaflet';
   templateUrl: './add-store.html',
   styleUrl: './add-store.scss',
 })
-export class AddStore implements OnInit {
+export class AddStore implements OnInit, AfterViewInit, OnDestroy {
   storeForm!: FormGroup;
 
   activeSection: string | null = 'basic';
   map!: L.Map;
   marker!: L.Marker;
-  defaultLat = 40.7128;
-  defaultLng = -74.006;
+  defaultLat = 28.4595;
+  defaultLng = 77.0266;
 
   weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   logoPreviewUrl: string = '';
@@ -26,9 +26,18 @@ export class AddStore implements OnInit {
   bannerFiles: File[] = [];
   bannerPreviews: string[] = [];
   showSuccessModal: boolean = false;
-
+  locationSuggestions: Array<{ display_name: string; lat: string; lon: string; address?: string }> = [];
+  showLocationSuggestions = false;
+  searchLocationTimeout: ReturnType<typeof setTimeout> | null = null;
+  searchLocationAbortController: AbortController | null = null;
+  searchLocationDebounceMs = 400;
 
   constructor(private fb: FormBuilder , private cdr: ChangeDetectorRef) {}
+
+  requireAtLeastOneImage = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    return Array.isArray(value) && value.length > 0 ? null : { required: true };
+  };
 
   ngOnInit(): void {
     this.initForm();
@@ -45,23 +54,26 @@ export class AddStore implements OnInit {
       basicInfo: this.fb.group({
         storeName: ['', [Validators.required]],
         storeType: ['', [Validators.required]],
-        description: [''],
-        storeLogo: [null],
-        storeBanners: [[]],
+        description: ['', [Validators.required]],
+        storeLogo: [null, [Validators.required]],
+        storeBanners: [[], [this.requireAtLeastOneImage]],
       }),
       contactInfo: this.fb.group({
+        managerName: ['', [Validators.required]],
+        contactPhone: ['', [Validators.required]],
         email: ['', [Validators.required, Validators.email]],
-        phone: ['', [Validators.required]],
+        supportPhone: ['', [Validators.required]],
+        emergencyContact: [''],
         website: [''],
       }),
       location: this.fb.group({
+        searchQuery: [''],
         address: ['', [Validators.required]],
         city: ['', [Validators.required]],
         state: ['', [Validators.required]],
         zipCode: ['', [Validators.required]],
-        latitude: [this.defaultLat],
-
-        longitude: [this.defaultLng],
+        latitude: [this.defaultLat, [Validators.required]],
+        longitude: [this.defaultLng, [Validators.required]],
       }),
       // inside initForm() -> storeForm initialization setup:
       operatingHours: this.fb.group({
@@ -77,8 +89,9 @@ export class AddStore implements OnInit {
         enableDroneDelivery: [false],
         allowCustomerPickup: [true],
         storeStatus: ['open', [Validators.required]],
-        dronePickupName: [''],
-        pickupInstructions: ['']
+        dronePickupName: ['', [Validators.required]],
+        pickupInstructions: [''],
+        confirmDeclaration: [false],
       })
     });
   }
@@ -99,24 +112,91 @@ export class AddStore implements OnInit {
     return group ? group.valid : false;
   }
 
- onFileChange(event: Event, controlName: string): void {
-    const element = event.target as HTMLInputElement;
-    const file = element.files?.[0] || null;
-    this.storeForm.get(`basicInfo.${controlName}`)?.setValue(file);
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (controlName === 'storeLogo') {
-          this.logoPreviewUrl = reader.result as string;
-        } else if (controlName === 'storeBanners') {
-          this.bannerPreviewUrl = reader.result as string;
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+  getControl(path: string) {
+    return this.storeForm.get(path);
   }
 
+  showControlError(path: string): boolean {
+    const control = this.getControl(path);
+    return !!(control && control.invalid && (control.touched || control.dirty));
+  }
+
+  errorMessage(path: string): string {
+    const control = this.getControl(path);
+    if (!control) {
+      return '';
+    }
+
+    if (control.hasError('required')) {
+      if (path.endsWith('storeName')) {
+        return 'Store name is required.';
+      }
+      if (path.endsWith('storeType')) {
+        return 'Store type is required.';
+      }
+      if (path.endsWith('managerName')) {
+        return 'Store manager is required.';
+      }
+      if (path.endsWith('contactPhone')) {
+        return 'Contact number is required.';
+      }
+      if (path.endsWith('email')) {
+        return 'Email address is required.';
+      }
+      if (path.endsWith('supportPhone')) {
+        return 'Support number is required.';
+      }
+      if (path.endsWith('description')) {
+        return 'Description is required.';
+      }
+      if (path.endsWith('storeLogo')) {
+        return 'Store logo is required.';
+      }
+      if (path.endsWith('storeBanners')) {
+        return 'Upload at least one banner image.';
+      }
+      if (path.endsWith('address')) {
+        return 'Street address is required.';
+      }
+      if (path.endsWith('city')) {
+        return 'City is required.';
+      }
+      if (path.endsWith('state')) {
+        return 'State is required.';
+      }
+      if (path.endsWith('zipCode')) {
+        return 'Zip code is required.';
+      }
+      if (path.endsWith('latitude')) {
+        return 'Latitude is required.';
+      }
+      if (path.endsWith('longitude')) {
+        return 'Longitude is required.';
+      }
+      if (path.endsWith('openTime')) {
+        return 'Opening time is required.';
+      }
+      if (path.endsWith('closeTime')) {
+        return 'Closing time is required.';
+      }
+      if (path.endsWith('storeStatus')) {
+        return 'Please select store status.';
+      }
+      if (path.endsWith('dronePickupName')) {
+        return 'Drone pickup point is required.';
+      }
+      if (path.endsWith('pickupInstructions')) {
+        return 'Pickup instructions are required.';
+      }
+      return 'This field is required.';
+    }
+
+    if (control.hasError('email')) {
+      return 'Enter a valid email address.';
+    }
+
+    return 'Invalid value.';
+  }
 
   onSubmit(): void {
     if (this.storeForm.valid) {
@@ -149,15 +229,16 @@ export class AddStore implements OnInit {
     }
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.initMap();
-    }, 300);
+  ngAfterViewInit(): void {
+    if (this.activeSection === 'location') {
+      this.ensureMapReady();
+    }
   }
 
   createForm() {
     this.storeForm = this.fb.group({
       location: this.fb.group({
+        searchQuery: [''],
         address: ['', Validators.required],
         city: ['', Validators.required],
         state: ['', Validators.required],
@@ -178,9 +259,29 @@ export class AddStore implements OnInit {
     } else {
       this.activeSection = section;
     }
+
+    if (section === 'location' && this.activeSection === 'location') {
+      this.ensureMapReady();
+    }
+  }
+
+  private ensureMapReady(): void {
+    setTimeout(() => {
+      if (!this.map) {
+        this.initMap();
+      }
+
+      this.map.invalidateSize();
+    });
   }
 
   initMap() {
+    const mapElement = document.getElementById('storeMap');
+
+    if (!mapElement) {
+      return;
+    }
+
     this.map = L.map('storeMap').setView([this.defaultLat, this.defaultLng], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -222,6 +323,134 @@ export class AddStore implements OnInit {
     this.updateLocation(lat, lng);
   }
 
+  searchLocation(): void {
+    const query = this.locationForm.get('searchQuery')?.value?.trim();
+
+    if (!query) {
+      this.locationSuggestions = [];
+      this.showLocationSuggestions = false;
+      return;
+    }
+
+    this.ensureMapReady();
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(query)}`)
+      .then((response) => response.json())
+      .then((results) => {
+        if (!results.length) {
+          alert('No location found. Please try a more specific address.');
+          return;
+        }
+
+        const result = results[0];
+        const lat = Number(result.lat);
+        const lng = Number(result.lon);
+
+        this.map.setView([lat, lng], 16);
+        this.moveMarker(lat, lng);
+        this.locationSuggestions = [];
+        this.showLocationSuggestions = false;
+      })
+      .catch((error) => {
+        console.error('Location search error', error);
+        alert('Unable to search location right now. Please try again.');
+      });
+  }
+
+  searchLocationSuggestions(): void {
+    const query = this.locationForm.get('searchQuery')?.value?.trim();
+
+    if (this.searchLocationTimeout) {
+      clearTimeout(this.searchLocationTimeout);
+      this.searchLocationTimeout = null;
+    }
+
+    if (!query || query.length < 3) {
+      if (this.searchLocationAbortController) {
+        this.searchLocationAbortController.abort();
+        this.searchLocationAbortController = null;
+      }
+
+      this.locationSuggestions = [];
+      this.showLocationSuggestions = false;
+      return;
+    }
+
+    this.searchLocationTimeout = setTimeout(() => {
+      this.executeLocationSuggestionSearch(query);
+    }, this.searchLocationDebounceMs);
+  }
+
+  private executeLocationSuggestionSearch(query: string): void {
+    if (this.searchLocationAbortController) {
+      this.searchLocationAbortController.abort();
+    }
+
+    this.searchLocationAbortController = new AbortController();
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&q=${encodeURIComponent(query)}`, {
+      signal: this.searchLocationAbortController.signal,
+    })
+      .then((response) => response.json())
+      .then((results) => {
+        this.locationSuggestions = results || [];
+        this.showLocationSuggestions = this.locationSuggestions.length > 0;
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') {
+          return;
+        }
+
+        console.error('Location suggestion error', error);
+        this.locationSuggestions = [];
+        this.showLocationSuggestions = false;
+      })
+      .finally(() => {
+        this.searchLocationAbortController = null;
+      });
+  }
+
+  selectLocationSuggestion(suggestion: { display_name: string; lat: string; lon: string; address?: string }): void {
+    const lat = Number(suggestion.lat);
+    const lng = Number(suggestion.lon);
+
+    this.locationForm.patchValue({
+      searchQuery: suggestion.display_name,
+    });
+
+    this.map.setView([lat, lng], 16);
+    this.moveMarker(lat, lng);
+    this.locationSuggestions = [];
+    this.showLocationSuggestions = false;
+  }
+
+  useCurrentLocation(): void {
+    if (!navigator.geolocation) {
+      alert('Current location is not supported by this browser.');
+      return;
+    }
+
+    this.ensureMapReady();
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        this.map.setView([lat, lng], 16);
+        this.moveMarker(lat, lng);
+      },
+      (error) => {
+        console.error('Current location error', error);
+        alert('Unable to access current location. Please allow location permission and try again.');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+      }
+    );
+  }
+
   updateLocation(lat: number, lng: number) {
     this.locationForm.patchValue({
       latitude: lat.toFixed(6),
@@ -246,6 +475,7 @@ export class AddStore implements OnInit {
           state: address.state || '',
 
           zipCode: address.postcode || '',
+          searchQuery: data.display_name || this.locationForm.get('searchQuery')?.value || '',
         });
       })
 
@@ -259,6 +489,16 @@ export class AddStore implements OnInit {
   ngOnDestroy() {
     if (this.map) {
       this.map.remove();
+    }
+
+    if (this.searchLocationTimeout) {
+      clearTimeout(this.searchLocationTimeout);
+      this.searchLocationTimeout = null;
+    }
+
+    if (this.searchLocationAbortController) {
+      this.searchLocationAbortController.abort();
+      this.searchLocationAbortController = null;
     }
   }
 
@@ -295,14 +535,17 @@ removeTimeSlot(index: number): void {
 
 
   onFinalSubmit(): void {
-    if (this.storeForm.valid) {
+    const declarationAccepted = this.storeForm.get('configuration.confirmDeclaration')?.value;
+
+    if (this.storeForm.valid && declarationAccepted) {
       console.log('Final Payload Created:', this.storeForm.value);
-      // alert('Store saved and created successfully!');
       this.showReviewModal = false;
-    this.showSuccessModal = true;
-    this.cdr.detectChanges();
+      this.showSuccessModal = true;
+      this.cdr.detectChanges();
+    } else if (!declarationAccepted) {
+      alert('Please accept the declaration agreement before submitting.');
     } else {
-      alert('Please accept the declaration agreement checklist to proceed.');
+      alert('Please fix the form errors before submitting.');
     }
   }
   

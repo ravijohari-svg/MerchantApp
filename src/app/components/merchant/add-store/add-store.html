@@ -21,6 +21,7 @@
           <div class="form-group">
             <label>Store Name <span class="error">*</span></label>
             <input type="text" formControlName="storeName" placeholder="e.g. Downtown Central" />
+            <div class="error-text" *ngIf="showControlError('basicInfo.storeName')">{{ errorMessage('basicInfo.storeName') }}</div>
           </div>
           <div class="form-group">
             <label>Store Type <span class="error">*</span></label>
@@ -30,22 +31,25 @@
               <option value="grocery">Grocery</option>
               <option value="restaurant">Restaurant</option>
             </select>
+            <div class="error-text" *ngIf="showControlError('basicInfo.storeType')">{{ errorMessage('basicInfo.storeType') }}</div>
           </div>
         </div>
 
         <div class="form-group">
-          <label>Description</label>
+          <label>Description <span class="error">*</span></label>
           <textarea formControlName="description" rows="4"
             placeholder="Brief overview of the store's offerings..."></textarea>
+          <div class="error-text" *ngIf="showControlError('basicInfo.description')">{{ errorMessage('basicInfo.description') }}</div>
         </div>
 
         <div class="form-grid upload-grid">
           <div class="form-group">
-            <label>Store Logo</label>
+            <label>Store Logo <span class="error">*</span></label>
            <div class="upload-zone">
     <input type="file" (change)="onLogoChange($event)" id="logo-input" accept="image/*" />
     <label for="logo-input">📁 Upload Square Logo</label>
   </div>
+  <div class="error-text" *ngIf="showControlError('basicInfo.storeLogo')">{{ errorMessage('basicInfo.storeLogo') }}</div>
   
   <div class="logo-preview-row" *ngIf="logoPreviewUrl">
     <img [src]="logoPreviewUrl" alt="Logo preview" />
@@ -54,11 +58,12 @@
           </div>
          
           <div class="form-group">
-            <label>Store Banners (Upload multiple one by one)</label>
+            <label>Store Banners (Upload multiple one by one) <span class="error">*</span></label>
             <div class="upload-zone">
               <input type="file" (change)="onBannerUpload($event)" id="banner-input" accept="image/*" />
               <label for="banner-input">🖼️ Add Banner Image</label>
             </div>
+            <div class="error-text" *ngIf="showControlError('basicInfo.storeBanners')">{{ errorMessage('basicInfo.storeBanners') }}</div>
 
             <div class="banners-thumbnail-grid" *ngIf="bannerPreviews.length > 0">
               <div class="banner-thumbnail-item" *ngFor="let preview of bannerPreviews; let i = index">
@@ -74,7 +79,7 @@
     <div class="accordion-item" [class.expanded]="activeSection === 'contact'">
       <button type="button" class="accordion-trigger" (click)="toggleSection('contact')">
         <span class="title-area">
-          <span class="icon-badge">👤</span>
+          <span class="icon-badge"><img src="assets/icons/contact.svg" /></span>
           <h3>Contact Information</h3>
         </span>
         <span class="arrow" [class.rotated]="activeSection === 'contact'"><span class="material-icons">expand_more</span></span>
@@ -84,32 +89,31 @@
         <div class="form-grid">
           <div class="form-group">
             <label>Store Manager Name <span class="error">*</span></label>
-            <input type="text" formControlName="email" placeholder="Name" />
+            <input type="text" formControlName="managerName" placeholder="Name" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.managerName')">{{ errorMessage('contactInfo.managerName') }}</div>
           </div>
 
           <div class="form-group">
             <label>Store Contact Number <span class="error">*</span></label>
-            <input type="email" />
-            <!-- <select formControlName="phone">
-              <option value="">Select Type</option>
-              <option value="retail">Retail</option>
-              <option value="grocery">Grocery</option>
-            </select> -->
+            <input type="tel" formControlName="contactPhone" placeholder="+1 (555) 000-0000" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.contactPhone')">{{ errorMessage('contactInfo.contactPhone') }}</div>
           </div>
 
           <div class="form-group">
             <label>Store Email Address <span class="error">*</span></label>
             <input type="email" formControlName="email" placeholder="store@business.com" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.email')">{{ errorMessage('contactInfo.email') }}</div>
           </div>
 
           <div class="form-group">
             <label>Customer Support Number <span class="error">*</span></label>
-            <input type="email" />
+            <input type="tel" formControlName="supportPhone" placeholder="+1 (555) 000-0000" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.supportPhone')">{{ errorMessage('contactInfo.supportPhone') }}</div>
           </div>
 
           <div class="form-group">
-            <label>Emergency Contact (Optional)</label>
-            <input type="tel" formControlName="phone" placeholder="+1 (555) 000-0000" />
+            <label>Emergency Contact <span class="optional">(Optional)</span></label>
+            <input type="tel" formControlName="emergencyContact" placeholder="+1 (555) 000-0000" />
           </div>
 
         </div>
@@ -122,7 +126,7 @@
       <button type="button" class="accordion-trigger" (click)="toggleSection('location')">
 
         <span class="title-area">
-          <span class="icon-badge">📍</span>
+          <span class="icon-badge"><img src="assets/icons/location.svg" /></span>
           <h3>Store Location</h3>
         </span>
 
@@ -138,6 +142,7 @@
         <div class="form-group">
           <label>Street Address <span class="error">*</span></label>
           <input type="text" formControlName="address" placeholder="123 Main St" />
+          <div class="error-text" *ngIf="showControlError('location.address')">{{ errorMessage('location.address') }}</div>
         </div>
 
 
@@ -146,18 +151,21 @@
           <div class="form-group">
             <label>City <span class="error">*</span></label>
             <input type="text" formControlName="city" />
+            <div class="error-text" *ngIf="showControlError('location.city')">{{ errorMessage('location.city') }}</div>
           </div>
 
 
           <div class="form-group">
             <label>State <span class="error">*</span></label>
             <input type="text" formControlName="state" />
+            <div class="error-text" *ngIf="showControlError('location.state')">{{ errorMessage('location.state') }}</div>
           </div>
 
 
           <div class="form-group">
             <label>Zip Code <span class="error">*</span></label>
             <input type="text" formControlName="zipCode" />
+            <div class="error-text" *ngIf="showControlError('location.zipCode')">{{ errorMessage('location.zipCode') }}</div>
           </div>
 
         </div>
@@ -167,6 +175,35 @@
 
           <label>Select Location on Map</label>
 
+          <div class="map-search-row">
+            <div class="map-search-input">
+              <span class="material-icons">search</span>
+              <input
+                type="text"
+                formControlName="searchQuery"
+                placeholder="Search for address..."
+                autocomplete="off"
+                (input)="searchLocationSuggestions()"
+                (keydown.enter)="$event.preventDefault(); searchLocation()"
+              />
+              <div class="location-suggestions" *ngIf="showLocationSuggestions">
+                <button
+                  type="button"
+                  class="suggestion-item"
+                  *ngFor="let suggestion of locationSuggestions"
+                  (click)="selectLocationSuggestion(suggestion)"
+                >
+                  <span class="suggestion-main">{{ suggestion.display_name }}</span>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="current-location-btn" (click)="useCurrentLocation()">
+              <span class="material-icons">my_location</span>
+              Use Current Location
+            </button>
+          </div>
+
           <div id="storeMap" class="map-container"></div>
 
         </div>
@@ -175,14 +212,16 @@
         <div class="form-grid basic-2-col">
 
           <div class="form-group">
-            <label>Latitude</label>
+            <label>Latitude <span class="error">*</span></label>
             <input type="text" formControlName="latitude" readonly />
+            <div class="error-text" *ngIf="showControlError('location.latitude')">{{ errorMessage('location.latitude') }}</div>
           </div>
 
 
           <div class="form-group">
-            <label>Longitude</label>
+            <label>Longitude <span class="error">*</span></label>
             <input type="text" formControlName="longitude" readonly />
+            <div class="error-text" *ngIf="showControlError('location.longitude')">{{ errorMessage('location.longitude') }}</div>
           </div>
 
         </div>
@@ -196,7 +235,7 @@
     <div class="accordion-item operation-hours" [class.expanded]="activeSection === 'hours'">
   <button type="button" class="accordion-trigger" (click)="toggleSection('hours')">
     <span class="title-area">
-      <span class="icon-badge">🕒</span>
+      <span class="icon-badge"><img src="assets/icons/operatingHours.svg" /></span>
       <h3>Operating Hours</h3>
     </span>
     <span class="arrow" [class.rotated]="activeSection === 'hours'"><span class="material-icons">expand_more</span></span>
@@ -219,15 +258,15 @@
         [formGroupName]="i"
       >
         <div class="form-group">
-          <label *ngIf="i === 0">Opening Time</label>
+          <label *ngIf="i === 0">Opening Time <span class="error">*</span></label>
           <input type="text" formControlName="openTime" placeholder="09:00 AM" />
+          <div class="error-text" *ngIf="showControlError('operatingHours.timeSlots.' + i + '.openTime')">{{ errorMessage('operatingHours.timeSlots.' + i + '.openTime') }}</div>
         </div>
         
         <div class="form-group relative-position">
-          <label *ngIf="i === 0">Closing Time</label>
+          <label *ngIf="i === 0">Closing Time <span class="error">*</span></label>
           <div class="input-with-action">
             <input type="text" formControlName="closeTime" placeholder="09:00 PM" />
-            
             <button 
               type="button" 
               class="remove-slot-btn" 
@@ -238,6 +277,7 @@
               &times;
             </button>
           </div>
+          <div class="error-text" *ngIf="showControlError('operatingHours.timeSlots.' + i + '.closeTime')">{{ errorMessage('operatingHours.timeSlots.' + i + '.closeTime') }}</div>
         </div>
       </div>
     </div>
@@ -253,10 +293,10 @@
       </label>
     </div>
 
-    <div class="form-group special-hours-group">
+    <!-- <div class="form-group special-hours-group">
       <label>Special Hours (Optional)</label>
       <input type="text" formControlName="specialHours" placeholder="e.g. Holiday specific timings or seasonal changes..." />
-    </div>
+    </div> -->
 
     <button type="button" class="add-slot-btn" (click)="addTimeSlot()">
       <span class="plus-icon">+</span> Add another time slot
@@ -268,7 +308,7 @@
    <div class="accordion-item" [class.expanded]="activeSection === 'config'">
   <button type="button" class="accordion-trigger" (click)="toggleSection('config')">
     <span class="title-area">
-      <span class="icon-badge">⚙️</span>
+      <span class="icon-badge"><img src="assets/icons/settings.svg" /></span>
       <h3>Store Configuration</h3>
     </span>
     <span class="arrow" [class.rotated]="activeSection === 'config'"><span class="material-icons">expand_more</span></span>
@@ -325,7 +365,6 @@
     <div class="status-section">
       <label class="section-label">Store Status <span class="error">*</span></label>
       <div class="status-cards-group">
-        
         <label class="status-card" [class.selected]="storeForm.get('configuration.storeStatus')?.value === 'open'">
           <input type="radio" value="open" formControlName="storeStatus" />
           <span class="radio-indicator"></span>
@@ -352,18 +391,20 @@
             <p>Store is permanently shut</p>
           </div>
         </label>
-
       </div>
+      <div class="error-text" *ngIf="showControlError('configuration.storeStatus')">{{ errorMessage('configuration.storeStatus') }}</div>
     </div>
 
     <div class="form-group">
-      <label>Drone Pickup Point Name</label>
+      <label>Drone Pickup Point Name <span class="error">*</span></label>
       <input type="text" formControlName="dronePickupName" placeholder="e.g. North Pad A" />
+      <div class="error-text" *ngIf="showControlError('configuration.dronePickupName')">{{ errorMessage('configuration.dronePickupName') }}</div>
     </div>
 
     <div class="form-group">
-      <label>Pickup Instructions</label>
+      <label>Pickup Instructions <span class="error">*</span></label>
       <textarea formControlName="pickupInstructions" rows="3" placeholder="Detail any specific instructions for customers or delivery drivers..."></textarea>
+      <div class="error-text" *ngIf="showControlError('configuration.pickupInstructions')">{{ errorMessage('configuration.pickupInstructions') }}</div>
     </div>
 
   </div>
@@ -442,7 +483,7 @@
             </div>
             <div>
               <span class="review-label">Phone Number</span>
-              <div class="review-val">{{ storeForm.get('contactInfo.phone')?.value }}</div>
+              <div class="review-val">{{ storeForm.get('contactInfo.contactPhone')?.value }}</div>
             </div>
             <div>
               <span class="review-label">Email Address</span>

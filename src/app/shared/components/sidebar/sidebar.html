@@ -17,7 +17,7 @@
     <ul class="sidebar-menu">
       @for (item of menuItems; track item.name) {
         <li 
-          [class.active]="activeItem === item.name" 
+          [class.active]="isActive(item)" 
           (click)="selectItem(item)"
           class="menu-item"
         >
@@ -32,7 +32,7 @@
             </span>
           }
           
-          @if (activeItem === item.name) {
+          @if (isActive(item)) {
             <div class="active-indicator"></div>
           }
         </li>
