@@ -1,176 +1,234 @@
 .login-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: #f5f7fa;
-    font-family: Inter, Arial, sans-serif;
-    text-align:center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at top, #f8fbff 0%, #eef3fb 55%, #e9eef7 100%);
+  font-family: Inter, Arial, sans-serif;
 }
 
-.card {
-    width: 420px;
-    padding: 28px;
-    border-radius: 12px;
-    background: white;
-    box-shadow: 0 8px 20px rgba(16, 24, 40, 0.06);
-    text-align: center
+.auth-shell {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
 }
 
 .brand {
-    width: 48px;
-    height: 48px;
-    border-radius: 15px;
-    background: #113880;
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 8px;
-    font-weight: 700
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #355ea9, #24457f);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(36, 69, 127, 0.2);
 }
 
 .title {
-    margin: 0 0 4px;
-    color: #1f3556
+  margin: 0;
+  color: #163b78;
+  font-size: 28px;
+  font-weight: 700;
 }
 
 .subtitle {
-    margin: 0 0 16px;
-    color: #7b8aa3;
-    font-size: 13px
+  margin: 4px 0 20px;
+  color: #7a879a;
+  font-size: 13px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.08);
+  text-align: left;
 }
 
 .tabs {
-    display: flex;
-    // gap: 8px;
-    justify-content: center;
-    margin-bottom: 18px
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.tab,
+.primary,
+.link,
+.back-link,
+.forgot-link {
+  border: none;
+  cursor: pointer;
 }
 
 .tab {
-    padding: 8px 14px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    background: #eef3fb;
-    color: #113880;
-    cursor: pointer;
-    width: 100%;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: #edf3ff;
+  color: #23447e;
+  font-weight: 600;
 }
 
 .tab.active {
-    background: #113880;
-    color: #fff
+  background: #23447e;
+  color: #fff;
 }
 
 .form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    text-align: left
+  display: flex;
+  flex-direction: column;
 }
 
 .form label {
-    font-size: 13px;
-    color: #516177;
-    margin-bottom: 6px
+  font-size: 13px;
+  color: #5b6678;
+  margin: 0 0 6px;
 }
 
 .form input {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid #e6e9ef;
-    background: #fafbfd
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e9f2;
+  background: #fbfcfe;
+  color: #1d2a3b;
+  margin-bottom: 12px;
+  outline: none;
 }
 
-.mobile-row {
-    // display: flex;
-    // gap: 8px
+.form input:focus {
+  border-color: #6d8fca;
+  box-shadow: 0 0 0 3px rgba(109, 143, 202, 0.12);
 }
 
-.mobile-input {
-    flex: 1
+.reset-card {
+  display: flex;
+  flex-direction: column;
 }
 
-.otp-inline {
-    display: flex;
-    flex-direction: column;
-    // align-items: flex-end;
-    // gap: 6px;
-    margin-top: 10px
+.forgot-link,
+.back-link {
+  background: transparent;
+  color: #5f7192;
+  padding: 0;
+  text-align: left;
+  margin: 2px 0 12px;
+  font-size: 13px;
 }
 
-.otp-input {
-    width: 120px;
-    text-align: center;
-    letter-spacing: 6px;
-    font-size: 18px;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #e6e9ef;
-    background: #fafbfd
+.back-link {
+  width: fit-content;
+  margin-bottom: 18px;
 }
 
-.resend {
-    font-size: 12px;
-    color: #6f7f9a
+.reset-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #cbd8f5;
+  background: #eef4ff;
+  color: #3d6fd7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
 }
 
-.resend .link {
-    background: transparent;
-    border: none;
-    color: #113880;
-    cursor: pointer;
-    padding: 0
+.reset-icon svg {
+  width: 22px;
+  height: 22px;
 }
 
-.mobile-action-row {
-    margin-top: 12px
-}
-
-.mobile-action-row .primary {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    background: #113880;
-    color: white;
-    border: none;
-    cursor: pointer
-}
-
-.otp-group input {
-    text-align: center;
-    letter-spacing: 8px;
-    font-size: 18px
+.reset-title {
+  margin: 0 0 12px;
+  color: #344055;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .actions {
-    margin-top: 8px
+  margin-top: 4px;
 }
 
 .primary {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    background: #113880;
-    color: white;
-    border: none;
-    cursor: pointer
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #23447e;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 10px 20px rgba(35, 68, 126, 0.16);
 }
 
 .primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.reset-step {
+  display: flex;
+  flex-direction: column;
+}
+
+.otp-input {
+  text-align: center;
+  letter-spacing: 7px;
+  font-size: 18px;
+}
+
+.resend-row {
+  margin: -2px 0 14px;
+  font-size: 13px;
+  color: #748299;
+}
+
+.resend-footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: #7e8795;
+}
+
+.link {
+  background: transparent;
+  color: #23447e;
+  padding: 0;
+  font-weight: 600;
+}
+
+.password-step {
+  margin-top: 10px;
+}
+
+.password-step h3 {
+  margin: 0 0 12px;
+  color: #243750;
+  font-size: 18px;
 }
 
 .create-link {
-    margin-top: 12px;
-    font-size: 13px;
-    color: #6f7f9a
+  margin-top: 14px;
+  font-size: 13px;
+  color: #6f7f9a;
 }
 
 .create-link a {
-    color: #113880;
-    text-decoration: none
+  color: #23447e;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
 }

@@ -1,58 +1,162 @@
 <div class="login-page">
-	<div >
-		<div class="brand">S1</div>
-		<h2 class="title">Welcome back</h2>
-		<p class="subtitle">Sign in to your merchant account</p>
-        <div class="card">
-		<div class="tabs" >
-			<button class="tab" [class.active]="mode==='email'" (click)="setMode('email')">Email & Password</button>
-			<button class="tab" [class.active]="mode==='mobile'" (click)="setMode('mobile')">Mobile OTP</button>
-		</div>
-			<form class="form" (submit)="$event.preventDefault(); onPrimaryAction()">
-				@if (mode==='email') {
-				<label>Email Address</label>
-				<input type="email" placeholder="you@company.com" (input)="email = $any($event.target).value" />
+  <div class="auth-shell">
+    <div class="brand">S1</div>
+    <h2 class="title">Welcome back</h2>
+    <p class="subtitle">Sign in to your merchant account</p>
 
-				<label>Password</label>
-				<input type="password" placeholder="Enter password" (input)="password = $any($event.target).value" />
-
-                <div class="actions">
-                        <button type="submit" class="primary" [disabled]="primaryDisabled">{{ primaryLabel }}</button>
-                    </div>
-				}
-
-				@if (mode==='mobile') {
-                    
-                   
-				<div class="mobile-row">
-					 <div>
-                        <label>Mobile Number</label>
-                        <input class="mobile-input" type="tel" placeholder="+91 12345 67890" (input)="mobile = $any($event.target).value" />
-                    </div>
-
-						@if (showOtpInput) {
-							<div class="otp-inline">
-								<label class="sr-only">Enter 6 digit OTP</label>
-								<input class="otp-input" type="text" maxlength="6" placeholder="______" (input)="otp = $any($event.target).value" />
-								<div class="resend">
-									@if (resendSeconds===0) {
-										<button type="button" class="link" (click)="resendOtp()">Resend</button>
-									} @else {
-										<span>Resend In {{resendSeconds}}s</span>
-									}
-								</div>
-							</div>
-						}
-				</div>
-
-				<div class="mobile-action-row">
-					<button type="button" class="primary" (click)="onSendOrVerify()" [disabled]="mobileActionDisabled">{{ mobileActionLabel }}</button>
-				</div>
-				}
-
-			
-		</form>
+    <div class="card">
+      @if (mode !== 'forgot') {
+        <div class="tabs">
+          <button class="tab" [class.active]="mode === 'email'" (click)="setMode('email')">Email & Password</button>
+          <button class="tab" [class.active]="mode === 'mobile'" (click)="openMobileLogin()">Mobile OTP</button>
         </div>
-		<div class="create-link">New to S1? <a [routerLink]="['/auth/register']">Create a merchant account</a></div>
-	</div>
+      }
+
+      <form class="form" (submit)="$event.preventDefault(); onPrimaryAction()">
+        @if (mode === 'email') {
+          <label>Email Address</label>
+          <input type="email" placeholder="you@company.com" (input)="email = $any($event.target).value" />
+
+          <label>Password</label>
+          <input type="password" placeholder="Enter password" (input)="password = $any($event.target).value" />
+
+          <button type="button" class="forgot-link" (click)="openForgotPassword()">Forgot Password?</button>
+
+          <div class="actions">
+            <button type="submit" class="primary" [disabled]="primaryDisabled">{{ primaryLabel }}</button>
+          </div>
+        }
+
+        @if (mode === 'mobile') {
+          <label>Mobile Number</label>
+          <input
+            class="mobile-input"
+            type="tel"
+            placeholder="+91 12345 67890"
+            [value]="mobile"
+            (input)="mobile = $any($event.target).value"
+          />
+
+          @if (mobileOtpVisible) {
+            <label>Enter 6 Digit OTP</label>
+            <input
+              class="otp-input"
+              type="text"
+              maxlength="6"
+              inputmode="numeric"
+              placeholder="______"
+              [value]="mobileOtp"
+              (input)="mobileOtp = ($any($event.target).value || '').replace(/[^0-9]/g, '').slice(0, 6)"
+            />
+          }
+
+          <div class="actions">
+            <button type="submit" class="primary" [disabled]="primaryDisabled">{{ primaryLabel }}</button>
+          </div>
+        }
+
+        @if (mode === 'forgot') {
+          @if (!otpRequested) {
+            <div class="reset-card">
+              <button type="button" class="back-link" (click)="setMode('email')">← Back to login</button>
+
+              <div class="reset-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 6.5h16v11H4v-11Z" stroke="currentColor" stroke-width="1.6" />
+                  <path d="m5.5 8 6.5 4.75L18.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+
+              <h3 class="reset-title">Reset Password</h3>
+
+              <label>Email Address</label>
+              <input type="email" placeholder="merchant@kfc.in" [value]="email" (input)="email = $any($event.target).value" />
+
+              <button type="submit" class="primary" [disabled]="primaryDisabled">{{ primaryLabel }}</button>
+            </div>
+
+            <div class="resend-footer">
+              Didn’t receive it? <button type="button" class="link" (click)="resendOtp()">Resend</button>
+            </div>
+          } @else if (!passwordStepVisible) {
+            <div class="reset-step">
+              <button type="button" class="back-link" (click)="setMode('email')">← Back to login</button>
+
+              <div class="reset-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 6.5h16v11H4v-11Z" stroke="currentColor" stroke-width="1.6" />
+                  <path d="m5.5 8 6.5 4.75L18.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+
+              <h3 class="reset-title">Reset Password</h3>
+
+              <label>Email Address</label>
+              <input type="email" placeholder="merchant@kfc.in" [value]="email" (input)="email = $any($event.target).value" />
+
+              <label>Enter 6 Digit OTP</label>
+              <input
+                class="otp-input"
+                type="text"
+                maxlength="6"
+                inputmode="numeric"
+                placeholder="______"
+                [value]="otp"
+                (input)="otp = ($any($event.target).value || '').replace(/[^0-9]/g, '').slice(0, 6)"
+              />
+
+              <div class="resend-row">
+                @if (resendSeconds === 0) {
+                  <button type="button" class="link" (click)="resendOtp()">Resend</button>
+                } @else {
+                  <span>Resend in {{ resendSeconds }}s</span>
+                }
+              </div>
+
+              <div class="actions">
+                <button type="submit" class="primary" [disabled]="primaryDisabled">{{ primaryLabel }}</button>
+              </div>
+            </div>
+          } @else {
+            <div class="reset-step">
+              <button type="button" class="back-link" (click)="backToOtpStep()">← Back to OTP</button>
+
+              <div class="reset-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 6.5h16v11H4v-11Z" stroke="currentColor" stroke-width="1.6" />
+                  <path d="m5.5 8 6.5 4.75L18.5 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+
+              <h3 class="reset-title">Reset Password</h3>
+
+              <label>New Password</label>
+              <input
+                type="password"
+                placeholder="password123"
+                [value]="newPassword"
+                (input)="newPassword = $any($event.target).value"
+              />
+
+              <label>Confirm Password</label>
+              <input
+                type="password"
+                placeholder="password123"
+                [value]="confirmPassword"
+                (input)="confirmPassword = $any($event.target).value"
+              />
+
+              <div class="actions">
+                <button type="submit" class="primary" [disabled]="primaryDisabled">{{ primaryLabel }}</button>
+              </div>
+            </div>
+          }
+        }
+      </form>
+    </div>
+
+    @if (mode !== 'forgot') {
+      <div class="create-link">New to S1? <a [routerLink]="['/auth/register']">Create a merchant account</a></div>
+    }
+  </div>
 </div>
