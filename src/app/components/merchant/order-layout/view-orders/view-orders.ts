@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MerchantService } from '../../../../services/merchant.service';
 
-export type FlowState = 'PENDING_ACCEPTANCE' | 'SELECT_TIME' | 'PREPARING_STEPS' | 'WAITING_DRONE';
+export type FlowState = 'PENDING_ACCEPTANCE' | 'SELECT_TIME' | 'PREPARING_STEPS' | 'Waiting';
 
 interface OrderItem {
   name: string;
@@ -69,6 +69,8 @@ export class ViewOrders implements OnInit, OnDestroy {
 
   tasks = { preparing: true, packing: false, qualityCheck: false };
   showReadyModal: boolean = false;
+  isAccepting: boolean = false;
+  showAcceptSuccessModal: boolean = false;
 
   ngOnInit() {
     console.log('ViewOrders initialized, calling fetchOrders...');
@@ -178,7 +180,49 @@ export class ViewOrders implements OnInit, OnDestroy {
     }
   }
 
-  acceptOrder(): void { this.currentStatus = 'SELECT_TIME'; }
+  acceptOrder(): void {
+    if (this.isAccepting) return;
+    this.isAccepting = true;
+    let merchantId = 'MERC-98765';
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const parsedToken = JSON.parse(token);
+        merchantId = parsedToken?.merchantBrand?.MerchantId || parsedToken.merchantId || parsedToken.MerchantId || parsedToken.id || 'MERC-98765';
+      }
+    } catch (e) {}
+
+    const payload = {
+      OrderId: this.orderId,
+      Action: "ACCEPTANCE_MERCHANT",
+      Payload: {
+        Status: "ACCEPTED",
+        AcceptedBy: merchantId,
+        RejectedReason: null
+      }
+    };
+
+    this.merchantService.updateOrder(payload).subscribe({
+      next: (res: any) => {
+        console.log('Order accepted successfully', res);
+        this.isAccepting = false;
+        this.showAcceptSuccessModal = true;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error accepting order', err);
+        this.isAccepting = false;
+        // Proceed anyway for now as fallback
+        this.currentStatus = 'SELECT_TIME';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+  
+  closeAcceptSuccessModal(): void {
+    this.showAcceptSuccessModal = false;
+    this.currentStatus = 'SELECT_TIME';
+  }
   rejectOrder(): void { console.log('Order rejected'); }
   incrementTime(): void { this.customTimeMinutes++; }
   decrementTime(): void { if (this.customTimeMinutes > 1) this.customTimeMinutes--; }
@@ -214,7 +258,7 @@ export class ViewOrders implements OnInit, OnDestroy {
   confirmReady(): void {
     this.clearInterval();
     this.showReadyModal = false;
-    this.currentStatus = 'WAITING_DRONE';
+    this.currentStatus = 'Waiting';
   }
 
   ngOnDestroy(): void { this.clearInterval(); }

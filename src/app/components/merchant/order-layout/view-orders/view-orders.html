@@ -139,7 +139,9 @@
       <p class="helper-text">Review items carefully before accepting to ensure availability.</p>
       <div class="btn-cluster">
         <button class="action-btn btn-outline" (click)="rejectOrder()">Reject Order</button>
-        <button class="action-btn btn-primary" (click)="acceptOrder()">Accept Order</button>
+        <button class="action-btn btn-primary" (click)="acceptOrder()" [disabled]="isAccepting">
+          {{ isAccepting ? 'Processing...' : 'Accept Order' }}
+        </button>
       </div>
     </div>
 
@@ -186,7 +188,7 @@
       </div>
     </div>
 
-    <div *ngIf="currentStatus === 'WAITING_DRONE'" class="action-flex-row">
+    <div *ngIf="currentStatus === 'Waiting'" class="action-flex-row">
       <div class="tracking-indicator-block">
         <div class="drone-icon-box"><mat-icon>precision_manufacturing</mat-icon></div>
         <div class="meta-labels">
@@ -222,6 +224,19 @@
     <div class="modal-actions-row">
       <button class="modal-btn-back" (click)="closeReadyModal()">Back</button>
       <button class="action-btn btn-primary flex-grow confirm-ready" (click)="confirmReady()">Confirm Ready</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop-layer" *ngIf="showAcceptSuccessModal">
+  <div class="modal-window-frame animate-slide-up" style="text-align: center; padding: 30px;">
+    <div style="color: #10b981; margin-bottom: 20px;">
+      <mat-icon style="font-size: 64px; height: 64px; width: 64px;">check_circle</mat-icon>
+    </div>
+    <h2>Order Accepted Successfully</h2>
+    <p class="modal-info-text" style="margin-bottom: 24px;">The order has been accepted and will now be processed.</p>
+    <div class="modal-actions-row">
+      <button class="action-btn btn-primary flex-grow" (click)="closeAcceptSuccessModal()">Continue</button>
     </div>
   </div>
 </div>

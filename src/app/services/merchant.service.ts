@@ -33,4 +33,8 @@ export class MerchantService {
   getProductList(payload: { MerchantId: string }) {
     return this.http.post(`https://os9ew78zs5.execute-api.eu-west-2.amazonaws.com/dev/products/get-product-list-for-merchant-owner`, payload);
   }
+
+  updateOrder(payload: any) {
+    return this.http.post(`https://3e4kg1o844.execute-api.eu-west-2.amazonaws.com/dev/customer/order/order-update`, payload);
+  }
 }
