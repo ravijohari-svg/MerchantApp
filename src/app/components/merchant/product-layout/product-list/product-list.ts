@@ -49,13 +49,15 @@ export class ProductList implements OnInit {
   }
 
   fetchProducts(): void {
-    let merchantId = 'MB00013';
-    const token = localStorage.getItem('userData');
-    if (token) {
-      try {
+    let merchantId = '';
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
         const parsed = JSON.parse(token);
-        merchantId = parsed?.merchantBrand?.MerchantId || parsed.merchantId || parsed.MerchantId || parsed.id || merchantId;
-      } catch(e) {}
+        merchantId = parsed?.merchantBrand?.MerchantId || parsed.merchantId || parsed.MerchantId || parsed.id || '';
+      }
+    } catch (e) {
+      console.warn('Could not parse token from localStorage');
     }
 
     this.isLoading = true;

@@ -42,7 +42,7 @@ export class StoreManagement implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    let merchantId = 'MB00013'; // Fallback
+    let merchantId = ''; // Fallback
     try {
       const token = localStorage.getItem('token');
       if (token) {
