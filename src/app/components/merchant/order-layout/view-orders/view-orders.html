@@ -1,0 +1,219 @@
+<div class="order-detail-viewframe">
+  
+  <div class="header-navigation-row">
+    <div class="left-header">
+      <button class="back-circle-btn">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="title-status-block">
+        <div class="title-row">
+          <h1>Order Details</h1>
+          <span class="id-token">{{ orderId }}</span>
+        </div>
+        <div class="status-indicator-dot">
+          <span class="orange-dot"></span>
+          <span class="status-lbl">{{ currentStatus.replace('_', ' ') }}</span>
+        </div>
+      </div>
+    </div>
+    <span class="timestamp-meta">{{ orderTime }}</span>
+  </div>
+
+  <div class="dashboard-content-grid">
+    
+    <div class="primary-column-span">
+      
+      <div class="dashboard-info-card">
+        <div class="card-title-row">
+          <mat-icon class="icon-accent">restaurant</mat-icon>
+          <h2>Order Items</h2>
+        </div>
+        <div class="items-list-wrapper">
+          <div *ngFor="let item of items" class="item-product-row">
+            <div class="product-info-left">
+              <img [src]="item.image" alt="Product Frame" class="product-thumb">
+              <div class="product-description">
+                <h3>{{ item.name }}</h3>
+                <p>Qty: {{ item.qty }}<span *ngIf="item.notes"> • {{ item.notes }}</span><span *ngIf="!item.notes && item.sku"> • SKU: {{ item.sku }}</span></p>
+              </div>
+            </div>
+            <span class="item-price-tag">${{ item.price.toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-info-card mt-20">
+        <div class="card-title-row">
+          <mat-icon class="icon-accent">local_shipping</mat-icon>
+          <h2>Delivery Logistics</h2>
+        </div>
+        <div class="logistics-split-row">
+          <div class="logistics-data-block">
+            <span class="label">DELIVERY ADDRESS</span>
+            <div class="value-with-icon">
+              <mat-icon class="map-marker">place</mat-icon>
+              <p class="address-text">{{ delivery.address }}</p>
+            </div>
+          </div>
+          <div class="logistics-data-block">
+            <span class="label">ESTIMATED TIME</span>
+            <div class="value-with-icon">
+              <mat-icon class="clock-icon">schedule</mat-icon>
+              <p class="bold-value">{{ delivery.estimatedTime }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="delivery-instructions-box">
+          <span class="label">INSTRUCTIONS</span>
+          <p class="instruction-quote">{{ delivery.instructions }}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="secondary-column-span">
+      
+      <!-- Customer Information Card -->
+      <div class="dashboard-info-card">
+        <div class="card-title-row">
+          <mat-icon class="icon-accent">person</mat-icon>
+          <h2>Customer</h2>
+        </div>
+        <div class="customer-profile-body">
+          <img [src]="customer.avatar" alt="Avatar User" class="customer-avatar-img">
+          <h3>{{ customer.name }}</h3>
+          <p class="member-badge">{{ customer.tier }}</p>
+          
+          <div class="customer-contact-channels">
+            <div class="contact-line">
+              <mat-icon>phone</mat-icon>
+              <span>{{ customer.phone }}</span>
+            </div>
+            <div class="contact-line">
+              <mat-icon>mail</mat-icon>
+              <span>{{ customer.email }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-info-card mt-20">
+        <div class="card-title-row">
+          <mat-icon class="icon-accent">payments</mat-icon>
+          <h2>Summary</h2>
+        </div>
+        <div class="billing-ledger-table">
+          <div class="ledger-row">
+            <span class="label text-muted">Subtotal</span>
+            <span class="val">${{ summary.subtotal.toFixed(2) }}</span>
+          </div>
+          <div class="ledger-row">
+            <span class="label text-muted">Tax (8.875%)</span>
+            <span class="val">${{ summary.tax.toFixed(2) }}</span>
+          </div>
+          <div class="ledger-row">
+            <span class="label text-muted">Delivery Fee</span>
+            <span class="val">${{ summary.deliveryFee.toFixed(2) }}</span>
+          </div>
+          <div class="ledger-row total-row">
+            <span class="total-lbl">Total Amount</span>
+            <span class="total-val">${{ summary.total.toFixed(2) }}</span>
+          </div>
+          <div class="payment-method-badge-row">
+            <mat-icon>credit_card</mat-icon>
+            <div class="payment-details">
+              <span class="title">PAYMENT METHOD</span>
+              <span class="val">{{ summary.paymentMethod }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sticky-action-bar-workspace">
+    
+    <div *ngIf="currentStatus === 'PENDING_ACCEPTANCE'" class="action-flex-row">
+      <p class="helper-text">Review items carefully before accepting to ensure availability.</p>
+      <div class="btn-cluster">
+        <button class="action-btn btn-outline" (click)="rejectOrder()">Reject Order</button>
+        <button class="action-btn btn-primary" (click)="acceptOrder()">Accept Order</button>
+      </div>
+    </div>
+
+    <div *ngIf="currentStatus === 'SELECT_TIME'" class="action-flex-row">
+      <div class="time-selection-tool">
+        <span class="label-text">Preparation Time</span>
+        <div class="radio-tab-container">
+          <button *ngFor="let opt of timeOptions" [class.active]="selectedTimeOption === opt" (click)="selectedTimeOption = opt">
+            {{ opt }}
+          </button>
+        </div>
+        <div *ngIf="selectedTimeOption === 'Custom'" class="custom-counter-input">
+          <button (click)="decrementTime()">-</button>
+          <input type="number" [(ngModel)]="customTimeMinutes" readonly />
+          <button (click)="incrementTime()">+</button>
+          <span class="min-suffix">mins</span>
+        </div>
+      </div>
+      <button class="action-btn btn-primary" (click)="startPreparing()">Start Preparing</button>
+    </div>
+
+    <div *ngIf="currentStatus === 'PREPARING_STEPS'" class="action-flex-row">
+      <div class="tracking-indicator-block">
+        <div class="circular-timer-ring"><span>{{ countdownMinutes }}m</span></div>
+        <div class="meta-labels">
+          <span class="lbl-top">PREPARATION TIMER</span>
+          <span class="lbl-bottom">{{ countdownMinutes }} min left</span>
+        </div>
+        <div class="block-divider"></div>
+        <div class="workflow-checklist">
+          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.preparing"><span class="circle-box"></span> Preparing</label>
+          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.packing"><span class="circle-box"></span> Packing</label>
+          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.qualityCheck"><span class="circle-box"></span> Quality Check</label>
+        </div>
+      </div>
+      <div class="btn-cluster">
+        <button class="action-btn btn-outline" (click)="triggerUpdateTime()">Update Time</button>
+        <button class="action-btn btn-primary" [disabled]="isReadyForPickupDisabled" (click)="openReadyModal()">Ready for Pickup</button>
+      </div>
+    </div>
+
+    <div *ngIf="currentStatus === 'WAITING_DRONE'" class="action-flex-row">
+      <div class="tracking-indicator-block">
+        <div class="drone-icon-box"><mat-icon>precision_manufacturing</mat-icon></div>
+        <div class="meta-labels">
+          <span class="lbl-top">ORDER STATUS</span>
+          <span class="lbl-bottom text-dark-bold">Waiting for Drone Pickup</span>
+        </div>
+        <div class="block-divider"></div>
+        <div class="meta-labels">
+          <span class="lbl-top">PICKUP ETA</span>
+          <span class="lbl-bottom text-blue-bold">3 min</span>
+        </div>
+      </div>
+      <button class="action-btn btn-primary px-30">View Status</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop-layer" *ngIf="showReadyModal">
+  <div class="modal-window-frame animate-slide-up">
+    <div class="modal-graphic-header">
+      <img src="../../../../../assets/icons/readyForPickup.svg" alt="Ready for Pickup">
+    </div>
+    <h2>Ready for Pickup</h2>
+    <p class="modal-info-text">This order has been packed and is ready for pickup.</p>
+    <div class="order-receipt-summary-box">
+      <div class="receipt-cell"><span class="lbl">ORDER ID</span><span class="val bold">#ORD-98231</span></div>
+      <div class="receipt-cell text-right"><span class="lbl">CUSTOMER</span><span class="val bold">Sarah Jenkins</span></div>
+      <div class="receipt-cell mt-12"><span class="lbl">TOTAL ITEMS</span><span class="val">1 Item</span></div>
+      <div class="receipt-cell text-right mt-12"><span class="lbl">PREPARATION TIME</span><span class="val icon-flex"><mat-icon>schedule</mat-icon> 18 mins</span></div>
+    </div>
+    <div class="modal-actions-row">
+      <button class="modal-btn-back" (click)="closeReadyModal()">Back</button>
+      <button class="action-btn btn-primary flex-grow confirm-ready" (click)="confirmReady()">Confirm Ready</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,181 @@
+<div class="page store-page-wrapper">
+
+    <div class="header">
+
+        <div>
+
+            <h2>Store Management</h2>
+
+            <p>Manage all store branches, locations, and assignments</p>
+
+        </div>
+
+        <button class="add-btn" (click)="goToAddStore()">
+
+            + Add Store
+
+        </button>
+
+    </div>
+
+    <!-- hierarchy -->
+
+    <div class="hierarchy-card">
+
+        <div class="title">
+
+            📚 KFC India — Organization Hierarchy
+
+        </div>
+
+        <div class="owner">
+
+            KFC India (Merchant Account · Owner: Ravi Sharma)
+
+        </div>
+
+        <div class="hierarchy">
+
+            @for(item of hierarchy; track item){
+
+            <div
+                class="branch"
+                [class.inactive]="!item.active">
+
+                <div>{{item.name}}</div>
+
+                <span>{{item.manager}}</span>
+
+            </div>
+
+            }
+
+        </div>
+
+    </div>
+
+    <!-- cards -->
+
+    @if (isLoading) {
+        <div class="loader-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading stores...</p>
+        </div>
+    }
+
+    @if (!isLoading) {
+    <div class="card-grid">
+
+        @for(store of stores; track store){
+
+        <div class="store-card">
+
+            <div class="top">
+
+                <div class="store">
+
+                    <span class="icon">
+                        @if (store.logo) {
+                            <img [src]="store.logo" alt="Store Logo" class="store-logo" />
+                        } @else {
+                            {{store.icon}}
+                        }
+                    </span>
+
+                    <div>
+
+                        <h4>{{store.name}}</h4>
+
+                        <small>{{store.type}}</small>
+
+                    </div>
+
+                </div>
+
+                <span
+                    class="status"
+                    [class.inactive]="!store.active">
+
+                    {{store.active?'Active':'Inactive'}}
+
+                </span>
+
+            </div>
+
+            <div class="store-details">
+                <div class="detail-item">
+                    <span class="label">Manager</span>
+                    <span class="value"><i class="pi pi-user"></i> {{store.managerName}}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Contact</span>
+                    <span class="value"><i class="pi pi-phone"></i> {{store.contactNumber}}</span>
+                </div>
+                <div class="detail-item full-width">
+                    <span class="label">Operating Hours</span>
+                    <span class="value"><i class="pi pi-clock"></i> {{store.openingTime}} - {{store.closingTime}}</span>
+                </div>
+                <div class="detail-item full-width">
+                    <span class="label">Address</span>
+                    <span class="value address-text"><i class="pi pi-map-marker"></i> {{store.address}}</span>
+                </div>
+            </div>
+
+            <div class="stats">
+
+                <div>
+
+                    <h3>{{store.orders}}</h3>
+
+                    <span>Orders Today</span>
+
+                </div>
+
+                <div>
+
+                    <h3>{{store.revenue}}</h3>
+
+                    <span>Revenue Today</span>
+
+                </div>
+
+            </div>
+
+            <div class="rating">
+
+                ⭐ {{store.rating}}
+
+             @if (store.delivery) {
+                <span>
+                    ✔ {{ store.delivery }}
+                </span>
+            }
+
+            </div>
+
+            <!-- Removed Team display entirely since we are showing manager in details -->
+
+            <div class="actions">
+
+                <button>
+
+                    ✎ Edit
+
+                </button>
+
+                <button>
+
+                    👁 View
+
+                </button>
+
+            </div>
+
+        </div>
+
+        }
+
+    </div>
+    }
+
+</div>

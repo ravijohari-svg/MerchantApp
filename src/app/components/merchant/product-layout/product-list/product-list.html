@@ -1,0 +1,117 @@
+<div class="dashboard-container">
+  <div class="header-section">
+    <div>
+      <h1 class="title">Products</h1>
+      <p class="subtitle">Manage your catalog, pricing, and inventory across all stores</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary"><mat-icon>upload</mat-icon> Bulk Import</button>
+      <button class="btn btn-primary" (click)="goToAddProduct()"><mat-icon>add</mat-icon> Add Product</button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of stats" [ngClass]="stat.color">
+      <div class="stat-icon-wrapper">
+        <mat-icon>{{stat.icon}}</mat-icon>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{stat.value}}</span>
+        <span class="stat-label">{{stat.label}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="table-toolbar">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search by name, SKU, category...">
+      </div>
+      <div class="toolbar-right">
+        <div class="dropdown-placeholder"></div>
+        <!-- <div class="view-toggle">
+          <button class="icon-toggle active"><mat-icon>list</mat-icon></button>
+          <button class="icon-toggle"><mat-icon>grid_view</mat-icon></button>
+        </div> -->
+      </div>
+    </div>
+
+    <div class="loader-container" *ngIf="isLoading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading products...</p>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="custom-mat-table" *ngIf="!isLoading">
+
+      <ng-container matColumnDef="product">
+        <th mat-header-cell *matHeaderCellDef> PRODUCT </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="product-cell">
+            <img *ngIf="element.image.startsWith('http')" [src]="element.image" alt="Product Image" class="product-image" />
+            <span *ngIf="!element.image.startsWith('http')" class="product-emoji">{{element.image}}</span>
+            <div class="product-details">
+              <span class="product-name">{{element.name}}</span>
+              <span class="product-subtext">{{element.subtext}}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="sku">
+        <th mat-header-cell *matHeaderCellDef> SKU </th>
+        <td mat-cell *matCellDef="let element" class="sku-text"> {{element.sku}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef> CATEGORY </th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="category-badge {{element.category.toLowerCase()}}">
+            {{element.category}} 
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef> PRICE </th>
+        <td mat-cell *matCellDef="let element" class="price-text"> 
+          ₹{{element.price | number:'1.0-2'}} 
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef> STOCK </th>
+        <td mat-cell *matCellDef="let element"> 
+          <div class="stock-cell" [ngClass]="{'low-stock': element.stock > 0 && element.stock < 15, 'out-of-stock': element.stock === 0, 'in-stock': element.stock >= 15}">
+            <span>{{element.stock}}</span>
+            <mat-icon *ngIf="element.stock > 0 && element.stock < 15" class="warning-icon">warning</mat-icon>
+            <mat-icon *ngIf="element.stock === 0" class="error-icon">cancel</mat-icon>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> STATUS </th>
+        <td mat-cell *matCellDef="let element"> 
+          <span class="status-text" [ngClass]="element.status.toLowerCase()">
+            {{element.status}} 
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> ACTIONS </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="action-buttons">
+            <button class="action-btn edit" (click)="onEdit(element)"><mat-icon>edit</mat-icon></button>
+            <button class="action-btn view" (click)="onView(element)"><mat-icon>visibility</mat-icon></button>
+            <button class="action-btn delete" (click)="onDelete(element)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

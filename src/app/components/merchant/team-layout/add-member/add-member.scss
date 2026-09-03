@@ -1,0 +1,684 @@
+$navy-brand: #0f3460;
+$navy-brand-hover: #164275;
+$slate-text: #64748b;
+$slate-dark: #1e293b;
+$slate-border: #e2e8f0;
+$bg-workspace: #f8fafc;
+$error-red: #ef4444;
+
+.invite-workspace-container {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  background-color: $bg-workspace;
+  min-height: 100vh;
+  // padding: 24px 24px 100px 24px; // Bottom pad prevents footer masking content
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: $slate-text;
+    font-weight: 500;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; color: #94a3b8; }
+    .active { color: $slate-dark; font-weight: 600; }
+  }
+
+  .view-header {
+    h1 { margin: 0; font-size: 26px; font-weight: 700; color: $slate-dark; }
+    .subtitle { margin: 6px 0 0 0; font-size: 14px; color: $slate-text; }
+  }
+
+  .form-accordion-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  // Overriding Angular Material Expansion Accordion Layout Rules
+  ::ng-deep .mat-expansion-panel.accordion-panel-card {
+    background: #ffffff !important;
+    border: 1px solid $slate-border !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
+    margin-bottom: 16px;
+    overflow: hidden;
+
+    .mat-expansion-panel-header {
+      padding: 20px 24px;
+      height: auto !important;
+      background: #fdfdfd;
+      border-bottom: 1px solid transparent;
+      
+      &.mat-expanded {
+        border-bottom-color: $slate-border;
+      }
+    }
+
+    .mat-expansion-panel-content {
+      .mat-expansion-panel-body {
+        padding: 24px !important;
+      }
+    }
+  }
+
+  .panel-headline-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .step-badge {
+      width: 28px;
+      height: 28px;
+      background-color: #059669;
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .heading-meta {
+      display: flex;
+      flex-direction: column;
+      h2 { margin: 0; font-size: 16px; font-weight: 700; color: $slate-dark; }
+      p { margin: 2px 0 0 0; font-size: 12px; color: $slate-text; }
+    }
+  }
+
+  // Upload Box Engine Styling Components
+  .photo-upload-container-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+
+    .avatar-uploader-box {
+      width: 80px;
+      height: 80px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      gap: 4px;
+
+      mat-icon { color: $slate-text; font-size: 20px; width: 20px; height: 20px; }
+      span { font-size: 11px; font-weight: 600; color: $slate-text; }
+
+      &:hover:not(.has-preview) {
+        border-color: $navy-brand;
+        background-color: #f0f7ff;
+      }
+
+      img { width: 100%; height: 100%; object-fit: cover; }
+
+      .remove-preview-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, 0.75);
+        color: #ffffff;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        mat-icon { font-size: 12px; width: 12px; height: 12px; color: #fff; }
+        &:hover { background: rgba(239, 68, 68, 0.9); }
+      }
+    }
+
+    .upload-guidelines-labels {
+      h3 { margin: 0; font-size: 14px; font-weight: 700; color: $slate-dark; }
+      p { margin: 4px 0 0 0; font-size: 12px; color: $slate-text; line-height: 1.4; }
+      .error-msg { margin-top: 6px; font-size: 12px; font-weight: 500; color: $error-red; }
+    }
+  }
+
+  // Structural Framework Responsive Grid Layout Elements
+  .form-fields-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    .full-width-field {
+      grid-column: span 1;
+      @media (min-width: 640px) { grid-column: span 2; }
+    }
+  }
+
+  // Universal Forms Input Configuration Block Control System
+  .input-form-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      
+      &.bold-title-lbl {
+        font-size: 14px;
+        color: $slate-dark;
+        font-weight: 700;
+      }
+
+      .asterisk { color: $error-red; margin-left: 2px; }
+    }
+
+    input[type="text"], input[type="email"], input[type="tel"], input[type="password"], select {
+      width: 100%;
+      box-sizing: border-box;
+      height: 42px;
+      padding: 0 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      color: $slate-dark;
+      outline: none;
+      transition: border-color 0.15s ease;
+
+      &:focus { border-color: $navy-brand; box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.08); }
+    }
+
+    select.multi-select-box { height: auto; padding: 8px; }
+
+    .phone-input-group {
+      display: flex;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+      height: 42px;
+      box-sizing: border-box;
+
+      .prefix {
+        background: #f1f5f9;
+        padding: 0 14px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        border-right: 1px solid #cbd5e1;
+      }
+
+      input { border: none !important; border-radius: 0 !important; height: 100% !important; }
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      mat-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 18px; width: 18px; height: 18px; }
+      input { padding-left: 38px !important; }
+    }
+
+    // Interactive State Errors Mapping Redirection Styles
+    &.field-error {
+      input, select, .phone-input-group { border-color: $error-red !important; background-color: #fffafb; }
+      .error-text-span { font-size: 12px; font-weight: 500; color: $error-red; margin-top: 2px; }
+    }
+
+    &.max-width-select { max-width: 360px; }
+  }
+
+  .role-caption-text { font-size: 13px; color: $slate-text; margin: 8px 0 20px 0; }
+
+  // Custom Selection Framework Radios Styling Engine Rows
+  .radio-group-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 42px;
+
+    .custom-radio-lbl {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: $slate-dark;
+      cursor: pointer;
+
+      input { position: absolute; opacity: 0; pointer-events: none; }
+      .radio-circle {
+        width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 50%; background: #fff; display: inline-block; position: relative;
+      }
+
+      input:checked ~ .radio-circle {
+        border-color: $navy-brand;
+        &::after {
+          content: ""; position: absolute; width: 10px; height: 10px; background: $navy-brand; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
+
+  // Customization Permissions Matrix Layout Component Elements
+  .permission-customization-box {
+    border: 1px solid $slate-border;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 16px;
+
+    .customization-header-row {
+      background: #f8fafc;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid $slate-border;
+      h4 { margin: 0; font-size: 14px; font-weight: 700; color: $slate-dark; }
+      .reset-link-btn { background: transparent; border: none; font-size: 13px; font-weight: 600; color: $navy-brand; cursor: pointer; &:hover { text-decoration: underline; } }
+    }
+
+    .matrix-table-scroll-frame { width: 100%; overflow-x: auto; }
+
+    .permissions-matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+
+      th {
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        padding: 12px 16px;
+        background: #ffffff;
+        border-bottom: 1px solid $slate-border;
+        &:not(.text-center-th) { text-align: center; width: 120px; }
+      }
+
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13.5px;
+        color: $slate-dark;
+        vertical-align: middle;
+        &:not(.module-label-cell) { text-align: center; }
+      }
+
+      tr:last-child td { border-bottom: none; }
+      .module-label-cell { font-weight: 600; color: #334155; }
+    }
+  }
+
+  // Generic Native Table Checkbox Controls Styling Rules Overrides
+  .matrix-checkbox-container, .custom-matrix-checkbox {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+
+    input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+    .checkmark-box, .box-indicator {
+      height: 18px; width: 18px; background-color: #ffffff; border: 2px solid #cbd5e1; border-radius: 4px; display: inline-block; position: relative; transition: all 0.15s;
+    }
+
+    input:checked ~ .checkmark-box, input:checked ~ .box-indicator {
+      background-color: $navy-brand;
+      border-color: $navy-brand;
+      &::after {
+        content: ""; position: absolute; left: 5px; top: 1px; width: 4px; height: 9px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
+      }
+    }
+  }
+
+  // Complex Dual Segment Configuration Split Pane Blueprint Rules
+  .dual-pane-split-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    @media (min-width: 1024px) { grid-template-columns: 1.2fr 1fr; }
+  }
+
+  .security-rules-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    .section-micro-lbl { font-size: 12px; font-weight: 700; color: $slate-text; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+
+    .checkbox-row-card {
+      border: 1px solid $slate-border;
+      border-radius: 8px;
+      padding: 12px 16px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+
+      .custom-matrix-checkbox { width: 100%; }
+
+      .lbl-info-block {
+        display: flex; align-items: center; gap: 10px; margin-left: 12px; font-size: 14px; font-weight: 600; color: $slate-dark;
+        mat-icon { color: $slate-text; font-size: 20px; width: 20px; height: 20px; }
+      }
+    }
+
+    .inline-checkbox-block-wrap {
+      margin-top: 6px;
+      .custom-matrix-checkbox.alignment-top {
+        align-items: flex-start;
+        .box-indicator { margin-top: 2px; flex-shrink: 0; }
+        .meta-desc {
+          margin-left: 12px; display: flex; flex-direction: column;
+          strong { font-size: 14px; font-weight: 600; color: $slate-dark; }
+          p { margin: 2px 0 0 0; font-size: 12px; color: $slate-text; line-height: 1.4; }
+        }
+      }
+    }
+  }
+
+  // Two Factor Authentication Toggle Module Card Style Rule Details
+  .tfa-toggle-card {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 10px;
+
+    .left-tfa-meta {
+      display: flex; align-items: center; gap: 12px;
+      .shield-box-icon {
+        width: 36px; height: 36px; background: #ffffff; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: $navy-brand;
+        mat-icon { font-size: 20px; width: 20px; height: 20px; }
+      }
+      .tfa-text {
+        display: flex; flex-direction: column;
+        strong { font-size: 13.5px; font-weight: 700; color: $slate-dark; }
+        p { margin: 2px 0 0 0; font-size: 12px; color: $slate-text; }
+      }
+    }
+
+    // Toggle iOS Switch Architecture Rules
+    .switch-toggle-control {
+      position: relative; inline-size: 40px; block-size: 24px; display: inline-block; cursor: pointer;
+      input { opacity: 0; width: 0; height: 0; }
+      .slider-bg-bar {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; border-radius: 24px; transition: 0.2s;
+        &::before { content: ""; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: 0.2s; }
+      }
+      input:checked ~ .slider-bg-bar {
+        background-color: $navy-brand;
+        &::before { transform: translateX(16px); }
+      }
+    }
+  }
+
+  // Information Blueprint Banner Elements
+  .info-banner-blue {
+    background-color: #f0f7ff;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    mat-icon { color: #2563eb; font-size: 20px; width: 20px; height: 20px; margin-top: 1px; }
+    .banner-body {
+      display: flex; flex-direction: column;
+      h5 { margin: 0; font-size: 13px; font-weight: 700; color: #1e40af; }
+      p { margin: 4px 0 0 0; font-size: 12.5px; color: #1e40af; line-height: 1.4; }
+    }
+  }
+
+  $navy-brand: #2b5292;      // Primary blue for button
+$slate-subtext: #64748b;  // Muted gray for step counter text
+$border-color: #e2e8f0;   // Subtle light gray border
+
+.sticky-form-footer {
+  /* Layout & Flow (Normal flow, NO fixed/sticky positioning) */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* Spacing & Card-like Appearance */
+  padding: 20px 24px;
+  margin-top: 24px;
+  background-color: #ffffff;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+
+  /* Step Counter Text */
+  .footer-step-counter {
+    font-size: 13px;
+    font-weight: 500;
+    color: $slate-subtext;
+  }
+
+  /* Button Container */
+  .footer-btn-cluster {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    /* Shared Base Button Styling */
+    .form-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 44px;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      outline: none;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    /* Outlined Button (Previous) */
+    .outline-btn {
+      background-color: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+
+      &:hover {
+        background-color: #f8fafc;
+        border-color: #94a3b8;
+      }
+    }
+
+    /* Primary Filled Button (Save & Review) */
+    .primary-btn {
+      background-color: $navy-brand;
+      color: #ffffff;
+      border: 1px solid $navy-brand;
+
+      &:hover {
+        background-color: lighten($navy-brand, 5%);
+      }
+    }
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .sticky-form-footer {
+    flex-direction: column-reverse;
+    gap: 16px;
+    align-items: stretch;
+    padding: 16px;
+
+    .footer-step-counter {
+      text-align: center;
+    }
+
+    .footer-btn-cluster {
+      width: 100%;
+
+      .form-btn {
+        flex: 1; /* Stretch buttons equally across screen width */
+      }
+    }
+  }
+}
+
+  $navy-brand: #1e3a8a;
+$chip-bg: #bfdbfe;     // Light blue chip background
+$chip-text: #1d4ed8;   // Darker blue text
+$error-red: #ef4444;
+
+  .input-form-control {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    // Standard Select Wrapper
+    .select-wrapper {
+      position: relative;
+      width: 100%;
+
+      .custom-select-box {
+        width: 100%;
+        height: 42px;
+        padding: 0 36px 0 14px;
+        font-size: 14px;
+        color: #334155;
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        appearance: none; // Hide native browser dropdown arrow
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:focus {
+          border-color: $navy-brand;
+          box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.08);
+        }
+
+        &:invalid, option[value=""] {
+          color: #94a3b8;
+        }
+      }
+
+      // Custom Chevron Dropdown Icon
+      .dropdown-chevron {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%) rotate(90deg);
+        font-size: 11px;
+        color: #64748b;
+        pointer-events: none;
+      }
+    }
+
+    // Chips Container
+    .chips-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+
+      .store-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: $chip-bg;
+        color: $chip-text;
+        padding: 5px 10px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+
+        .chip-remove-btn {
+          background: transparent;
+          border: none;
+          color: $chip-text;
+          font-size: 12px;
+          line-height: 1;
+          padding: 0;
+          margin: 0;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            color: #000000;
+          }
+        }
+      }
+    }
+
+    // Error State Styling
+    &.field-error {
+      .custom-select-box {
+        border-color: $error-red !important;
+        background-color: #fffafb;
+      }
+
+      .error-text-span {
+        font-size: 12px;
+        color: $error-red;
+        font-weight: 500;
+      }
+    }
+  }
+  $navy-brand: #1e3a8a;
+$green-bg: #dcfce7;     // Soft green circle fill
+$green-icon: #059669;   // Dark green checkmark
+
+.step-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: $navy-brand;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+
+  /* Completed State Style */
+  &.completed {
+    background-color: $green-bg;
+    color: $green-icon;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+}

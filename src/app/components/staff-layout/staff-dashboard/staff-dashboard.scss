@@ -1,0 +1,138 @@
+$surface-bg: #f8f9fc;
+$font-main: #212b36;
+$font-secondary: #637381;
+$border-split: #f4f6f8;
+
+$color-ready: #00ab55;
+$color-accept: #1e3a8a;
+$color-preparing: #ffab00;
+$color-pending: #919eab;
+
+.work-dashboard-container {
+  background-color: $surface-bg;
+  // padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $font-main;
+  font-family: 'Public Sans', sans-serif;
+
+  .view-header {
+    .purple-badge {
+      background: rgba(144, 59, 255, 0.1);
+      color: #7c3aed;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+    h1 { font-size: 26px; font-weight: 800; margin: 10px 0 10px; }
+    .subtitle { color: $font-secondary; font-size: 13px; margin-top: 4px; }
+  }
+
+  mat-card.content-card {
+    border-radius: 16px;
+    border: none;
+    background: #ffffff;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.05), 0px 10px 15px -3px rgba(145, 158, 171, 0.04) !important;
+    padding: 24px;
+
+    .card-title-header h2 {
+      font-size: 16px; font-weight: 700; margin: 0 0 20px 0;
+    }
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+
+    .metric-card {
+      border: none; border-radius: 16px; background: #fff;
+      box-shadow: 0px 1px 3px rgba(0,0,0,0.04) !important;
+      
+      .metric-body {
+        padding: 24px; display: flex; align-items: center; gap: 16px;
+
+        .metric-icon {
+          width: 44px; height: 44px; border-radius: 12px;
+          display: flex; align-items: center; justify-content: center;
+          mat-icon { font-size: 20px; width: 20px; height: 20px; }
+        }
+        .metric-data {
+          display: flex; flex-direction: column;
+          .metric-value { font-size: 24px; font-weight: 800; margin: 0; line-height: 1.2; }
+          .metric-title { font-size: 13px; color: $font-secondary; font-weight: 500; }
+        }
+      }
+    }
+  }
+
+  .orders-list {
+    display: flex; flex-direction: column; gap: 12px;
+
+    .order-item-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; background: #fafbfc; border-radius: 12px;
+      transition: background 0.2s ease;
+      &:hover { background: #f4f6f8; }
+
+      .order-details-col {
+        display: flex; flex-direction: column; gap: 4px;
+        
+        .identity-line {
+          display: flex; gap: 12px; align-items: center;
+          .order-id { font-weight: 700; font-size: 14px; }
+          .items-count { font-size: 12px; color: $font-secondary; font-weight: 500; }
+        }
+        .meta-line {
+          display: flex; gap: 12px; align-items: center;
+          .customer-name { font-size: 13px; color: $font-secondary; }
+          .timestamp { font-size: 12px; color: #919eab; }
+        }
+      }
+
+      .order-actions-col {
+        display: flex; align-items: center; gap: 24px;
+
+        .status-indicator-text {
+          font-size: 12px; font-weight: 700;
+          &.preparing { color: $color-preparing; }
+          &.pending { color: $color-pending; }
+        }
+
+        button {
+          height: 36px; line-height: 36px; padding: 0 20px; border-radius: 8px;
+          font-size: 13px; font-weight: 700; text-transform: none;
+          
+          &.action-btn-ready { background-color: $color-ready; color: #fff; }
+          &.action-btn-accept { background-color: $color-accept; color: #fff; }
+        }
+      }
+    }
+  }
+
+  .notifications-list {
+    display: flex; flex-direction: column; gap: 12px;
+
+    .notification-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 16px; background-color: #fafbfc; border-radius: 10px;
+
+      .bullet {
+        width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0;
+        &.alert { background-color: #ff4842; }
+        &.info { background-color: #1890ff; }
+        &.reminder { background-color: #54d62c; }
+      }
+
+      .notification-body {
+        display: flex; flex-direction: column; gap: 2px;
+        .message-text { font-size: 13px; font-weight: 500; margin: 0; color: #212b36; }
+        .time-elapsed { font-size: 11px; color: #919eab; }
+      }
+    }
+  }
+}

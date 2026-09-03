@@ -1,0 +1,375 @@
+<div class="invite-workspace-container">
+  <nav class="breadcrumb-nav">
+    <span>Team</span> <mat-icon>chevron_right</mat-icon> <span class="active">Invite Member</span>
+  </nav>
+  
+  <header class="view-header">
+    <h1>Invite Team Member</h1>
+    <p class="subtitle">Invite a new team member and assign roles and store access.</p>
+  </header>
+
+  <form [formGroup]="inviteForm" (ngSubmit)="onSubmitWorkflow()" class="form-accordion-flow">
+    
+    <mat-accordion multi="true">
+      
+      <mat-expansion-panel [expanded]="true" class="accordion-panel-card">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-headline-row">
+            <div class="step-badge" [class.completed]="isStep1Valid">
+              <mat-icon *ngIf="isStep1Valid">check_circle</mat-icon>
+              <span *ngIf="!isStep1Valid">1</span>
+            </div>
+            <div class="heading-meta">
+              <h2>Personal Information</h2>
+              <p>Basic identification and contact details</p>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="panel-inner-body">
+          <div class="photo-upload-container-row">
+            <input type="file" #imageFileSelector (change)="onFileSelected($event)" accept="image/*" hidden />
+            
+            <div class="avatar-uploader-box" [class.has-preview]="imagePreviewUrl" (click)="!imagePreviewUrl && imageFileSelector.click()">
+              <ng-container *ngIf="!imagePreviewUrl">
+                <mat-icon>add_a_photo</mat-icon>
+                <span>Upload</span>
+              </ng-container>
+              <ng-container *ngIf="imagePreviewUrl">
+                <img [src]="imagePreviewUrl" alt="Preview Frame Target Display User Graphic" />
+                <button type="button" class="remove-preview-btn" (click)="removeUploadedImage(imageFileSelector); $event.stopPropagation()">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </ng-container>
+            </div>
+
+            <div class="upload-guidelines-labels">
+              <h3>Profile Photo</h3>
+              <p>Recommended size: 400×400px. Max 2MB (JPG, PNG).</p>
+              <div class="error-msg" *ngIf="inviteForm.get('profilePhoto')?.touched && inviteForm.get('profilePhoto')?.errors?.['required']">
+                Profile avatar photo processing execution step is required.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-fields-grid-layout">
+            <div class="input-form-control" [class.field-error]="inviteForm.get('fullName')?.touched && inviteForm.get('fullName')?.invalid">
+              <label>Full Name <span class="asterisk">*</span></label>
+              <input type="text" formControlName="fullName" placeholder="e.g. John Doe" />
+              <span class="error-text-span" *ngIf="inviteForm.get('fullName')?.touched && inviteForm.get('fullName')?.errors?.['required']">Full designation name value input required.</span>
+            </div>
+
+            <div class="input-form-control" [class.field-error]="inviteForm.get('emailAddress')?.touched && inviteForm.get('emailAddress')?.invalid">
+              <label>Email Address <span class="asterisk">*</span></label>
+              <input type="email" formControlName="emailAddress" placeholder="john.doe@company.com" />
+              <span class="error-text-span" *ngIf="inviteForm.get('emailAddress')?.touched && inviteForm.get('emailAddress')?.errors?.['required']">Email mapping endpoint destination sequence is a required block field.</span>
+            </div>
+
+            <div class="input-form-control" [class.field-error]="inviteForm.get('mobileNumber')?.touched && inviteForm.get('mobileNumber')?.invalid">
+              <label>Mobile Number <span class="asterisk">*</span></label>
+              <div class="phone-input-group">
+                <span class="prefix">+1</span>
+                <input type="tel" formControlName="mobileNumber" placeholder="(555) 000-0000" />
+              </div>
+              <span class="error-text-span" *ngIf="inviteForm.get('mobileNumber')?.touched && inviteForm.get('mobileNumber')?.errors?.['required']">Phone mobile line connection reference number value input is required.</span>
+            </div>
+
+            <div class="input-form-control" [class.field-error]="inviteForm.get('employeeId')?.touched && inviteForm.get('employeeId')?.invalid">
+              <label>Employee ID <span class="asterisk">*</span></label>
+              <input type="text" formControlName="employeeId" placeholder="S1-EMP-4920" />
+              <span class="error-text-span" *ngIf="inviteForm.get('employeeId')?.touched && inviteForm.get('employeeId')?.errors?.['required']">System staff identifier tracker employee token entry is mandatory.</span>
+            </div>
+
+            <div class="input-form-control full-width-field" [class.field-error]="inviteForm.get('designation')?.touched && inviteForm.get('designation')?.invalid">
+              <label>Designation <span class="asterisk">*</span></label>
+              <input type="text" formControlName="designation" placeholder="e.g. Senior Store Manager" />
+              <span class="error-text-span" *ngIf="inviteForm.get('designation')?.touched && inviteForm.get('designation')?.errors?.['required']">Organizational title designation input is required.</span>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel class="accordion-panel-card">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-headline-row">
+            <div class="step-badge">2</div>
+            <div class="heading-meta">
+              <h2>Role & Permissions</h2>
+              <p>Define access levels and functional authority</p>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="panel-inner-body">
+          <div class="input-form-control max-width-select" [class.field-error]="inviteForm.get('selectedRole')?.touched && inviteForm.get('selectedRole')?.invalid">
+            <label class="bold-title-lbl">Select User Role <span class="asterisk">*</span></label>
+            <select formControlName="selectedRole">
+              <option value="" disabled selected>Choose a predefined role...</option>
+              <option value="Merchant Owner">Merchant Owner</option>
+              <option value="Store Manager">Store Manager</option>
+              <option value="Inventory Manager">Inventory Manager</option>
+              <option value="Staff">Staff</option>
+            </select>
+            <span class="error-text-span" *ngIf="inviteForm.get('selectedRole')?.touched && inviteForm.get('selectedRole')?.errors?.['required']">Predefined user access category role profile selection mandatory.</span>
+          </div>
+          <p class="role-caption-text">Roles come with default permission sets that you can customize below.</p>
+
+          <div class="permission-customization-box">
+            <div class="customization-header-row">
+              <h4>Permission Customization</h4>
+              <button type="button" class="reset-link-btn">Reset to Default</button>
+            </div>
+
+            <div class="matrix-table-scroll-frame">
+              <table class="permissions-matrix-table">
+                <thead>
+                  <tr>
+                    <th class="text-center-th">Module</th>
+                    <th>View</th>
+                    <th>Create</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody formArrayName="permissionsMatrix">
+                  <tr *ngFor="let item of permissionsArray.controls; let i=index" [formGroupName]="i">
+                    <td class="module-label-cell">{{ modulesList[i] }}</td>
+                    <td>
+                      <label class="matrix-checkbox-container">
+                        <input type="checkbox" formControlName="view" (change)="onPermissionChange()" />
+                        <span class="checkmark-box"></span>
+                      </label>
+                    </td>
+                    <td>
+                      <label class="matrix-checkbox-container">
+                        <input type="checkbox" formControlName="create" (change)="onPermissionChange()" />
+                        <span class="checkmark-box"></span>
+                      </label>
+                    </td>
+                    <td>
+                      <label class="matrix-checkbox-container">
+                        <input type="checkbox" formControlName="edit" (change)="onPermissionChange()" />
+                        <span class="checkmark-box"></span>
+                      </label>
+                    </td>
+                    <td>
+                      <label class="matrix-checkbox-container">
+                        <input type="checkbox" formControlName="delete" (change)="onPermissionChange()" />
+                        <span class="checkmark-box"></span>
+                      </label>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel class="accordion-panel-card">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-headline-row">
+            <div class="step-badge">3</div>
+            <div class="heading-meta">
+              <h2>Store Assignment</h2>
+              <p>Select which locations this member can access</p>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="panel-inner-body">
+          <div class="form-fields-grid-layout">
+            
+            <div class="input-form-control" [class.field-error]="inviteForm.get('assignedStores')?.touched && inviteForm.get('assignedStores')?.invalid">
+              <label>Assign Store <span class="asterisk">*</span></label>
+
+              <div class="select-wrapper">
+                <select class="custom-select-box" (change)="onStoreSelect($event)">
+                  <option value="" disabled selected>Select Stores</option>
+                  <option *ngFor="let store of availableStores" [value]="store">
+                    {{ store }}
+                  </option>
+                </select>
+                <span class="dropdown-chevron">❯</span>
+              </div>
+
+              <div class="chips-wrapper" *ngIf="inviteForm.get('assignedStores')?.value?.length > 0">
+                <div class="store-chip" *ngFor="let store of inviteForm.get('assignedStores')?.value">
+                  <span>{{ store }}</span>
+                  <button type="button" class="chip-remove-btn" (click)="removeStore(store)">✕</button>
+                </div>
+              </div>
+
+              <span class="error-text-span" *ngIf="inviteForm.get('assignedStores')?.touched && inviteForm.get('assignedStores')?.errors?.['required']">
+                At least one storefront site entry must be assigned.
+              </span>
+            </div>
+
+            <div class="input-form-control" [class.field-error]="inviteForm.get('defaultStore')?.touched && inviteForm.get('defaultStore')?.invalid">
+              <label>Default Store <span class="asterisk">*</span></label>
+              <select formControlName="defaultStore">
+                <option value="" disabled>Select default store</option>
+                <option value="KFC Sector 55">KFC Sector 55</option>
+                <option value="KFC MG Road">KFC MG Road</option>
+              </select>
+              <span class="error-text-span" *ngIf="inviteForm.get('defaultStore')?.touched && inviteForm.get('defaultStore')?.errors?.['required']">Default operational node destination specification required.</span>
+            </div>
+
+            <div class="input-form-control" [class.field-error]="inviteForm.get('reportingManager')?.touched && inviteForm.get('reportingManager')?.invalid">
+              <label>Reporting Manager <span class="asterisk">*</span></label>
+              <div class="search-input-wrapper">
+                <mat-icon>search</mat-icon>
+                <input type="text" formControlName="reportingManager" placeholder="Search manager name or ID" />
+              </div>
+              <span class="error-text-span" *ngIf="inviteForm.get('reportingManager')?.touched && inviteForm.get('reportingManager')?.errors?.['required']">Supervisory authorization tracking manager assignment required.</span>
+            </div>
+
+            <div class="input-form-control">
+              <label>Employment Type <span class="asterisk">*</span></label>
+              <div class="radio-group-row">
+                <label class="custom-radio-lbl">
+                  <input type="radio" value="Full Time" formControlName="employmentType" />
+                  <span class="radio-circle"></span> Full Time
+                </label>
+                <label class="custom-radio-lbl">
+                  <input type="radio" value="Part Time" formControlName="employmentType" />
+                  <span class="radio-circle"></span> Part Time
+                </label>
+                <label class="custom-radio-lbl">
+                  <input type="radio" value="Contract" formControlName="employmentType" />
+                  <span class="radio-circle"></span> Contract
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-banner-blue">
+            <mat-icon>info</mat-icon>
+            <div class="banner-body">
+              <h5>Next Steps</h5>
+              <p>Once you complete the Store Assignment, you'll need to set up login credentials. The team member will receive an invitation email with instructions to set their password.</p>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel class="accordion-panel-card">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-headline-row">
+            <div class="step-badge">4</div>
+            <div class="heading-meta">
+              <h2>Login & Access</h2>
+              <p>Security settings and authentication preferences</p>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="panel-inner-body">
+          <div class="dual-pane-split-grid">
+            
+            <div class="form-fields-grid-layout inner-split-stack">
+              <div class="input-form-control" [class.field-error]="inviteForm.get('username')?.touched && inviteForm.get('username')?.invalid">
+                <label>Username <span class="asterisk">*</span></label>
+                <input type="text" formControlName="username" placeholder="jdoe_admin" />
+                <span class="error-text-span" *ngIf="inviteForm.get('username')?.touched && inviteForm.get('username')?.errors?.['required']">Unique authorization profile username parameter value required.</span>
+              </div>
+
+              <div class="input-form-control" [class.field-error]="inviteForm.get('temporaryPassword')?.touched && inviteForm.get('temporaryPassword')?.invalid">
+                <label>Temporary Password <span class="asterisk">*</span></label>
+                <input type="password" formControlName="temporaryPassword" placeholder="********" />
+                <span class="error-text-span" *ngIf="inviteForm.get('temporaryPassword')?.touched && inviteForm.get('temporaryPassword')?.errors?.['required']">Initial access provisioning temporary security key input required.</span>
+              </div>
+
+              <div class="input-form-control" [class.field-error]="inviteForm.get('confirmPassword')?.touched && (inviteForm.get('confirmPassword')?.invalid || inviteForm.errors?.['mismatch'])">
+                <label>Confirm Password <span class="asterisk">*</span></label>
+                <input type="password" formControlName="confirmPassword" placeholder="********" />
+                <span class="error-text-span" *ngIf="inviteForm.get('confirmPassword')?.touched && inviteForm.get('confirmPassword')?.errors?.['required']">Security access validation key confirmation validation parameter entry input required.</span>
+                <span class="error-text-span" *ngIf="inviteForm.get('confirmPassword')?.touched && inviteForm.errors?.['mismatch']">The credentials confirmation tracking string entry mismatch parameters mismatch.</span>
+              </div>
+
+              <div class="input-form-control">
+                <label>Account Status <span class="asterisk">*</span></label>
+                <div class="radio-group-row">
+                  <label class="custom-radio-lbl">
+                    <input type="radio" value="Active" formControlName="accountStatus" />
+                    <span class="radio-circle"></span> Active
+                  </label>
+                  <label class="custom-radio-lbl">
+                    <input type="radio" value="Inactive" formControlName="accountStatus" />
+                    <span class="radio-circle"></span> Inactive
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="security-rules-pane">
+              <label class="section-micro-lbl">Invitation Method</label>
+              
+              <div class="checkbox-row-card">
+                <label class="custom-matrix-checkbox">
+                  <input type="checkbox" formControlName="sendEmailInvite" />
+                  <span class="box-indicator"></span>
+                  <div class="lbl-info-block">
+                    <mat-icon>mail_outline</mat-icon>
+                    <span>Send Email Invitation</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="checkbox-row-card">
+                <label class="custom-matrix-checkbox">
+                  <input type="checkbox" formControlName="sendSmsInvite" />
+                  <span class="box-indicator"></span>
+                  <div class="lbl-info-block">
+                    <mat-icon>chat_bubble_outline</mat-icon>
+                    <span>Send SMS Invitation</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="inline-checkbox-block-wrap">
+                <label class="custom-matrix-checkbox alignment-top">
+                  <input type="checkbox" formControlName="requirePasswordReset" />
+                  <span class="box-indicator"></span>
+                  <div class="meta-desc">
+                    <strong>Require Password Reset on First Login</strong>
+                    <p>Security measure to ensure user-defined credentials.</p>
+                  </div>
+                </label>
+              </div>
+
+              <div class="tfa-toggle-card">
+                <div class="left-tfa-meta">
+                  <div class="shield-box-icon"><mat-icon>verified_user</mat-icon></div>
+                  <div class="tfa-text">
+                    <strong>Two-Factor Authentication</strong>
+                    <p>Highly recommended for admin roles.</p>
+                  </div>
+                </div>
+                <label class="switch-toggle-control">
+                  <input type="checkbox" formControlName="twoFactorAuth" />
+                  <span class="slider-bg-bar"></span>
+                </label>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+    </mat-accordion>
+
+    
+    <footer class="sticky-form-footer">
+    <span class="footer-step-counter">Step 4 of 4: Login & Access</span>
+    <div class="footer-btn-cluster">
+      <button type="button" class="form-btn outline-btn">Previous</button>
+      <button type="submit" class="form-btn primary-btn">
+        Save & Review <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </footer>
+
+  </form>
+</div>

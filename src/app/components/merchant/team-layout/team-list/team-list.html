@@ -1,0 +1,129 @@
+<div class="team-management-workspace">
+  <header class="workspace-header">
+    <div class="header-titles">
+      <h1>Team Management</h1>
+      <p class="subtitle">Manage roles, permissions, and store access for your team</p>
+    </div>
+    <button class="btn btn-primary" (click)="inviteMember()">
+      <mat-icon>add</mat-icon> Invite Member
+    </button>
+  </header>
+
+  <section class="metrics-summary-grid">
+    <div class="metric-card">
+      <div class="icon-box blue-theme"><mat-icon>person_outline</mat-icon></div>
+      <div class="metric-data">
+        <span class="count">1</span>
+        <span class="label">Merchant Owner</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="icon-box green-theme"><mat-icon>storefront</mat-icon></div>
+      <div class="metric-data">
+        <span class="count">3</span>
+        <span class="label">Store Manager</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="icon-box orange-theme"><mat-icon>inventory_2</mat-icon></div>
+      <div class="metric-data">
+        <span class="count">2</span>
+        <span class="label">Inventory Manager</span>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="icon-box purple-theme"><mat-icon>group</mat-icon></div>
+      <div class="metric-data">
+        <span class="count">3</span>
+        <span class="label">Staff</span>
+      </div>
+    </div>
+  </section>
+
+  <main class="data-table-card">
+    <div class="table-controls-row">
+      <div class="search-input-wrapper">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" (keyup)="applyFilter($event)" placeholder="Search team members.." />
+      </div>
+      <div class="filter-placeholder-box"></div>
+    </div>
+
+    <div class="responsive-table-wrapper">
+      <table mat-table [dataSource]="dataSource" class="team-data-table">
+
+        <ng-container matColumnDef="member">
+          <th mat-header-cell *matHeaderCellDef> MEMBER </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="member-profile-cell">
+              <div class="avatar-circle" [ngClass]="element.avatarClass">{{ element.initials }}</div>
+              <div class="identity-meta">
+                <span class="name">{{ element.name }}</span>
+                <span class="phone">{{ element.phone }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef> EMAIL </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="email-text">{{ element.email }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef> ROLE </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="badge" [ngClass]="element.roleClass">{{ element.role }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="assignedStores">
+          <th mat-header-cell *matHeaderCellDef> ASSIGNED STORES </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="store-text">{{ element.assignedStores }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> STATUS </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="status-lbl" [ngClass]="element.status === 'Active' ? 'text-active' : 'text-inactive'">
+              {{ element.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="lastLogin">
+          <th mat-header-cell *matHeaderCellDef> LAST LOGIN </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="time-text">{{ element.lastLogin }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="logins">
+          <th mat-header-cell *matHeaderCellDef> LOGINS </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="count-text" [ngClass]="{'font-bold': element.logins > 200}">{{ element.logins }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-right"> ACTIONS </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="actions-cell">
+              <button class="icon-btn"><mat-icon>edit</mat-icon></button>
+              <button *ngIf="element.showDelete" class="icon-btn color-danger">
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </main>
+</div>

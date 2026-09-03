@@ -1,0 +1,16 @@
+:host, .splash-bg {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	background: #2E5291;
+	color: #ffffff;
+	text-align: center;
+    
+	// padding: 2rem;
+}
+
+.splash-gif {
+    max-width: 80%; /* Ensure it fits nicely on smaller screens */
+    height: auto;
+}

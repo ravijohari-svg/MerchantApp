@@ -1,0 +1,609 @@
+<div class="add-store-container">
+  <div class="header">
+    <h1>Add New Store</h1>
+    <p>Register your new business location and configure its operating parameters.</p>
+  </div>
+
+  <form [formGroup]="storeForm" (ngSubmit)="onSubmit()">
+
+    <div class="accordion-item" [class.expanded]="activeSection === 'basic'">
+      <button type="button" class="accordion-trigger" (click)="toggleSection('basic')">
+        <span class="title-area">
+          <span class="icon-badge success" *ngIf="isSectionValid('basicInfo')">✓</span>
+          <span class="icon-badge standard" *ngIf="!isSectionValid('basicInfo')">📄</span>
+          <h3>Basic Information</h3>
+        </span>
+        <span class="arrow" [class.rotated]="activeSection === 'basic'"><span class="material-icons">expand_more</span></span>
+      </button>
+
+      <div class="accordion-content" formGroupName="basicInfo">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Store Name <span class="error">*</span></label>
+            <input type="text" formControlName="storeName" placeholder="e.g. Downtown Central" />
+            <div class="error-text" *ngIf="showControlError('basicInfo.storeName')">{{ errorMessage('basicInfo.storeName') }}</div>
+          </div>
+          <div class="form-group">
+            <label>Store Type <span class="error">*</span></label>
+            <select formControlName="storeType">
+              <option value="">Select Type</option>
+              <option value="retail">Retail</option>
+              <option value="grocery">Grocery</option>
+              <option value="restaurant">Restaurant</option>
+            </select>
+            <div class="error-text" *ngIf="showControlError('basicInfo.storeType')">{{ errorMessage('basicInfo.storeType') }}</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description <span class="error">*</span></label>
+          <textarea formControlName="description" rows="4"
+            placeholder="Brief overview of the store's offerings..."></textarea>
+          <div class="error-text" *ngIf="showControlError('basicInfo.description')">{{ errorMessage('basicInfo.description') }}</div>
+        </div>
+
+        <div class="form-grid upload-grid">
+          <div class="form-group">
+            <label>Store Logo <span class="error">*</span></label>
+           <div class="upload-zone">
+    <input type="file" (change)="onLogoChange($event)" id="logo-input" accept="image/*" />
+    <label for="logo-input">📁 Upload Square Logo</label>
+  </div>
+  <div class="error-text" *ngIf="showControlError('basicInfo.storeLogo')">{{ errorMessage('basicInfo.storeLogo') }}</div>
+  
+  <div class="logo-preview-row" *ngIf="logoPreviewUrl">
+    <img [src]="logoPreviewUrl" alt="Logo preview" />
+    <span>Logo Uploaded</span>
+  </div>
+          </div>
+         
+          <div class="form-group">
+            <label>Store Banners (Upload multiple one by one) <span class="error">*</span></label>
+            <div class="upload-zone">
+              <input type="file" (change)="onBannerUpload($event)" id="banner-input" accept="image/*" />
+              <label for="banner-input">🖼️ Add Banner Image</label>
+            </div>
+            <div class="error-text" *ngIf="showControlError('basicInfo.storeBanners')">{{ errorMessage('basicInfo.storeBanners') }}</div>
+
+            <div class="banners-thumbnail-grid" *ngIf="bannerPreviews.length > 0">
+              <div class="banner-thumbnail-item" *ngFor="let preview of bannerPreviews; let i = index">
+                <img [src]="preview" alt="Banner thumb" />
+                <button type="button" class="remove-thumb-btn" (click)="removeBanner(i)" title="Remove Banner">&times;</button>
+              </div>
+            </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item" [class.expanded]="activeSection === 'contact'">
+      <button type="button" class="accordion-trigger" (click)="toggleSection('contact')">
+        <span class="title-area">
+          <span class="icon-badge"><img src="assets/icons/contact.svg" /></span>
+          <h3>Contact Information</h3>
+        </span>
+        <span class="arrow" [class.rotated]="activeSection === 'contact'"><span class="material-icons">expand_more</span></span>
+      </button>
+
+      <div class="accordion-content" formGroupName="contactInfo">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Store Manager Name <span class="error">*</span></label>
+            <input type="text" formControlName="managerName" placeholder="Name" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.managerName')">{{ errorMessage('contactInfo.managerName') }}</div>
+          </div>
+
+          <div class="form-group">
+            <label>Store Contact Number <span class="error">*</span></label>
+            <input type="tel" formControlName="contactPhone" placeholder="+1 (555) 000-0000" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.contactPhone')">{{ errorMessage('contactInfo.contactPhone') }}</div>
+          </div>
+
+          <div class="form-group">
+            <label>Store Email Address <span class="error">*</span></label>
+            <input type="email" formControlName="email" placeholder="store@business.com" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.email')">{{ errorMessage('contactInfo.email') }}</div>
+          </div>
+
+          <div class="form-group">
+            <label>Customer Support Number <span class="error">*</span></label>
+            <input type="tel" formControlName="supportPhone" placeholder="+1 (555) 000-0000" />
+            <div class="error-text" *ngIf="showControlError('contactInfo.supportPhone')">{{ errorMessage('contactInfo.supportPhone') }}</div>
+          </div>
+
+          <div class="form-group">
+            <label>Emergency Contact <span class="optional">(Optional)</span></label>
+            <input type="tel" formControlName="emergencyContact" placeholder="+1 (555) 000-0000" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="accordion-item" [class.expanded]="activeSection === 'location'">
+
+      <button type="button" class="accordion-trigger" (click)="toggleSection('location')">
+
+        <span class="title-area">
+          <span class="icon-badge"><img src="assets/icons/location.svg" /></span>
+          <h3>Store Location</h3>
+        </span>
+
+        <span class="arrow" [class.rotated]="activeSection === 'location'">
+          <span class="material-icons">expand_more</span>
+        </span>
+
+      </button>
+
+
+      <div class="accordion-content" formGroupName="location">
+
+        <div class="form-group">
+          <label>Street Address <span class="error">*</span></label>
+          <input type="text" formControlName="address" placeholder="123 Main St" />
+          <div class="error-text" *ngIf="showControlError('location.address')">{{ errorMessage('location.address') }}</div>
+        </div>
+
+
+        <div class="form-grid basic-3-col">
+
+          <div class="form-group">
+            <label>City <span class="error">*</span></label>
+            <input type="text" formControlName="city" />
+            <div class="error-text" *ngIf="showControlError('location.city')">{{ errorMessage('location.city') }}</div>
+          </div>
+
+
+          <div class="form-group">
+            <label>State <span class="error">*</span></label>
+            <input type="text" formControlName="state" />
+            <div class="error-text" *ngIf="showControlError('location.state')">{{ errorMessage('location.state') }}</div>
+          </div>
+
+
+          <div class="form-group">
+            <label>Zip Code <span class="error">*</span></label>
+            <input type="text" formControlName="zipCode" />
+            <div class="error-text" *ngIf="showControlError('location.zipCode')">{{ errorMessage('location.zipCode') }}</div>
+          </div>
+
+        </div>
+
+
+        <div class="form-group map-section">
+
+          <label>Select Location on Map</label>
+
+          <div class="map-search-row">
+            <div class="map-search-input">
+              <span class="material-icons">search</span>
+              <input
+                type="text"
+                formControlName="searchQuery"
+                placeholder="Search for address..."
+                autocomplete="off"
+                (input)="searchLocationSuggestions()"
+                (keydown.enter)="$event.preventDefault(); searchLocation()"
+              />
+              <div class="location-suggestions" *ngIf="showLocationSuggestions">
+                <button
+                  type="button"
+                  class="suggestion-item"
+                  *ngFor="let suggestion of locationSuggestions"
+                  (click)="selectLocationSuggestion(suggestion)"
+                >
+                  <span class="suggestion-main">{{ suggestion.display_name }}</span>
+                </button>
+              </div>
+            </div>
+
+            <button type="button" class="current-location-btn" (click)="useCurrentLocation()">
+              <span class="material-icons">my_location</span>
+              Use Current Location
+            </button>
+          </div>
+
+          <div id="storeMap" class="map-container"></div>
+
+        </div>
+
+
+        <div class="form-grid basic-2-col">
+
+          <div class="form-group">
+            <label>Latitude <span class="error">*</span></label>
+            <input type="text" formControlName="latitude" readonly />
+            <div class="error-text" *ngIf="showControlError('location.latitude')">{{ errorMessage('location.latitude') }}</div>
+          </div>
+
+
+          <div class="form-group">
+            <label>Longitude <span class="error">*</span></label>
+            <input type="text" formControlName="longitude" readonly />
+            <div class="error-text" *ngIf="showControlError('location.longitude')">{{ errorMessage('location.longitude') }}</div>
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+    <div class="accordion-item operation-hours" [class.expanded]="activeSection === 'hours'">
+  <button type="button" class="accordion-trigger" (click)="toggleSection('hours')">
+    <span class="title-area">
+      <span class="icon-badge"><img src="assets/icons/operatingHours.svg" /></span>
+      <h3>Operating Hours</h3>
+    </span>
+    <span class="arrow" [class.rotated]="activeSection === 'hours'"><span class="material-icons">expand_more</span></span>
+  </button>
+
+  <div class="accordion-content" formGroupName="operatingHours">
+    
+    <div class="days-selector-group" formGroupName="days">
+      <label class="checkbox-container" *ngFor="let day of weekDays">
+        <input type="checkbox" [formControlName]="day.toLowerCase()" />
+        <span class="checkmark"></span>
+        {{ day }}
+      </label>
+    </div>
+
+    <div formArrayName="timeSlots" class="time-slots-container">
+      <div 
+        class="form-grid time-slot-row" 
+        *ngFor="let slot of timeSlots.controls; let i = index" 
+        [formGroupName]="i"
+      >
+        <div class="form-group">
+          <label *ngIf="i === 0">Opening Time <span class="error">*</span></label>
+          <input type="time" formControlName="openTime" placeholder="09:00" />
+          <div class="error-text" *ngIf="showControlError('operatingHours.timeSlots.' + i + '.openTime')">{{ errorMessage('operatingHours.timeSlots.' + i + '.openTime') }}</div>
+        </div>
+        
+        <div class="form-group relative-position">
+          <label *ngIf="i === 0">Closing Time <span class="error">*</span></label>
+          <div class="input-with-action">
+            <input type="time" formControlName="closeTime" placeholder="21:00" />
+            <button 
+              type="button" 
+              class="remove-slot-btn" 
+              *ngIf="timeSlots.length > 1" 
+              (click)="removeTimeSlot(i)"
+              title="Remove this time slot"
+            >
+              &times;
+            </button>
+          </div>
+          <div class="error-text" *ngIf="showControlError('operatingHours.timeSlots.' + i + '.closeTime')">{{ errorMessage('operatingHours.timeSlots.' + i + '.closeTime') }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="holiday-banner">
+      <div class="banner-text">
+        <h4>Holiday Mode</h4>
+        <p>Toggle store as closed for regional holidays</p>
+      </div>
+      <label class="switch">
+        <input type="checkbox" formControlName="holidayMode" />
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <!-- <div class="form-group special-hours-group">
+      <label>Special Hours (Optional)</label>
+      <input type="text" formControlName="specialHours" placeholder="e.g. Holiday specific timings or seasonal changes..." />
+    </div> -->
+
+    <button type="button" class="add-slot-btn" (click)="addTimeSlot()">
+      <span class="plus-icon">+</span> Add another time slot
+    </button>
+
+  </div>
+</div>
+
+   <div class="accordion-item" [class.expanded]="activeSection === 'config'">
+  <button type="button" class="accordion-trigger" (click)="toggleSection('config')">
+    <span class="title-area">
+      <span class="icon-badge"><img src="assets/icons/settings.svg" /></span>
+      <h3>Store Configuration</h3>
+    </span>
+    <span class="arrow" [class.rotated]="activeSection === 'config'"><span class="material-icons">expand_more</span></span>
+  </button>
+
+  <div class="accordion-content" formGroupName="configuration">
+    
+    <div class="config-switches-grid">
+      <div class="switch-card">
+        <div class="card-info">
+          <h4>Accept Orders</h4>
+          <p>Enable immediate order receiving</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" formControlName="acceptOrders" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="switch-card">
+        <div class="card-info">
+          <h4>Accept Scheduled Orders</h4>
+          <p>Allow pre-orders for later dates</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" formControlName="acceptScheduledOrders" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="switch-card">
+        <div class="card-info">
+          <h4>Enable Drone Delivery</h4>
+          <p>Activate autonomous delivery fleet</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" formControlName="enableDroneDelivery" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <div class="switch-card">
+        <div class="card-info">
+          <h4>Allow Customer Pickup</h4>
+          <p>In-store collection by customers</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" formControlName="allowCustomerPickup" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <label class="section-label">Store Status <span class="error">*</span></label>
+      <div class="status-cards-group">
+        <label class="status-card" [class.selected]="storeForm.get('configuration.storeStatus')?.value === 'open'">
+          <input type="radio" value="open" formControlName="storeStatus" />
+          <span class="radio-indicator"></span>
+          <div class="status-card-text">
+            <h5>Open</h5>
+            <p>Visible and accepting orders</p>
+          </div>
+        </label>
+
+        <label class="status-card" [class.selected]="storeForm.get('configuration.storeStatus')?.value === 'temp_closed'">
+          <input type="radio" value="temp_closed" formControlName="storeStatus" />
+          <span class="radio-indicator"></span>
+          <div class="status-card-text">
+            <h5>Temporarily Closed</h5>
+            <p>Shown as inactive for now</p>
+          </div>
+        </label>
+
+        <label class="status-card" [class.selected]="storeForm.get('configuration.storeStatus')?.value === 'closed'">
+          <input type="radio" value="closed" formControlName="storeStatus" />
+          <span class="radio-indicator"></span>
+          <div class="status-card-text">
+            <h5>Closed</h5>
+            <p>Store is permanently shut</p>
+          </div>
+        </label>
+      </div>
+      <div class="error-text" *ngIf="showControlError('configuration.storeStatus')">{{ errorMessage('configuration.storeStatus') }}</div>
+    </div>
+
+    <div class="form-group">
+      <label>Drone Pickup Point Name <span class="error">*</span></label>
+      <input type="text" formControlName="dronePickupName" placeholder="e.g. North Pad A" />
+      <div class="error-text" *ngIf="showControlError('configuration.dronePickupName')">{{ errorMessage('configuration.dronePickupName') }}</div>
+    </div>
+
+    <div class="form-group">
+      <label>Pickup Instructions <span class="error">*</span></label>
+      <textarea formControlName="pickupInstructions" rows="3" placeholder="Detail any specific instructions for customers or delivery drivers..."></textarea>
+      <div class="error-text" *ngIf="showControlError('configuration.pickupInstructions')">{{ errorMessage('configuration.pickupInstructions') }}</div>
+    </div>
+
+  </div>
+</div>
+
+    <div class="action-row">
+      <button type="submit" class="btn-primary" [disabled]="storeForm.invalid">
+        Save Configurations
+      </button>
+    </div>
+
+  </form>
+</div>
+
+
+
+<div class="review-modal-backdrop" *ngIf="showReviewModal">
+  <div class="review-modal-content">
+    
+    <div class="review-header">
+      <h2>Review Store Information</h2>
+      <p>Please verify all details before creating your store.</p>
+    </div>
+
+    <div class="review-cards-list">
+      
+      <div class="review-panel">
+        <div class="panel-header">
+          <h3>BASIC INFORMATION</h3>
+          <button type="button" class="edit-btn" (click)="editSection('basic')">✎</button>
+        </div>
+        <div class="panel-body">
+          <div class="review-grid">
+            <div>
+              <span class="review-label">Store Name</span>
+              <div class="review-val font-semibold">{{ storeForm.get('basicInfo.storeName')?.value }}</div>
+            </div>
+            <div>
+              <span class="review-label">Store Type</span>
+              <div class="review-val font-semibold">{{ storeForm.get('basicInfo.storeType')?.value }}</div>
+            </div>
+          </div>
+          <div class="review-full-width">
+            <span class="review-label">Description</span>
+            <div class="review-val description-text">{{ storeForm.get('basicInfo.description')?.value || '—' }}</div>
+          </div>
+          <div class="review-media-grid">
+            <div>
+              <span class="review-label">Store Logo</span>
+              <div class="logo-box">
+                <img *ngIf="logoPreviewUrl" [src]="logoPreviewUrl" alt="Store Logo" />
+                <div *ngIf="!logoPreviewUrl" class="fallback-placeholder">Logo</div>
+              </div>
+            </div>
+            <div>
+              <span class="review-label">Banner Preview</span>
+              <div class="banner-box">
+                <img *ngIf="bannerPreviewUrl" [src]="bannerPreviewUrl" alt="Banner Preview" />
+                <div *ngIf="!bannerPreviewUrl" class="fallback-placeholder">Banner Image Preview</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-panel">
+        <div class="panel-header">
+          <h3>CONTACT INFORMATION</h3>
+          <button type="button" class="edit-btn" (click)="editSection('contact')">✎</button>
+        </div>
+        <div class="panel-body">
+          <div class="review-grid">
+            <div>
+              <span class="review-label">Manager Name</span>
+              <div class="review-val font-semibold">{{ storeForm.get('contactInfo.managerName')?.value }}</div>
+            </div>
+            <div>
+              <span class="review-label">Phone Number</span>
+              <div class="review-val">{{ storeForm.get('contactInfo.contactPhone')?.value }}</div>
+            </div>
+            <div>
+              <span class="review-label">Email Address</span>
+              <div class="review-val">{{ storeForm.get('contactInfo.email')?.value }}</div>
+            </div>
+            <div>
+              <span class="review-label">Support Number</span>
+              <div class="review-val">{{ storeForm.get('contactInfo.supportPhone')?.value || '—' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-panel">
+        <div class="panel-header">
+          <h3>STORE LOCATION</h3>
+          <button type="button" class="edit-btn" (click)="editSection('location')">✎</button>
+        </div>
+        <div class="panel-body flex-row">
+          <div class="location-details">
+            <div>
+              <span class="review-label">Street Address</span>
+              <div class="review-val font-semibold">{{ storeForm.get('location.address')?.value }}</div>
+            </div>
+            <div class="review-grid mini">
+              <div>
+                <span class="review-label">City</span>
+                <div class="review-val">{{ storeForm.get('location.city')?.value }}</div>
+              </div>
+              <div>
+                <span class="review-label">Pincode</span>
+                <div class="review-val">{{ storeForm.get('location.zipCode')?.value }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="map-preview">
+            <div class="map-placeholder">
+              <span class="map-pin-icon">📍</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-panel">
+        <div class="panel-header">
+          <h3>OPERATING HOURS</h3>
+          <button type="button" class="edit-btn" (click)="editSection('hours')">✎</button>
+        </div>
+        <div class="panel-body">
+          <div class="review-grid">
+            <div>
+              <span class="review-label">Working Days</span>
+              <div class="review-val font-semibold">{{ getFormattedWorkingDays() }}</div>
+            </div>
+            <div>
+              <span class="review-label">Store Timings</span>
+              <div class="review-val font-semibold" *ngIf="timeSlots.controls.length > 0">
+                {{ timeSlots.at(0).get('openTime')?.value }} — {{ timeSlots.at(0).get('closeTime')?.value }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <form [formGroup]="storeForm" class="review-footer-action">
+      <label class="declaration-checkbox" formGroupName="configuration">
+        <input type="checkbox" formControlName="confirmDeclaration" />
+        <span class="desc">
+          I confirm that all store information provided above is accurate and compliant with the merchant service agreement.
+        </span>
+      </label>
+
+      <div class="review-buttons-row">
+        <button type="button" class="btn-cancel" (click)="showReviewModal = false">Cancel</button>
+        <button type="button" class="btn-back" (click)="showReviewModal = false">Back</button>
+        <button type="button" class="btn-submit" [disabled]="!storeForm.get('configuration.confirmDeclaration')?.value" (click)="onFinalSubmit()">
+          Create Store
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+
+<!-- ---- success modal --- -->
+
+<div class="review-modal-backdrop" *ngIf="showSuccessModal">
+  <div class="success-modal-content">
+    
+    <div class="success-illustration-wrapper">
+      <div class="store-icon-box">
+        🏪
+        <span class="success-check-badge">✓</span>
+      </div>
+    </div>
+
+    <div class="success-body">
+      <h2>✓ Store Created Successfully</h2>
+      <p class="success-subtitle">Your new store is ready. You can now start managing your inventory and orders.</p>
+    </div>
+
+    <div class="success-actions-row">
+      <button type="button" class="btn-go-store" (click)="goToStore()">Go To Store</button>
+      <button type="button" class="btn-store-list" (click)="backToStoreList()">Back To Store List</button>
+    </div>
+
+    <hr class="success-divider" />
+
+    <div class="success-badges-footer">
+      <span>🛡️ Merchant Verified</span>
+      <span>⚡ Instant Setup</span>
+    </div>
+
+    <p class="hint">
+     <span class="material-icons info-tip">info_outline</span> Pro Tip: Connect your banking information in the "Bank Details" section to enable
+seamless payouts from your new store sales.
+    </p>
+
+  </div>
+</div>
