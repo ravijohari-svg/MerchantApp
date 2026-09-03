@@ -47,7 +47,7 @@ export class StoreManagement implements OnInit {
       const token = localStorage.getItem('token');
       if (token) {
         const parsedToken = JSON.parse(token);
-        merchantId = parsedToken?.merchantBrand?.merchantId || parsedToken.merchantId || parsedToken.MerchantId || parsedToken.id || 'MB00013';
+        merchantId = parsedToken?.merchantBrand?.MerchantId || parsedToken.merchantId || parsedToken.MerchantId || parsedToken.id || 'MB00013';
       }
     } catch (e) {
       console.warn('Could not parse token from localStorage');
