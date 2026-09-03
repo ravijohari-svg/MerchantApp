@@ -1,5 +1,5 @@
 <div class="order-detail-viewframe">
-  
+
   <div class="header-navigation-row">
     <div class="left-header">
       <button class="back-circle-btn">
@@ -20,9 +20,9 @@
   </div>
 
   <div class="dashboard-content-grid">
-    
+
     <div class="primary-column-span">
-      
+
       <div class="dashboard-info-card">
         <div class="card-title-row">
           <mat-icon class="icon-accent">restaurant</mat-icon>
@@ -34,10 +34,11 @@
               <img [src]="item.image" alt="Product Frame" class="product-thumb">
               <div class="product-description">
                 <h3>{{ item.name }}</h3>
-                <p>Qty: {{ item.qty }}<span *ngIf="item.notes"> • {{ item.notes }}</span><span *ngIf="!item.notes && item.sku"> • SKU: {{ item.sku }}</span></p>
+                <p>Qty: {{ item.qty }}<span *ngIf="item.notes"> • {{ item.notes }}</span><span
+                    *ngIf="!item.notes && item.sku"> • SKU: {{ item.sku }}</span></p>
               </div>
             </div>
-            <span class="item-price-tag">${{ item.price.toFixed(2) }}</span>
+            <span class="item-price-tag">{{ item.price.toFixed(2) }}</span>
           </div>
         </div>
       </div>
@@ -72,7 +73,7 @@
     </div>
 
     <div class="secondary-column-span">
-      
+
       <!-- Customer Information Card -->
       <div class="dashboard-info-card">
         <div class="card-title-row">
@@ -83,7 +84,7 @@
           <img [src]="customer.avatar" alt="Avatar User" class="customer-avatar-img">
           <h3>{{ customer.name }}</h3>
           <p class="member-badge">{{ customer.tier }}</p>
-          
+
           <div class="customer-contact-channels">
             <div class="contact-line">
               <mat-icon>phone</mat-icon>
@@ -105,19 +106,19 @@
         <div class="billing-ledger-table">
           <div class="ledger-row">
             <span class="label text-muted">Subtotal</span>
-            <span class="val">${{ summary.subtotal.toFixed(2) }}</span>
+            <span class="val">{{ summary.subtotal.toFixed(2) }}</span>
           </div>
           <div class="ledger-row">
-            <span class="label text-muted">Tax (8.875%)</span>
-            <span class="val">${{ summary.tax.toFixed(2) }}</span>
+            <span class="label text-muted">Tax </span>
+            <span class="val">{{ summary.tax.toFixed(2) }}</span>
           </div>
           <div class="ledger-row">
             <span class="label text-muted">Delivery Fee</span>
-            <span class="val">${{ summary.deliveryFee.toFixed(2) }}</span>
+            <span class="val">{{ summary.deliveryFee.toFixed(2) }}</span>
           </div>
           <div class="ledger-row total-row">
             <span class="total-lbl">Total Amount</span>
-            <span class="total-val">${{ summary.total.toFixed(2) }}</span>
+            <span class="total-val">{{ summary.total.toFixed(2) }}</span>
           </div>
           <div class="payment-method-badge-row">
             <mat-icon>credit_card</mat-icon>
@@ -133,7 +134,7 @@
   </div>
 
   <div class="sticky-action-bar-workspace">
-    
+
     <div *ngIf="currentStatus === 'PENDING_ACCEPTANCE'" class="action-flex-row">
       <p class="helper-text">Review items carefully before accepting to ensure availability.</p>
       <div class="btn-cluster">
@@ -146,7 +147,8 @@
       <div class="time-selection-tool">
         <span class="label-text">Preparation Time</span>
         <div class="radio-tab-container">
-          <button *ngFor="let opt of timeOptions" [class.active]="selectedTimeOption === opt" (click)="selectedTimeOption = opt">
+          <button *ngFor="let opt of timeOptions" [class.active]="selectedTimeOption === opt"
+            (click)="selectedTimeOption = opt">
             {{ opt }}
           </button>
         </div>
@@ -169,14 +171,18 @@
         </div>
         <div class="block-divider"></div>
         <div class="workflow-checklist">
-          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.preparing"><span class="circle-box"></span> Preparing</label>
-          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.packing"><span class="circle-box"></span> Packing</label>
-          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.qualityCheck"><span class="circle-box"></span> Quality Check</label>
+          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.preparing"><span
+              class="circle-box"></span> Preparing</label>
+          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.packing"><span
+              class="circle-box"></span> Packing</label>
+          <label class="custom-check"><input type="checkbox" [(ngModel)]="tasks.qualityCheck"><span
+              class="circle-box"></span> Quality Check</label>
         </div>
       </div>
       <div class="btn-cluster">
         <button class="action-btn btn-outline" (click)="triggerUpdateTime()">Update Time</button>
-        <button class="action-btn btn-primary" [disabled]="isReadyForPickupDisabled" (click)="openReadyModal()">Ready for Pickup</button>
+        <button class="action-btn btn-primary" [disabled]="isReadyForPickupDisabled" (click)="openReadyModal()">Ready
+          for Pickup</button>
       </div>
     </div>
 
@@ -207,9 +213,11 @@
     <p class="modal-info-text">This order has been packed and is ready for pickup.</p>
     <div class="order-receipt-summary-box">
       <div class="receipt-cell"><span class="lbl">ORDER ID</span><span class="val bold">#ORD-98231</span></div>
-      <div class="receipt-cell text-right"><span class="lbl">CUSTOMER</span><span class="val bold">Sarah Jenkins</span></div>
+      <div class="receipt-cell text-right"><span class="lbl">CUSTOMER</span><span class="val bold">Sarah Jenkins</span>
+      </div>
       <div class="receipt-cell mt-12"><span class="lbl">TOTAL ITEMS</span><span class="val">1 Item</span></div>
-      <div class="receipt-cell text-right mt-12"><span class="lbl">PREPARATION TIME</span><span class="val icon-flex"><mat-icon>schedule</mat-icon> 18 mins</span></div>
+      <div class="receipt-cell text-right mt-12"><span class="lbl">PREPARATION TIME</span><span
+          class="val icon-flex"><mat-icon>schedule</mat-icon> 18 mins</span></div>
     </div>
     <div class="modal-actions-row">
       <button class="modal-btn-back" (click)="closeReadyModal()">Back</button>
