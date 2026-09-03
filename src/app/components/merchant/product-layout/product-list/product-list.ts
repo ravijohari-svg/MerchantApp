@@ -21,13 +21,13 @@ interface Product {
 
 @Component({
   selector: 'app-product-list',
-   imports: [CommonModule, MatTableModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule],
+  imports: [CommonModule, MatTableModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
 })
 export class ProductList implements OnInit {
-  
-  
+
+
   stats = [
     { label: 'Total Products', value: 248, icon: 'inventory_2', color: 'blue' },
     { label: 'Active Listings', value: 231, icon: 'check_circle', color: 'green' },
@@ -35,10 +35,10 @@ export class ProductList implements OnInit {
     { label: 'Out of Stock', value: 10, icon: 'cancel', color: 'red' }
   ];
 
-  
+
   displayedColumns: string[] = ['product', 'sku', 'category', 'price', 'stock', 'status', 'actions'];
 
-  
+
   dataSource: Product[] = [];
   isLoading = true;
 
@@ -49,13 +49,15 @@ export class ProductList implements OnInit {
   }
 
   fetchProducts(): void {
-    let merchantId = 'MB00013';
-    const token = localStorage.getItem('userData');
-    if (token) {
-      try {
+    let merchantId = '';
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
         const parsed = JSON.parse(token);
-        merchantId = parsed?.merchantBrand?.MerchantId || parsed.merchantId || parsed.MerchantId || parsed.id || merchantId;
-      } catch(e) {}
+        merchantId = parsed?.merchantBrand?.MerchantId || parsed.merchantId || parsed.MerchantId || parsed.id || '';
+      }
+    } catch (e) {
+      console.warn('Could not parse token from localStorage');
     }
 
     this.isLoading = true;
@@ -100,12 +102,12 @@ export class ProductList implements OnInit {
     ];
   }
 
-  
+
   onEdit(product: Product) { console.log('Edit product', product); }
   onView(product: Product) { console.log('View product', product); }
   onDelete(product: Product) { console.log('Delete product', product); }
 
   goToAddProduct(): void {
-  this.router.navigate(['/merchant/products/add-product']);
-}
+    this.router.navigate(['/merchant/products/add-product']);
+  }
 }

@@ -42,12 +42,12 @@ export class StoreManagement implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
-    let merchantId = 'MB00013'; // Fallback
+    let merchantId = ''; // Fallback
     try {
       const token = localStorage.getItem('token');
       if (token) {
         const parsedToken = JSON.parse(token);
-        merchantId = parsedToken?.merchantBrand?.merchantId || parsedToken.merchantId || parsedToken.MerchantId || parsedToken.id || 'MB00013';
+        merchantId = parsedToken?.merchantBrand?.MerchantId || parsedToken.merchantId || parsedToken.MerchantId || parsedToken.id || '';
       }
     } catch (e) {
       console.warn('Could not parse token from localStorage');
@@ -86,9 +86,9 @@ export class StoreManagement implements OnInit {
               closingTime: store.OperatingHours?.ClosingTime || '--:--',
               logo: store.BasicInfo?.StoreLogo || null,
               address: [
-                  store.Address?.AddressLine1,
-                  store.Address?.City,
-                  store.Address?.State
+                store.Address?.AddressLine1,
+                store.Address?.City,
+                store.Address?.State
               ].filter(Boolean).join(', ') || 'N/A'
             };
           });
