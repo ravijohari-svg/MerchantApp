@@ -28,13 +28,7 @@
         <mat-icon>search</mat-icon>
         <input type="text" placeholder="Search by name, SKU, category...">
       </div>
-      <div class="toolbar-right">
-        <div class="dropdown-placeholder"></div>
-        <!-- <div class="view-toggle">
-          <button class="icon-toggle active"><mat-icon>list</mat-icon></button>
-          <button class="icon-toggle"><mat-icon>grid_view</mat-icon></button>
-        </div> -->
-      </div>
+
     </div>
 
     <div class="loader-container" *ngIf="isLoading">
@@ -48,7 +42,8 @@
         <th mat-header-cell *matHeaderCellDef> PRODUCT </th>
         <td mat-cell *matCellDef="let element">
           <div class="product-cell">
-            <img *ngIf="element.image.startsWith('http')" [src]="element.image" alt="Product Image" class="product-image" />
+            <img *ngIf="element.image.startsWith('http')" [src]="element.image" alt="Product Image"
+              class="product-image" />
             <span *ngIf="!element.image.startsWith('http')" class="product-emoji">{{element.image}}</span>
             <div class="product-details">
               <span class="product-name">{{element.name}}</span>
@@ -65,24 +60,25 @@
 
       <ng-container matColumnDef="category">
         <th mat-header-cell *matHeaderCellDef> CATEGORY </th>
-        <td mat-cell *matCellDef="let element"> 
+        <td mat-cell *matCellDef="let element">
           <span class="category-badge {{element.category.toLowerCase()}}">
-            {{element.category}} 
+            {{element.category}}
           </span>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="price">
         <th mat-header-cell *matHeaderCellDef> PRICE </th>
-        <td mat-cell *matCellDef="let element" class="price-text"> 
-          ₹{{element.price | number:'1.0-2'}} 
+        <td mat-cell *matCellDef="let element" class="price-text">
+          ₹{{element.price | number:'1.0-2'}}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="stock">
         <th mat-header-cell *matHeaderCellDef> STOCK </th>
-        <td mat-cell *matCellDef="let element"> 
-          <div class="stock-cell" [ngClass]="{'low-stock': element.stock > 0 && element.stock < 15, 'out-of-stock': element.stock === 0, 'in-stock': element.stock >= 15}">
+        <td mat-cell *matCellDef="let element">
+          <div class="stock-cell"
+            [ngClass]="{'low-stock': element.stock > 0 && element.stock < 15, 'out-of-stock': element.stock === 0, 'in-stock': element.stock >= 15}">
             <span>{{element.stock}}</span>
             <mat-icon *ngIf="element.stock > 0 && element.stock < 15" class="warning-icon">warning</mat-icon>
             <mat-icon *ngIf="element.stock === 0" class="error-icon">cancel</mat-icon>
@@ -92,9 +88,9 @@
 
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef> STATUS </th>
-        <td mat-cell *matCellDef="let element"> 
+        <td mat-cell *matCellDef="let element">
           <span class="status-text" [ngClass]="element.status.toLowerCase()">
-            {{element.status}} 
+            {{element.status}}
           </span>
         </td>
       </ng-container>

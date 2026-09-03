@@ -16,6 +16,7 @@ export class Login implements OnDestroy {
   password = '';
   showPassword = false;
   loginError: string | null = null;
+  isSubmitting = false;
 
   mobile = '';
   mobileOtpVisible = false;
@@ -45,6 +46,7 @@ export class Login implements OnDestroy {
   }
 
   get primaryLabel() {
+    if (this.isSubmitting) return 'Processing...';
     if (this.mode === 'email') return 'Sign In';
     if (this.mode === 'mobile') return this.mobileOtpVisible ? 'Verify & Sign In' : 'Send OTP';
     if (!this.otpRequested) return 'Send OTP';
@@ -52,6 +54,7 @@ export class Login implements OnDestroy {
   }
 
   get primaryDisabled() {
+    if (this.isSubmitting) return true;
     if (this.mode === 'email') {
       return !this.email || !this.password;
     }
@@ -246,6 +249,7 @@ export class Login implements OnDestroy {
   }
 
   private signInWithEmail() {
+    this.isSubmitting = true;
     const payload = {
       Email: this.email,
       Password: this.password,
@@ -254,6 +258,7 @@ export class Login implements OnDestroy {
     this.loginError = null;
     this.authApiService.login(payload).subscribe({
       next: (res: any) => {
+        this.isSubmitting = false;
         // If the API returns 200 OK but includes the error object in the response body
         if (res && res.error && res.error.message) {
           this.loginError = res.error.message;
@@ -267,6 +272,7 @@ export class Login implements OnDestroy {
         this.router.navigate(['/merchant']);
       },
       error: (err: any) => {
+        this.isSubmitting = false;
         // alert("API Error details: " + JSON.stringify(err));
         console.error('Login failed:', err);
         // Handle HttpErrorResponse and custom error formats

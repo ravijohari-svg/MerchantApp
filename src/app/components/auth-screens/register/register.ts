@@ -40,7 +40,7 @@ export class Register {
 
   @ViewChild('stepper') stepper!: MatStepper;
 
-  isLinear = false;
+  isLinear = true;
   isUploadingLogo = false;
   errorMessage = '';
   isSubmitting = false;
