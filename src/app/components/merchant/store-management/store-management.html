@@ -56,6 +56,14 @@
 
     <!-- cards -->
 
+    @if (isLoading) {
+        <div class="loader-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Loading stores...</p>
+        </div>
+    }
+
+    @if (!isLoading) {
     <div class="card-grid">
 
         @for(store of stores; track store){
@@ -67,9 +75,11 @@
                 <div class="store">
 
                     <span class="icon">
-
-                        {{store.icon}}
-
+                        @if (store.logo) {
+                            <img [src]="store.logo" alt="Store Logo" class="store-logo" />
+                        } @else {
+                            {{store.icon}}
+                        }
                     </span>
 
                     <div>
@@ -90,6 +100,25 @@
 
                 </span>
 
+            </div>
+
+            <div class="store-details">
+                <div class="detail-item">
+                    <span class="label">Manager</span>
+                    <span class="value"><i class="pi pi-user"></i> {{store.managerName}}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Contact</span>
+                    <span class="value"><i class="pi pi-phone"></i> {{store.contactNumber}}</span>
+                </div>
+                <div class="detail-item full-width">
+                    <span class="label">Operating Hours</span>
+                    <span class="value"><i class="pi pi-clock"></i> {{store.openingTime}} - {{store.closingTime}}</span>
+                </div>
+                <div class="detail-item full-width">
+                    <span class="label">Address</span>
+                    <span class="value address-text"><i class="pi pi-map-marker"></i> {{store.address}}</span>
+                </div>
             </div>
 
             <div class="stats">
@@ -124,27 +153,7 @@
 
             </div>
 
-            <div class="team-title">
-
-                Assigned Team
-
-            </div>
-
-            <div class="team">
-
-                @for(member of store.team; track member){
-
-                <span>
-
-                    {{member}}
-
-                </span>
-
-                }
-
-                <small>+0 more</small>
-
-            </div>
+            <!-- Removed Team display entirely since we are showing manager in details -->
 
             <div class="actions">
 
@@ -167,5 +176,6 @@
         }
 
     </div>
+    }
 
 </div>

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthApiService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
@@ -13,6 +14,8 @@ export class Login implements OnDestroy {
   mode: 'email' | 'mobile' | 'forgot' = 'email';
   email = '';
   password = '';
+  showPassword = false;
+  loginError: string | null = null;
 
   mobile = '';
   mobileOtpVisible = false;
@@ -27,10 +30,11 @@ export class Login implements OnDestroy {
   resendSeconds = 0;
   private _resendTimer: any = null;
 
-  constructor(private authApiService: AuthApiService, private router: Router) {}
+  constructor(private authApiService: AuthApiService, private router: Router, private cdr: ChangeDetectorRef) { }
 
   setMode(mode: 'email' | 'mobile' | 'forgot') {
     this.mode = mode;
+    this.loginError = null;
     if (mode !== 'forgot') {
       this.resetForgotState();
     }
@@ -103,9 +107,14 @@ export class Login implements OnDestroy {
     this.resetPassword();
   }
 
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
   openForgotPassword() {
     this.mode = 'forgot';
     this.resetForgotState();
+    this.loginError = null;
   }
 
   openMobileLogin() {
@@ -242,13 +251,35 @@ export class Login implements OnDestroy {
       Password: this.password,
     };
 
+    this.loginError = null;
     this.authApiService.login(payload).subscribe({
       next: (res: any) => {
-        localStorage.setItem('token', res);
+        // If the API returns 200 OK but includes the error object in the response body
+        if (res && res.error && res.error.message) {
+          this.loginError = res.error.message;
+          this.cdr.detectChanges();
+          return;
+        }
+
+        const tokenData = res?.data || res;
+        const tokenString = typeof tokenData === 'object' ? JSON.stringify(tokenData) : tokenData;
+        localStorage.setItem('token', tokenString);
         this.router.navigate(['/merchant']);
       },
       error: (err: any) => {
+        // alert("API Error details: " + JSON.stringify(err));
         console.error('Login failed:', err);
+        // Handle HttpErrorResponse and custom error formats
+        if (err?.error?.error?.message) {
+          this.loginError = err.error.error.message;
+        } else if (err?.error?.message) {
+          this.loginError = err.error.message;
+        } else if (err?.message) {
+          this.loginError = err.message;
+        } else {
+          this.loginError = 'Login failed. Please try again.';
+        }
+        this.cdr.detectChanges();
       },
     });
   }

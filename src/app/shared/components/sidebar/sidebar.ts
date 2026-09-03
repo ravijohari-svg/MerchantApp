@@ -1,4 +1,4 @@
-import { Component, inject, HostBinding } from '@angular/core';
+import { Component, inject, HostBinding, OnInit } from '@angular/core';
 import { LayoutService } from '../../../services/layout.service';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -10,7 +10,7 @@ import { filter } from 'rxjs/operators';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
-export class Sidebar {
+export class Sidebar implements OnInit {
   protected readonly layoutService = inject(LayoutService);
 
   @HostBinding('class.open')
@@ -19,6 +19,19 @@ export class Sidebar {
   }
 
   activeItem = 'Dashboard';
+  brandName = '';
+
+  ngOnInit(): void {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const parsedToken = JSON.parse(token);
+        this.brandName = parsedToken?.merchantBrand?.BrandName || parsedToken?.merchant?.BrandName || parsedToken?.BrandName || '';
+      }
+    } catch (e) {
+      console.warn('Could not parse token from localStorage in sidebar');
+    }
+  }
 
   menuItems = [
     { name: 'Dashboard', icon: 'pi pi-th-large', route: '/merchant/dashboard' },

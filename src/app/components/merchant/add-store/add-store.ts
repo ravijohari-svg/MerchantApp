@@ -1,7 +1,9 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Router } from '@angular/router';
 import * as L from 'leaflet';
+import { MerchantService } from '../../../services/merchant.service';
 
 @Component({
   selector: 'app-add-store',
@@ -23,7 +25,7 @@ export class AddStore implements OnInit, AfterViewInit, OnDestroy {
   bannerPreviewUrl: string = '';
   showReviewModal: boolean = false;
 
-  bannerFiles: File[] = [];
+  bannerUrls: string[] = [];
   bannerPreviews: string[] = [];
   showSuccessModal: boolean = false;
   locationSuggestions: Array<{ display_name: string; lat: string; lon: string; address?: string }> = [];
@@ -32,7 +34,7 @@ export class AddStore implements OnInit, AfterViewInit, OnDestroy {
   searchLocationAbortController: AbortController | null = null;
   searchLocationDebounceMs = 400;
 
-  constructor(private fb: FormBuilder , private cdr: ChangeDetectorRef) {}
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private merchantService: MerchantService, private router: Router) { }
 
   requireAtLeastOneImage = (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
@@ -79,11 +81,11 @@ export class AddStore implements OnInit, AfterViewInit, OnDestroy {
       operatingHours: this.fb.group({
         days: this.fb.group(daysConfig),
         // Switch standard controls to an Angular FormArray
-        timeSlots: this.fb.array([this.createTimeSlot('09:00 AM', '09:00 PM')]),
+        timeSlots: this.fb.array([this.createTimeSlot('09:00', '21:00')]),
         holidayMode: [false],
         specialHours: ['']
       }),
-     configuration: this.fb.group({
+      configuration: this.fb.group({
         acceptOrders: [true],
         acceptScheduledOrders: [true],
         enableDroneDelivery: [false],
@@ -209,7 +211,7 @@ export class AddStore implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
- // Submit main form triggers the Popup overlay
+  // Submit main form triggers the Popup overlay
   onSubmitForm(): void {
     const sectionsToValidate = ['basicInfo', 'contactInfo', 'location', 'operatingHours'];
     let isValid = true;
@@ -503,12 +505,12 @@ export class AddStore implements OnInit, AfterViewInit, OnDestroy {
   }
 
   addTimeSlot(): void {
-  // Logic to dynamically push additional time setups if required
-  this.timeSlots.push(this.createTimeSlot());
-  console.log('Add additional time slots clicked');
-}
+    // Logic to dynamically push additional time setups if required
+    this.timeSlots.push(this.createTimeSlot());
+    console.log('Add additional time slots clicked');
+  }
 
-removeTimeSlot(index: number): void {
+  removeTimeSlot(index: number): void {
     if (this.timeSlots.length > 1) {
       this.timeSlots.removeAt(index);
     }
@@ -518,11 +520,11 @@ removeTimeSlot(index: number): void {
   getFormattedWorkingDays(): string {
     const daysGroup = this.storeForm.get('operatingHours.days')?.value;
     if (!daysGroup) return 'None';
-    
+
     const selectedDays = this.weekDays.filter(day => daysGroup[day.toLowerCase()]);
     if (selectedDays.length === 0) return 'None';
     if (selectedDays.length === 7) return 'Everyday';
-    
+
     return selectedDays.join(', ');
   }
 
@@ -539,48 +541,191 @@ removeTimeSlot(index: number): void {
 
     if (this.storeForm.valid && declarationAccepted) {
       console.log('Final Payload Created:', this.storeForm.value);
-      this.showReviewModal = false;
-      this.showSuccessModal = true;
-      this.cdr.detectChanges();
+
+      const formValue = this.storeForm.value;
+      const basicInfo = formValue.basicInfo || {};
+      const contactInfo = formValue.contactInfo || {};
+      const location = formValue.location || {};
+      const operatingHours = formValue.operatingHours || {};
+      const configuration = formValue.configuration || {};
+
+      const days = operatingHours.days || {};
+      const workingDays: string[] = [];
+      Object.keys(days).forEach(day => {
+        if (days[day]) {
+          workingDays.push(day.toUpperCase().substring(0, 3));
+        }
+      });
+
+      const formatTime = (timeStr: string) => {
+        if (!timeStr) return '';
+        if (timeStr.includes('AM') || timeStr.includes('PM')) {
+          const [time, modifier] = timeStr.split(' ');
+          let [hours, minutes] = time.split(':');
+          if (hours === '12') hours = '00';
+          if (modifier === 'PM') hours = String(parseInt(hours, 10) + 12);
+          return `${hours.padStart(2, '0')}:${minutes}`;
+        }
+        return timeStr.substring(0, 5); // Ensure HH:mm
+      };
+
+      const timeSlots = operatingHours.timeSlots || [];
+      const openingTime = timeSlots.length > 0 ? formatTime(timeSlots[0].openTime) : '09:00';
+      const closingTime = timeSlots.length > 0 ? formatTime(timeSlots[0].closeTime) : '21:00';
+
+      let merchantId = "MB00010";
+      let createdBy = "USER#OWNER001";
+      try {
+        const tokenStr = localStorage.getItem('token');
+        if (tokenStr) {
+          const tokenData = JSON.parse(tokenStr);
+          if (tokenData.merchantBrand?.MerchantId) {
+            merchantId = tokenData.merchantBrand.MerchantId;
+          }
+          if (tokenData.merchant?.Email) {
+            createdBy = tokenData.merchant.Email;
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing token from local storage', e);
+      }
+
+      const payload = {
+        "MerchantId": merchantId,
+        "CreatedBy": createdBy,
+        "Role": "OWNER",
+        "StoreName": basicInfo.storeName || "",
+        // "StoreCode": "SEC57",
+        "StoreType": basicInfo.storeType || "",
+        "BasicInfo": {
+          "Description": basicInfo.description || "",
+          "StoreLogo": typeof basicInfo.storeLogo === 'string' && basicInfo.storeLogo ? basicInfo.storeLogo : "",
+          "StoreBanner": Array.isArray(basicInfo.storeBanners) && basicInfo.storeBanners.length > 0 ? basicInfo.storeBanners : []
+        },
+        "ContactInfo": {
+          "PrimaryManagerUserId": "",
+          "PrimaryManagerName": contactInfo.managerName || "",
+          "StoreContactNumber": contactInfo.contactPhone || "",
+          "CustomerSupportNumber": contactInfo.supportPhone || "",
+          "EmergencyNumber": contactInfo.emergencyContact || "",
+          "Email": contactInfo.email || ""
+        },
+        "Address": {
+          "AddressLine1": location.address || "",
+          "AddressLine2": "",
+          "Landmark": "",
+          "City": location.city || "",
+          "District": location.city || "",
+          "State": location.state || "",
+          "PinCode": location.zipCode || "",
+          "Latitude": parseFloat(location.latitude) || 0,
+          "Longitude": parseFloat(location.longitude) || 0
+        },
+        "OperatingHours": {
+          "WorkingDays": workingDays.length > 0 ? workingDays : ["MON", "TUE", "WED", "THU", "FRI"],
+          "OpeningTime": openingTime,
+          "ClosingTime": closingTime,
+          "HolidayMode": operatingHours.holidayMode || false,
+          "SpecialHours": []
+        },
+        "StoreConfiguration": {
+          "AcceptOrders": configuration.acceptOrders ?? true,
+          "AcceptScheduledOrders": configuration.acceptScheduledOrders ?? true,
+          "EnableDroneDelivery": configuration.enableDroneDelivery ?? false,
+          "AllowCustomerPickup": configuration.allowCustomerPickup ?? true,
+          "PickupInstructions": configuration.pickupInstructions || ""
+        }
+      };
+
+      fetch(`${this.merchantService.baseUrl}/dev/merchant/owner/add-store`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('API Response:', data);
+        if (data.success === false || data.error) {
+          let errMsg = data.message || data.error?.message || 'Failed to add store.';
+          if (data.errors && Array.isArray(data.errors)) {
+            errMsg += '\n' + data.errors.join('\n');
+          }
+          alert(errMsg);
+        } else {
+          this.showReviewModal = false;
+          this.showSuccessModal = true;
+          this.cdr.detectChanges();
+        }
+      })
+      .catch(error => {
+        console.error('Error adding store:', error);
+        alert('Failed to add store. Please try again.');
+      });
     } else if (!declarationAccepted) {
       alert('Please accept the declaration agreement before submitting.');
     } else {
       alert('Please fix the form errors before submitting.');
     }
   }
-  
-  
+
+
   // 3. Add these navigation helper methods for the success modal buttons
-goToStore(): void {
-  this.showSuccessModal = false;
-  // Add your routing logic here, e.g., this.router.navigate(['/store-dashboard']);
-  console.log('Navigating to individual store dashboard...');
-}
+  goToStore(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/merchant/store-management']);
+  }
 
-backToStoreList(): void {
-  this.showSuccessModal = false;
-  // Add your routing logic here, e.g., this.router.navigate(['/stores']);
-  console.log('Navigating back to full store list...');
-}
+  backToStoreList(): void {
+    this.showSuccessModal = false;
+    this.router.navigate(['/merchant/store-management']);
+  }
 
 
 
- // Logo Upload (Single)
- // Logo Upload (Single)
   onLogoChange(event: Event): void {
     const element = event.target as HTMLInputElement;
     const file = element.files?.[0] || null;
 
     if (file) {
-      this.storeForm.get('basicInfo.storeLogo')?.setValue(file);
-
       const reader = new FileReader();
       reader.onload = () => {
         // Set the preview URL string
         this.logoPreviewUrl = reader.result as string;
-        
-        // Force an immediate DOM check to ensure the image appears instantly
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
+
+        const base64String = (reader.result as string).split(',')[1];
+        const payload = {
+          base64: base64String,
+          fileName: file.name,
+          contentType: file.type,
+          folder: 'store-logos'
+        };
+
+        fetch(`${this.merchantService.baseUrl}/dev/merchant/upload-files`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(response => response.json())
+          .then(res => {
+            let uploadedUrl = res?.data?.url || res?.url;
+            if (!uploadedUrl && typeof res?.data === 'string') {
+              uploadedUrl = res.data;
+            }
+            if (uploadedUrl) {
+              this.storeForm.get('basicInfo.storeLogo')?.setValue(uploadedUrl);
+              this.cdr.detectChanges();
+            } else {
+              console.error('Logo upload failed:', res);
+              alert('Failed to get logo URL.');
+            }
+          })
+          .catch(err => {
+            console.error('Logo upload error', err);
+            alert('Logo upload failed.');
+          });
       };
       reader.readAsDataURL(file);
 
@@ -591,21 +736,49 @@ backToStoreList(): void {
 
 
   // Banner Upload (Multiple - One by One)
- onBannerUpload(event: Event): void {
+  onBannerUpload(event: Event): void {
     const element = event.target as HTMLInputElement;
     const file = element.files?.[0] || null;
 
     if (file) {
-      this.bannerFiles = [...this.bannerFiles, file];
-      this.storeForm.get('basicInfo.storeBanners')?.setValue(this.bannerFiles);
-
       const reader = new FileReader();
       reader.onload = () => {
-        // Update array reference
+        // Update array reference for preview
         this.bannerPreviews = [...this.bannerPreviews, reader.result as string];
-        
-        // Force Angular to render the newly added DOM element immediately
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
+
+        const base64String = (reader.result as string).split(',')[1];
+        const payload = {
+          base64: base64String,
+          fileName: file.name,
+          contentType: file.type,
+          folder: 'store-banners'
+        };
+
+        fetch(`${this.merchantService.baseUrl}/dev/merchant/upload-files`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(response => response.json())
+          .then(res => {
+            let uploadedUrl = res?.data?.url || res?.url;
+            if (!uploadedUrl && typeof res?.data === 'string') {
+              uploadedUrl = res.data;
+            }
+            if (uploadedUrl) {
+              this.bannerUrls = [...this.bannerUrls, uploadedUrl];
+              this.storeForm.get('basicInfo.storeBanners')?.setValue(this.bannerUrls);
+              this.cdr.detectChanges();
+            } else {
+              console.error('Banner upload failed:', res);
+              alert('Failed to get banner URL.');
+            }
+          })
+          .catch(err => {
+            console.error('Banner upload error', err);
+            alert('Banner upload failed.');
+          });
       };
       reader.readAsDataURL(file);
 
@@ -613,12 +786,12 @@ backToStoreList(): void {
     }
   }
   // Remove a single uploaded banner
- removeBanner(index: number): void {
-    this.bannerFiles = this.bannerFiles.filter((_, i) => i !== index);
+  removeBanner(index: number): void {
+    this.bannerUrls = this.bannerUrls.filter((_, i) => i !== index);
     this.bannerPreviews = this.bannerPreviews.filter((_, i) => i !== index);
-    this.storeForm.get('basicInfo.storeBanners')?.setValue(this.bannerFiles);
-    
+    this.storeForm.get('basicInfo.storeBanners')?.setValue(this.bannerUrls);
+
     // Force UI to remove the banner from DOM immediately
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
   }
 }

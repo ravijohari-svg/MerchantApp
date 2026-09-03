@@ -1779,6 +1779,9 @@ $text-muted: #64748b;
     }
 
     input[type='text'],
+    input[type='number'],
+    input[type='date'],
+    select,
     textarea {
       width: 100%;
       padding: 10px 14px;

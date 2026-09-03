@@ -232,3 +232,43 @@
     font-size: 24px;
   }
 }
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.password-wrapper input {
+  margin-bottom: 0;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #7a879a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.toggle-password svg {
+  width: 20px;
+  height: 20px;
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #fdecea;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  border: 1px solid #f5c2c7;
+}

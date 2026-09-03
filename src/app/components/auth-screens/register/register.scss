@@ -182,24 +182,28 @@ h2 {
 }
 
 .category-card {
-  height: 90px;
-
+  height: 110px;
   border: 1px solid #e1e7ef;
-
   border-radius: 12px;
-
   display: flex;
-
+  flex-direction: column;
   align-items: center;
-
   justify-content: center;
-
+  gap: 8px;
   cursor: pointer;
-
   transition: 0.3s;
-
   font-weight: 600;
+  font-size: 12px;
   box-shadow: 2px 2px 1px 1px #dedede;
+  text-align: center;
+  padding: 10px;
+}
+
+.category-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .category-card:hover {
@@ -262,8 +266,61 @@ h2 {
   align-items: center;
 
   justify-content: center;
+  flex-direction: column;
 
   cursor: pointer;
+  overflow: hidden;
+  position: relative;
+
+  mat-icon {
+    color: #234a91;
+    margin-bottom: 4px;
+  }
+  
+  span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+  }
+}
+
+.logo-preview {
+  max-height: 90px;
+  max-width: 90%;
+  object-fit: contain;
+}
+
+.delete-logo-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffeded;
+  color: #e53935;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    color: #e53935;
+  }
+
+  &:hover {
+    background: #e53935;
+    color: white;
+
+    mat-icon {
+      color: white;
+    }
+  }
 }
 
 textarea {
@@ -560,6 +617,16 @@ textarea {
   color: #234a91;
 
   flex-shrink: 0;
+
+  &.loading {
+    animation: pulse 1.5s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.95); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .document-content {
@@ -592,6 +659,11 @@ textarea {
   font-size: 12px;
 
   font-weight: 600;
+}
+
+.asterisk {
+  color: #ff4d4f;
+  margin-left: 3px;
 }
 
 .uploaded-file {
@@ -696,14 +768,20 @@ textarea {
 
 .remove-file {
   color: #e53935;
-
   font-size: 13px;
-
   font-weight: 600;
-
   cursor: pointer;
-
   transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
 }
 
 .remove-file:hover {

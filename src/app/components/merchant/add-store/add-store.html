@@ -259,14 +259,14 @@
       >
         <div class="form-group">
           <label *ngIf="i === 0">Opening Time <span class="error">*</span></label>
-          <input type="text" formControlName="openTime" placeholder="09:00 AM" />
+          <input type="time" formControlName="openTime" placeholder="09:00" />
           <div class="error-text" *ngIf="showControlError('operatingHours.timeSlots.' + i + '.openTime')">{{ errorMessage('operatingHours.timeSlots.' + i + '.openTime') }}</div>
         </div>
         
         <div class="form-group relative-position">
           <label *ngIf="i === 0">Closing Time <span class="error">*</span></label>
           <div class="input-with-action">
-            <input type="text" formControlName="closeTime" placeholder="09:00 PM" />
+            <input type="time" formControlName="closeTime" placeholder="21:00" />
             <button 
               type="button" 
               class="remove-slot-btn" 

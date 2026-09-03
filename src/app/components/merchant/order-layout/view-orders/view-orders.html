@@ -34,7 +34,7 @@
               <img [src]="item.image" alt="Product Frame" class="product-thumb">
               <div class="product-description">
                 <h3>{{ item.name }}</h3>
-                <p>Qty: {{ item.qty }} • {{ item.notes }}</p>
+                <p>Qty: {{ item.qty }}<span *ngIf="item.notes"> • {{ item.notes }}</span><span *ngIf="!item.notes && item.sku"> • SKU: {{ item.sku }}</span></p>
               </div>
             </div>
             <span class="item-price-tag">${{ item.price.toFixed(2) }}</span>

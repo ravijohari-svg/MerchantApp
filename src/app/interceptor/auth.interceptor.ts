@@ -29,8 +29,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       switch (error.status) {
 
         case 401:
-          localStorage.clear();
-          router.navigate(['/login']);
+          // localStorage.clear();
+          // router.navigate(['/login']);
           break;
 
         case 403:

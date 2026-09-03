@@ -63,12 +63,22 @@
           </div>
 
           <div class="accordion-body" *ngIf="activeSectionIndex === 0" formGroupName="basicInfo">
-            <!-- Product Name -->
-            <div class="form-group">
-              <label>Product Name <span class="required">*</span></label>
-              <input type="text" formControlName="productName" placeholder="e.g., McSpicy Burger" maxlength="120">
-              <div class="char-counter">
-                {{ productForm.get('basicInfo.productName')?.value?.length || 0 }}/120 characters
+            <!-- Product Name & Store (2 Columns) -->
+            <div class="basic-grid grid-2-col">
+              <div class="form-group">
+                <label>Product Name <span class="required">*</span></label>
+                <input type="text" formControlName="productName" placeholder="e.g., McSpicy Burger" maxlength="120">
+                <div class="char-counter">
+                  {{ productForm.get('basicInfo.productName')?.value?.length || 0 }}/120 characters
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Store <span class="required">*</span></label>
+                <select formControlName="storeId">
+                  <option value="">Select Store</option>
+                  <option *ngFor="let store of stores" [value]="store.id">{{ store.name }} - {{ store.id }}</option>
+                </select>
               </div>
             </div>
 
@@ -89,12 +99,18 @@
             <div class="basic-grid grid-2-col">
               <div class="form-group">
                 <label>Category <span class="required">*</span></label>
-                <input type="text" formControlName="category" placeholder="Select category">
+                <select formControlName="category" (change)="onCategoryChange($event)">
+                  <option value="">Select category</option>
+                  <option *ngFor="let cat of categories" [value]="cat.CategoryId || cat._id || cat.id">{{ cat.CategoryName || cat.name }}</option>
+                </select>
               </div>
 
               <div class="form-group">
                 <label>Sub Category <span class="required">*</span></label>
-                <input type="text" formControlName="subCategory" placeholder="Select sub category">
+                <select formControlName="subCategory">
+                  <option value="">Select sub category</option>
+                  <option *ngFor="let subCat of subCategories" [value]="subCat.SubCategoryId || subCat.CategoryId || subCat._id || subCat.id">{{ subCat.SubCategoryName || subCat.CategoryName || subCat.name }}</option>
+                </select>
               </div>
             </div>
 
@@ -190,8 +206,9 @@
               <div *ngFor="let slot of gallerySlots" class="gallery-slot"
                 [class.selected]="selectedImageSlot === slot.key" [class.has-image]="slot.base64"
                 (click)="selectImageSlot(slot.key)">
-                <img *ngIf="slot.base64" [src]="slot.base64" alt="slot.label">
-                <span *ngIf="!slot.base64">+ {{ slot.label }}</span>
+                <img *ngIf="slot.base64 && !slot.isUploading" [src]="slot.base64" alt="slot.label">
+                <span *ngIf="slot.isUploading" style="color: #234a91; font-weight: 500;">Uploading...</span>
+                <span *ngIf="!slot.base64 && !slot.isUploading">+ {{ slot.label }}</span>
               </div>
             </div>
 
@@ -1137,9 +1154,9 @@
       <div class="preview-card">
         <h4>Product Preview</h4>
 
-        <div class="image-container">
+        <div class="image-container" style="display: flex; align-items: center; justify-content: center;">
           <img *ngIf="activePreviewImage" [src]="activePreviewImage" alt="Preview Image">
-          <span *ngIf="!activePreviewImage" class="placeholder-icon">🍔</span>
+          <mat-icon *ngIf="!activePreviewImage" style="font-size: 48px; width: 48px; height: 48px; color: #cbd5e1;">image</mat-icon>
         </div>
 
         <div class="product-details">
@@ -1209,4 +1226,29 @@
 
     </div>
 
+  </div>
+
+  <!-- Error Modal Backdrop & Card -->
+  <div class="modal-overlay" *ngIf="showErrorModal">
+    <div class="success-modal-card" style="border-top: 4px solid #f44336;">
+      
+      <!-- Error Badge Circle -->
+      <div class="success-icon-badge" style="background: #fdecea; color: #f44336;">
+        <span class="check-icon">✕</span>
+      </div>
+
+      <!-- Title & Description -->
+      <h2 class="modal-title">Failed to Publish Product</h2>
+      <p class="modal-description" style="color: #f44336;">
+        {{ errorMessage }}
+      </p>
+
+      <!-- Action Buttons Stack -->
+      <div class="modal-actions">
+        <button type="button" class="btn btn-text" style="background-color: #f44336; color: white;" (click)="closeErrorModal()">
+          Close
+        </button>
+      </div>
+
+    </div>
   </div>

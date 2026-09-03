@@ -37,13 +37,19 @@
       </div>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="custom-mat-table">
+    <div class="loader-container" *ngIf="isLoading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading products...</p>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="custom-mat-table" *ngIf="!isLoading">
 
       <ng-container matColumnDef="product">
         <th mat-header-cell *matHeaderCellDef> PRODUCT </th>
         <td mat-cell *matCellDef="let element">
           <div class="product-cell">
-            <span class="product-emoji">{{element.image}}</span>
+            <img *ngIf="element.image.startsWith('http')" [src]="element.image" alt="Product Image" class="product-image" />
+            <span *ngIf="!element.image.startsWith('http')" class="product-emoji">{{element.image}}</span>
             <div class="product-details">
               <span class="product-name">{{element.name}}</span>
               <span class="product-subtext">{{element.subtext}}</span>

@@ -235,42 +235,63 @@
 
 }
 
-.team-title {
-
-    color: gray;
-    font-size: 13px;
-    margin-bottom: 10px;
-
+.store-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
 }
 
-.team {
-
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.store-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
     margin-bottom: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 16px;
 
-    span {
-
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: #4b56d2;
-        color: white;
+    .detail-item {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        font-weight: 600;
+        flex-direction: column;
+        gap: 4px;
 
+        &.full-width {
+            grid-column: span 2;
+        }
+
+        .label {
+            font-size: 11px;
+            color: #8d98a7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .value {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.4;
+
+            i {
+                color: #2f5daa;
+                font-size: 13px;
+                margin-top: 3px;
+            }
+        }
     }
-
-    small {
-
-        color: gray;
-
+    
+    .address-text {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #555;
     }
-
 }
 
 .actions {
@@ -297,4 +318,14 @@
     }
 
 }
+}
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  gap: 12px;
 }

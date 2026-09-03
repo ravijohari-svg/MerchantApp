@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { Router } from '@angular/router';
+import { MerchantService } from '../../../../services/merchant.service';
 
 export interface GallerySlot {
   key: string;
@@ -9,6 +11,7 @@ export interface GallerySlot {
   base64: string | null;
   fileName: string | null;
   error?: string;
+  isUploading?: boolean;
 }
 
 @Component({
@@ -44,11 +47,97 @@ export class AddProduct implements OnInit {
 
   selectedImageSlot: string = 'main';
   showSuccessModal: boolean = false;
+  showErrorModal: boolean = false;
+  errorMessage: string = '';
+  stores: any[] = [];
+  categories: any[] = [];
+  subCategories: any[] = [];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private merchantService: MerchantService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
+    this.fetchStores();
+    this.fetchCategories();
+  }
+
+  fetchCategories(): void {
+    this.merchantService.getCategories().subscribe({
+      next: (res: any) => {
+        if (res.success && res.data) {
+          this.categories = res.data;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching categories:', err);
+      }
+    });
+  }
+
+  onCategoryChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const categoryId = selectElement.value;
+
+    // Reset subCategory
+    this.productForm.get('basicInfo.subCategory')?.setValue('');
+    this.subCategories = [];
+
+    if (categoryId) {
+      this.merchantService.getCategories(categoryId).subscribe({
+        next: (res: any) => {
+          if (res.success && res.data) {
+            this.subCategories = res.data;
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching subcategories:', err);
+        }
+      });
+    }
+  }
+
+  fetchStores(): void {
+    let merchantId = 'MB00013'; // Fallback
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const parsedToken = JSON.parse(token);
+        merchantId = parsedToken?.merchantBrand?.MerchantId || parsedToken.merchantId || parsedToken.MerchantId || parsedToken.id || 'MB00013';
+      }
+    } catch (e) {
+      console.warn('Could not parse token from localStorage');
+    }
+
+    this.merchantService.getStores(merchantId).subscribe({
+      next: (response: any) => {
+        let res = response;
+        if (typeof response === 'string') {
+          res = JSON.parse(response);
+        } else if (response && response.body && typeof response.body === 'string') {
+          res = JSON.parse(response.body);
+        } else if (response && response.body && typeof response.body === 'object') {
+          res = response.body;
+        }
+
+        if (res && res.stores) {
+          this.stores = res.stores.map((store: any) => ({
+            id: store.StoreId || store.storeId || store.id || 'Unknown',
+            name: store.StoreName || 'Unnamed Store'
+          }));
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching stores', err);
+      }
+    });
   }
 
   initForm(): void {
@@ -56,6 +145,7 @@ export class AddProduct implements OnInit {
       // Section 1: Basic Information
       basicInfo: this.fb.group({
         productName: ['', [Validators.required, Validators.maxLength(120)]],
+        storeId: ['', Validators.required],
         shortProductName: [''],
         brand: [''],
         category: ['', Validators.required],
@@ -267,12 +357,59 @@ export class AddProduct implements OnInit {
       const reader = new FileReader();
       reader.onload = () => {
         const base64Str = reader.result as string;
+        const base64Payload = base64Str.split(',')[1];
+
         if (slot) {
-          slot.base64 = base64Str;
+          slot.base64 = base64Str; // Show immediate preview
           slot.fileName = file.name;
           slot.error = undefined;
+          slot.isUploading = true;
+          this.cdr.detectChanges(); // Trigger Angular to update the UI immediately
         }
-        this.productForm.get('imagesMedia')?.get(targetKey)?.setValue(base64Str);
+
+        const payload = {
+          base64: base64Payload,
+          fileName: file.name,
+          contentType: file.type,
+          folder: 'products'
+        };
+
+        this.merchantService.uploadFile(payload).subscribe({
+          next: (res: any) => {
+            try {
+              let parsedRes = res;
+              if (typeof res === 'string') {
+                parsedRes = JSON.parse(res);
+              }
+
+              let uploadedUrl = parsedRes?.data?.url || parsedRes?.url;
+              if (!uploadedUrl && typeof parsedRes?.data === 'string') {
+                uploadedUrl = parsedRes.data;
+              }
+
+              if (uploadedUrl) {
+                this.productForm.get('imagesMedia')?.get(targetKey)?.setValue(uploadedUrl);
+                if (slot) {
+                  slot.base64 = uploadedUrl; // Update preview to s3 url
+                  slot.isUploading = false;
+                }
+              } else {
+                alert('Upload failed: Invalid response');
+                if (slot) slot.isUploading = false;
+              }
+            } catch (e) {
+              console.error('Parsing error', e);
+              if (slot) slot.isUploading = false;
+            }
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Upload error', err);
+            alert('Upload failed. Please try again.');
+            if (slot) slot.isUploading = false;
+            this.cdr.detectChanges();
+          }
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -321,18 +458,98 @@ export class AddProduct implements OnInit {
   }
 
   onPublish(): void {
-    this.showSuccessModal = true;
-    if (this.productForm.valid) {
-      console.log('Publishing product...', this.productForm.value);
-    } else {
+    if (this.productForm.invalid) {
+      this.productForm.markAllAsTouched();
       alert('Please fill in all required fields before publishing.');
+      return;
     }
+
+    const val = this.productForm.value;
+
+    let merchantId = 'MB00013';
+    let merchantName = 'Skye Retail Pvt Ltd';
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const parsed = JSON.parse(token);
+        merchantId = parsed?.merchantBrand?.MerchantId || parsed.merchantId || parsed.MerchantId || parsed.id || merchantId;
+        merchantName = parsed?.merchantBrand?.BrandName || parsed.merchantName || merchantName;
+      }
+    } catch (e) { }
+
+    const storeId = val.basicInfo.storeId;
+    const store = this.stores.find(s => s.id === storeId);
+
+    // Attempt to find Category name from subcategories array
+    const subCat = this.subCategories.find(s => (s.SubCategoryId || s.CategoryId || s._id || s.id) === val.basicInfo.subCategory);
+    const categoryName = subCat ? (subCat.SubCategoryName || subCat.CategoryName || subCat.name) : '';
+
+    // Collect all uploaded S3 images that are not null
+    const commonImages = Object.values(val.imagesMedia).filter(img => typeof img === 'string' && img.trim() !== '');
+
+    const payload = {
+      StoreId: storeId,
+      StoreName: store ? store.name : '',
+      MerchantId: merchantId,
+      MerchantName: merchantName,
+      CategoryId: val.basicInfo.subCategory,
+      ParentCategoryId: val.basicInfo.category,
+      CategoryName: categoryName,
+      ProductName: val.basicInfo.productName,
+      ShortProductName: val.basicInfo.shortProductName,
+      ProductType: val.variants && val.variants.length > 0 ? "VARIABLE" : "SIMPLE",
+      Brand: val.basicInfo.brand,
+      ShortDescription: val.basicInfo.shortDescription,
+      DetailedDescription: val.basicInfo.detailedDescription,
+      AddedBy: "MERCHANT",
+      CommonImages: commonImages,
+      Attributes: { ...val.categoryAttributes },
+      Location: {
+        Latitude: 28.4595, // Fallback coordinates
+        Longitude: 77.0266
+      },
+      MinimumOrderQty: val.pricing.minOrderQty,
+      MaximumOrderQty: val.pricing.maxOrderQty,
+      LowStockAlertThreshold: val.inventory.lowStockThreshold,
+      ReorderQty: val.inventory.reorderQty,
+      Variants: val.variants.map((v: any) => ({
+        VariantName: v.name,
+        SKU: v.sku,
+        SellingPrice: v.sellingPrice,
+        MRP: v.mrp,
+        CurrentStock: v.stock,
+        Status: v.status,
+        Images: commonImages.length > 0 ? [commonImages[0]] : []
+      }))
+    };
+
+    console.log('Publishing product payload...', payload);
+
+    this.merchantService.addProduct(payload).subscribe({
+      next: (res: any) => {
+        console.log('Add Product Response:', res);
+        if (res && res.success === false) {
+          this.errorMessage = res.message || 'Failed to publish product.';
+          this.showErrorModal = true;
+        } else {
+          this.showSuccessModal = true;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Add Product Error:', err);
+        const errMsg = err.error?.message || err.message || 'Failed to publish product. Please try again.';
+        this.errorMessage = errMsg;
+        this.showErrorModal = true;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   // Modal Action Handlers
   onViewProduct(): void {
     console.log('Navigating to View Product page...');
-    // Add router navigation logic, e.g.: this.router.navigate(['/products', productId]);
+    this.router.navigate(['merchant/products/list']);
   }
 
   onAddAnotherProduct(): void {
@@ -343,7 +560,12 @@ export class AddProduct implements OnInit {
 
   onBackToProducts(): void {
     this.showSuccessModal = false;
-    // Add router navigation logic, e.g.: this.router.navigate(['/products']);
+    this.router.navigate(['merchant/products/list']);
+  }
+
+  closeErrorModal(): void {
+    this.showErrorModal = false;
+    this.errorMessage = '';
   }
 
   setStatus(status: 'Draft' | 'Active'): void {

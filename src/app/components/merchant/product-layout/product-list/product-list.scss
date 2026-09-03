@@ -116,6 +116,17 @@ $red: #ef4444;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: $text-secondary;
+  font-size: 0.9rem;
+  gap: 12px;
+}
+
 .table-toolbar {
   display: flex;
   justify-content: space-between;
@@ -198,6 +209,13 @@ $red: #ef4444;
   display: flex;
   align-items: center;
   gap: 14px;
+  .product-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #f1f5f9;
+  }
   .product-emoji {
     font-size: 1.5rem;
     background: #f1f5f9;

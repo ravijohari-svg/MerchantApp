@@ -10,17 +10,7 @@
 	// padding: 2rem;
 }
 
-.splash-content h1 {
-	font-size: 3rem;
-	margin: 0 0 0.5rem;
-	font-weight: 700;
-	letter-spacing: 0.5px;
-    font-family: Inter, Arial, sans-serif;
-}
-
-.splash-content .subtitle {
-    font-family: Inter, Arial, sans-serif;
-	font-size: 1.125rem;
-	margin: 0;
-	opacity: 0.95;
+.splash-gif {
+    max-width: 80%; /* Ensure it fits nicely on smaller screens */
+    height: auto;
 }

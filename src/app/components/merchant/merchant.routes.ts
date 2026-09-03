@@ -73,7 +73,7 @@ export const MERCHANT_ROUTES: Routes = [
               import('./order-layout/order-list/order-list').then((m) => m.OrderList),
           },
           {
-            path: 'view-orders',
+            path: 'view-orders/:id',
             loadComponent: () =>
               import('./order-layout/view-orders/view-orders').then((m) => m.ViewOrders),
           },
