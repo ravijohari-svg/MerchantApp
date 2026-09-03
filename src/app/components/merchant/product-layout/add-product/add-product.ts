@@ -170,7 +170,7 @@ export class AddProduct implements OnInit {
 
       // Section 3: Category & Attributes
       categoryAttributes: this.fb.group({
-        weightVolume: [''],
+        weight: [''],
         ingredients: [''],
         vegNonVeg: [''],
         shelfLife: [''],
