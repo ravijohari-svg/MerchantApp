@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -36,15 +36,49 @@ export class ProductList implements OnInit {
   ];
 
 
+  tabs: string[] = ['All Products', 'Active', 'Inactive', 'Out of Stock'];
+  selectedTab: string = 'All Products';
+  currentSearchTerm: string = '';
+
   displayedColumns: string[] = ['product', 'sku', 'category', 'price', 'stock', 'status', 'actions'];
 
 
-  dataSource: Product[] = [];
+  dataSource = new MatTableDataSource<Product>([]);
   isLoading = true;
 
   constructor(private router: Router, private merchantService: MerchantService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+    this.dataSource.filterPredicate = (data: Product, filter: string) => {
+      let searchParams: any = { status: 'all products', search: '' };
+      try {
+        searchParams = JSON.parse(filter);
+      } catch (e) {
+        searchParams = { status: 'all products', search: filter };
+      }
+      
+      let matchStatus = true;
+      if (searchParams.status !== 'all products') {
+        if (searchParams.status === 'out of stock') {
+          matchStatus = data.stock === 0;
+        } else {
+          matchStatus = data.status.toLowerCase() === searchParams.status;
+        }
+      }
+
+      let matchSearch = true;
+      if (searchParams.search) {
+        const searchStr = searchParams.search;
+        matchSearch = 
+          data.name.toLowerCase().includes(searchStr) ||
+          data.sku.toLowerCase().includes(searchStr) ||
+          data.category.toLowerCase().includes(searchStr);
+      }
+
+      return matchStatus && matchSearch;
+    };
+    
+    this.applyFilters();
     this.fetchProducts();
   }
 
@@ -64,7 +98,7 @@ export class ProductList implements OnInit {
     this.merchantService.getProductList({ MerchantId: merchantId }).subscribe({
       next: (res: any) => {
         if (res && res.items) {
-          this.dataSource = [...res.items.map((item: any) => ({
+          this.dataSource.data = [...res.items.map((item: any) => ({
             id: item.ProductId,
             image: item.Images && item.Images.length > 0 ? item.Images[0] : '📦',
             name: item.ProductName,
@@ -89,10 +123,10 @@ export class ProductList implements OnInit {
   }
 
   updateStats(): void {
-    const totalProducts = this.dataSource.length;
-    const activeListings = this.dataSource.filter(p => p.status.toUpperCase() === 'ACTIVE').length;
-    const lowStock = this.dataSource.filter(p => p.stock > 0 && p.stock < 15).length;
-    const outOfStock = this.dataSource.filter(p => p.stock === 0).length;
+    const totalProducts = this.dataSource.data.length;
+    const activeListings = this.dataSource.data.filter(p => p.status.toUpperCase() === 'ACTIVE').length;
+    const lowStock = this.dataSource.data.filter(p => p.stock > 0 && p.stock < 15).length;
+    const outOfStock = this.dataSource.data.filter(p => p.stock === 0).length;
 
     this.stats = [
       { label: 'Total Products', value: totalProducts, icon: 'inventory_2', color: 'blue' },
@@ -100,6 +134,23 @@ export class ProductList implements OnInit {
       { label: 'Low Stock (< 15)', value: lowStock, icon: 'warning', color: 'orange' },
       { label: 'Out of Stock', value: outOfStock, icon: 'cancel', color: 'red' }
     ];
+  }
+
+  selectTab(tab: string): void {
+    this.selectedTab = tab;
+    this.applyFilters();
+  }
+
+  applySearch(event: Event): void {
+    this.currentSearchTerm = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    this.dataSource.filter = JSON.stringify({
+      status: this.selectedTab.toLowerCase(),
+      search: this.currentSearchTerm
+    });
   }
 
 

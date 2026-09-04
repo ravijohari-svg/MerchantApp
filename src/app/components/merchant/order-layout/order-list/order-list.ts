@@ -44,6 +44,7 @@ export class OrderList implements OnInit {
 
   tabs: string[] = ['All Orders', 'Pending', 'Accepted', 'Preparing', 'In Transit', 'Delivered', 'Cancelled'];
   selectedTab: string = 'All Orders';
+  currentSearchTerm: string = '';
 
   displayedColumns: string[] = ['id', 'customer', 'store', 'items', 'amount', 'payment', 'status', 'drone', 'time', 'actions'];
 
@@ -65,9 +66,32 @@ export class OrderList implements OnInit {
 
   ngOnInit(): void {
     this.dataSource.filterPredicate = (data: Order, filter: string) => {
-      if (filter === 'all orders') return true;
-      return data.status.toLowerCase() === filter;
+      let searchParams: any = { status: 'all orders', search: '' };
+      try {
+        searchParams = JSON.parse(filter);
+      } catch (e) {
+        searchParams = { status: 'all orders', search: filter };
+      }
+      
+      let matchStatus = true;
+      if (searchParams.status !== 'all orders') {
+        matchStatus = data.status.toLowerCase() === searchParams.status;
+      }
+
+      let matchSearch = true;
+      if (searchParams.search) {
+        const searchStr = searchParams.search;
+        matchSearch = 
+          data.id.toLowerCase().includes(searchStr) ||
+          data.customer.toLowerCase().includes(searchStr) ||
+          data.store.toLowerCase().includes(searchStr) ||
+          data.status.toLowerCase().includes(searchStr);
+      }
+
+      return matchStatus && matchSearch;
     };
+    
+    this.applyFilters();
     this.fetchOrders();
   }
 
@@ -161,12 +185,19 @@ export class OrderList implements OnInit {
 
   selectTab(tab: string): void {
     this.selectedTab = tab;
-    this.dataSource.filter = tab.toLowerCase();
+    this.applyFilters();
   }
 
   applySearch(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.currentSearchTerm = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    this.dataSource.filter = JSON.stringify({
+      status: this.selectedTab.toLowerCase(),
+      search: this.currentSearchTerm
+    });
   }
 
   getInitials(name: string): string {

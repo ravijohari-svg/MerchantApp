@@ -21,7 +21,7 @@ $red: #ef4444;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 24px;
 
   .title {
     font-size: 1.75rem;
@@ -71,7 +71,7 @@ $red: #ef4444;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.25rem;
-  margin-bottom: 2rem;
+  margin-bottom: 24px;
 }
 
 .stat-card {
@@ -108,12 +108,62 @@ $red: #ef4444;
 }
 
 /* Data Table Container Content Area */
-.content-wrapper {
-  background: $card-bg;
-  border-radius: 16px;
-  border: 1px solid $border-color;
+.tabs-container {
+  display: flex; 
+  gap: 8px; 
+  margin-bottom: 24px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  button {
+    flex: 0 0 auto;
+    padding: 8px 16px; border-radius: 20px; border: 1px solid #e2e8f0; background: white;
+    color: $text-secondary; font-weight: 500; cursor: pointer; transition: all 0.2s;
+    &.active { background: #0f4c93; color: white; border-color: #0f4c93; }
+  }
+}
+
+.table-card {
+  background: $card-bg; border-radius: 16px; border: 1px solid $border-color; padding: 16px;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  
+  .search-bar-row {
+    display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;
+
+    @media (min-width: 640px) {
+      flex-direction: row; justify-content: space-between; gap: 16px;
+    }
+
+    .search-input-wrapper {
+      display: flex; align-items: center; gap: 8px; background: #f1f5f9;
+      padding: 8px 16px; border-radius: 8px; flex: 1;
+      mat-icon { color: $text-secondary; }
+      input { border: none; background: transparent; width: 100%; outline: none; font-size: 14px; }
+    }
+    .filter-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px;
+      border: 1px solid $border-color; background: white; border-radius: 8px; cursor: pointer;
+      width: 100%; color: $text-primary; font-weight: 500;
+      @media (min-width: 640px) { width: auto; }
+    }
+  }
+}
+
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .loader-container {
@@ -125,54 +175,6 @@ $red: #ef4444;
   color: $text-secondary;
   font-size: 0.9rem;
   gap: 12px;
-}
-
-.table-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem;
-  border-bottom: 1px solid $border-color;
-
-  .search-box {
-    display: flex;
-    align-items: center;
-    background: #f8fafc;
-    border: 1px solid $border-color;
-    border-radius: 99px;
-    padding: 6px 16px;
-    width: 320px;
-    gap: 8px;
-    mat-icon { color: $text-secondary; font-size: 20px; width: 20px; height: 20px; }
-    input {
-      border: none; background: transparent; width: 100%; outline: none;
-      font-size: 0.875rem; color: $text-primary;
-      &::placeholder { color: #94a3b8; }
-    }
-  }
-
-  .toolbar-right {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    .dropdown-placeholder {
-      width: 100px; height: 34px; background: #f8fafc; border: 1px solid $border-color; border-radius: 6px;
-    }
-  }
-
-  .view-toggle {
-    display: flex;
-    border: 1px solid $border-color;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #f8fafc;
-    .icon-toggle {
-      border: none; background: transparent; padding: 6px 10px; cursor: pointer; color: $text-secondary;
-      display: flex; align-items: center;
-      mat-icon { font-size: 18px; width: 18px; height: 18px; }
-      &.active { background: #ffffff; color: #0f172a; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    }
-  }
 }
 
 /* Custom Angular Material Table Structure Styling */
