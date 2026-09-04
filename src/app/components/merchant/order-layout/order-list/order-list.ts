@@ -13,7 +13,7 @@ interface Order {
   items: number;
   amount: number;
   payment: string;
-  status: 'Pending' | 'Preparing' | 'In Transit' | 'Delivered' | 'Cancelled';
+  status: 'Pending' | 'Accepted' | 'Preparing' | 'In Transit' | 'Delivered' | 'Cancelled';
   drone: string;
   time: string;
 }
@@ -42,7 +42,7 @@ export class OrderList implements OnInit {
     cancelled: 0
   };
 
-  tabs: string[] = ['All Orders', 'Pending', 'Preparing', 'In Transit', 'Delivered', 'Cancelled'];
+  tabs: string[] = ['All Orders', 'Pending', 'Accepted', 'Preparing', 'In Transit', 'Delivered', 'Cancelled'];
   selectedTab: string = 'All Orders';
 
   displayedColumns: string[] = ['id', 'customer', 'store', 'items', 'amount', 'payment', 'status', 'drone', 'time', 'actions'];
@@ -110,7 +110,8 @@ export class OrderList implements OnInit {
             // Map status
             let statusStr = 'Pending';
             const apiStatus = (item.OrderStatus || item.status || '').toUpperCase();
-            if (apiStatus === 'PENDING') statusStr = 'Pending';
+            if (apiStatus === 'PENDING' || apiStatus === 'CREATED') statusStr = 'Pending';
+            else if (apiStatus === 'ACCEPTED') statusStr = 'Accepted';
             else if (apiStatus === 'PREPARING') statusStr = 'Preparing';
             else if (apiStatus === 'IN TRANSIT') statusStr = 'In Transit';
             else if (apiStatus === 'DELIVERED') statusStr = 'Delivered';
@@ -140,7 +141,7 @@ export class OrderList implements OnInit {
               items: totalItems,
               amount: item.FinalAmount || item.amount || item.TotalAmount || item.totalAmount || 0,
               payment: item.Payment?.PaymentStatus || item.payment || item.PaymentStatus || item.paymentStatus || 'N/A',
-              status: statusStr as 'Pending' | 'Preparing' | 'In Transit' | 'Delivered' | 'Cancelled',
+              status: statusStr as 'Pending' | 'Accepted' | 'Preparing' | 'In Transit' | 'Delivered' | 'Cancelled',
               drone: item.DroneId || item.drone || item.droneId || '—',
               time: timeAgo
             };

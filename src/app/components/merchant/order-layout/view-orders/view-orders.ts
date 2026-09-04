@@ -1,6 +1,6 @@
 
 import { Component, OnDestroy, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,6 +29,7 @@ export class ViewOrders implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private location = inject(Location);
 
   private targetOrderId: string | null = null;
 
@@ -56,6 +57,7 @@ export class ViewOrders implements OnInit, OnDestroy {
   summary = {
     subtotal: 0,
     tax: 0,
+    otherCharges: 0,
     deliveryFee: 0,
     total: 0,
     paymentMethod: ''
@@ -133,6 +135,14 @@ export class ViewOrders implements OnInit, OnDestroy {
   }
 
   mapOrderData(data: any) {
+    if (data.OrderStatus === 'CREATED') {
+      this.currentStatus = 'PENDING_ACCEPTANCE';
+    } else if (data.OrderStatus === 'ACCEPTED') {
+      this.currentStatus = 'SELECT_TIME';
+    } else {
+      this.currentStatus = 'Waiting';
+    }
+
     this.orderId = data.OrderId ? `#${data.OrderId}` : '';
     if (data.TS_Created) {
       const date = new Date(data.TS_Created);
@@ -171,6 +181,7 @@ export class ViewOrders implements OnInit, OnDestroy {
     if (data.Pricing) {
       this.summary.subtotal = data.Pricing.Subtotal || 0;
       this.summary.tax = data.Pricing.TaxAmount || 0;
+      this.summary.otherCharges = data.Pricing.OtherCharges || 0;
       this.summary.deliveryFee = data.Pricing.DeliveryFee || 0;
       this.summary.total = data.Pricing.TotalAmount || 0;
     }
@@ -193,7 +204,7 @@ export class ViewOrders implements OnInit, OnDestroy {
     } catch (e) {}
 
     const payload = {
-      OrderId: this.orderId,
+      OrderId: this.orderId.replace('#', ''),
       Action: "ACCEPTANCE_MERCHANT",
       Payload: {
         Status: "ACCEPTED",
@@ -222,6 +233,10 @@ export class ViewOrders implements OnInit, OnDestroy {
   closeAcceptSuccessModal(): void {
     this.showAcceptSuccessModal = false;
     this.currentStatus = 'SELECT_TIME';
+  }
+  
+  goBack(): void {
+    this.location.back();
   }
   rejectOrder(): void { console.log('Order rejected'); }
   incrementTime(): void { this.customTimeMinutes++; }

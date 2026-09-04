@@ -180,6 +180,7 @@ $primary-blue: #0f4c93;
       &.in-transit { background: #eff6ff; color: #3b82f6; }
       &.preparing { background: #fffbeb; color: #f59e0b; }
       &.pending { background: #faf5ff; color: #8b5cf6; }
+      &.accepted { background: #e0f2fe; color: #0284c7; }
       &.cancelled { background: #fef2f2; color: #ef4444; }
     }
 
