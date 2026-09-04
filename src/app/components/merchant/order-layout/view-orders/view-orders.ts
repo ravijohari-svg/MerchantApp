@@ -201,7 +201,7 @@ export class ViewOrders implements OnInit, OnDestroy {
         const parsedToken = JSON.parse(token);
         merchantId = parsedToken?.merchantBrand?.MerchantId || parsedToken.merchantId || parsedToken.MerchantId || parsedToken.id || 'MERC-98765';
       }
-    } catch (e) {}
+    } catch (e) { }
 
     const payload = {
       OrderId: this.orderId.replace('#', ''),
@@ -229,12 +229,12 @@ export class ViewOrders implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   closeAcceptSuccessModal(): void {
     this.showAcceptSuccessModal = false;
     this.currentStatus = 'SELECT_TIME';
   }
-  
+
   goBack(): void {
     this.location.back();
   }
